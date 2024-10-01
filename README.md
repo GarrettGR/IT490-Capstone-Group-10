@@ -4,9 +4,9 @@
 
 welcome!
 
-## AppliCare
+# AppliCare
 
-Contact Information
+## Contact Information
 Garrett Gonzalez-Rivas - Back-End Developer - grg@njit.edu
 Shakawath Hussain - Front-End Developer - sh692@njit.edu
 Yashi Rastogi - RabbitMQ Developer - yr27@njit.edu

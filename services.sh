@@ -3,10 +3,23 @@
 while [ $# -gt 0 ]; do
 	case "$1" in
 		-b | --backend)
-			if [ "$(hostname)" = "backend" ]; then
-				bash ~/Capstone-Group-09/backend/startbackend.sh
-			else
-				ssh backend "bash ~/Capstone-Group-09/backend/startbackend.sh"
+      if [[ -n "$2" ]]; then
+				if [[ "$2" == "start" ]]; then
+				  if [ "$(hostname)" = "backend" ]; then
+				    bash ~/Capstone-Group-09/backend/startbackend.sh
+			    else
+				    ssh backend "bash ~/Capstone-Group-09/backend/startbackend.sh"
+			    fi
+				elif [[ "$2" == "stop" ]]; then
+					if [ "$(hostname)" = "backend" ]; then
+				    bash ~/Capstone-Group-09/backend/stopbackend.sh
+			    else
+				    ssh backend "bash ~/Capstone-Group-09/backend/stopbackend.sh"
+			    fi
+				else
+					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
+					exit 1
+				fi
 			fi
 		;;
 		-f | --frontend)

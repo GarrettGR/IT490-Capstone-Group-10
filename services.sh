@@ -23,24 +23,67 @@ while [ $# -gt 0 ]; do
 			fi
 		;;
 		-f | --frontend)
-			if [ "$(hostname)" = "frontend" ]; then
-				hostname
-			else
-				ssh frontend "hostname"
+			if [[ -n "$2" ]]; then
+				if [[ "$2" == "start" ]]; then
+				  if [ "$(hostname)" = "frontend" ]; then
+				    # bash ~/Capstone-Group-09/frontend/startfrontend.sh
+            hostname
+			    else
+				    # ssh frontend "bash ~/Capstone-Group-09/frontend/startfrontend.sh"
+            ssh frontend "hostname"
+			    fi
+				elif [[ "$2" == "stop" ]]; then
+					if [ "$(hostname)" = "frontend" ]; then
+				    # bash ~/Capstone-Group-09/backend/stopfrontend.sh
+            echo "Stopped $(hostname)"
+			    else
+				    # ssh frontend "bash ~/Capstone-Group-09/frontend/stopfrontend.sh"
+            ssh frontend 'echo "Stopped $(hostname)"'
+			    fi
+				else
+					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
+					exit 1
+				fi
 			fi
 		;;
 		-d | --database)
-			if [ "$(hostname)" = "database" ]; then
-				bash ~/Capstone-Group-09/database/startdb.sh
-			else
-				ssh database "bash ~/Capstone-Group-09/database/startdb.sh"
+      if [[ -n "$2" ]]; then
+				if [[ "$2" == "start" ]]; then
+				  if [ "$(hostname)" = "database" ]; then
+				    bash ~/Capstone-Group-09/database/startdb.sh
+			    else
+				    ssh database "bash ~/Capstone-Group-09/database/startdb.sh"
+			    fi
+				elif [[ "$2" == "stop" ]]; then
+					if [ "$(hostname)" = "database" ]; then
+				    bash ~/Capstone-Group-09/database/stopdb.sh
+			    else
+				    ssh database "bash ~/Capstone-Group-09/database/stopdb.sh"
+			    fi
+				else
+					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
+					exit 1
+				fi
 			fi
 		;;
 		-c | --communication)
-			if [ "$(hostname)" = "communication" ]; then
-				bash ~/Capstone-Group-09/messaging/startrmq.sh
-			else
-				ssh communication "bash ~/Capstone-Group-09/messaging/startrmq.sh"
+      if [[ -n "$2" ]]; then
+				if [[ "$2" == "start" ]]; then
+				  if [ "$(hostname)" = "communication" ]; then
+				    bash ~/Capstone-Group-09/messaging/startrmq.sh
+			    else
+				    ssh communication "bash ~/Capstone-Group-09/messaging/startrmq.sh"
+			    fi
+				elif [[ "$2" == "stop" ]]; then
+					if [ "$(hostname)" = "communication" ]; then
+				    bash ~/Capstone-Group-09/messaging/stoprmq.sh
+			    else
+				    ssh communication "bash ~/Capstone-Group-09/messaging/stoprmq.sh"
+			    fi
+				else
+					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
+					exit 1
+				fi
 			fi
 		;;
 	esac

@@ -80,6 +80,12 @@ while [ $# -gt 0 ]; do
 			    else
 				    ssh communication "bash ~/Capstone-Group-09/messaging/stoprmq.sh"
 			    fi
+        elif [[ "$2" == "status" ]]; then 
+          if [ "$(hostname)" = "communication" ]; then
+            systemctl status rabbitmq-server
+          else
+            ssh communication "systemctl status rabbitmq-server"
+          fi
 				else
 					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
 					exit 1

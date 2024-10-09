@@ -1,5 +1,5 @@
 #!/bin/bash
 
-if [ ! $(systemctl is-active mysql) ]; then
+if [[ $(systemctl is-active mysql) == "inactive" ]]; then
     systemctl start mysql
 fi

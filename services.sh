@@ -60,6 +60,12 @@ while [ $# -gt 0 ]; do
 			    else
 				    ssh database "bash ~/Capstone-Group-09/database/stopdb.sh"
 			    fi
+        elif [[ "$2" == "status" ]]; then
+          if [ "$(hostname)" == "database" ]; then
+            systemctl status mariadb
+          else
+            ssh database "systemctl status mariadb"
+          fi
 				else
 					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
 					exit 1

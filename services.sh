@@ -27,10 +27,10 @@ while [ $# -gt 0 ]; do
 				if [[ "$2" == "start" ]]; then
 				  if [ "$(hostname)" = "frontend" ]; then
 				    # bash ~/Capstone-Group-09/frontend/startfrontend.sh
-            hostname
+            cd ~/Capstone-Group-09-master; npm start
 			    else
 				    # ssh frontend "bash ~/Capstone-Group-09/frontend/startfrontend.sh"
-            ssh frontend "hostname"
+            ssh frontend "cd ~/Capstone-Group-09-master; npm start"
 			    fi
 				elif [[ "$2" == "stop" ]]; then
 					if [ "$(hostname)" = "frontend" ]; then

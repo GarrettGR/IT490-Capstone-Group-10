@@ -6,10 +6,8 @@ After=network.target
 Environment=NODE_PORT=3001
 # TODO: Add secrets / other variables needed by node/react
 Type=simple
-User=nouser
-# don't use root, might be: `nobody'?
-Group=nogroup
-# also might be `nobody'?
+User=root
+# Group=nogroup
 WorkingDirectory=/root/Capstone-Group-09/frontend/
 ExecStart=/usr/bin/node /root/Capstone-Group-09/frontend/frontend.js
 # ExecStop=

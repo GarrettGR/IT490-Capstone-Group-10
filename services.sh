@@ -6,15 +6,15 @@ while [ $# -gt 0 ]; do
       if [[ -n "$2" ]]; then
 				if [[ "$2" == "start" ]]; then
 				  if [ "$(hostname)" = "backend" ]; then
-				    bash ~/Capstone-Group-09/backend/startbackend.sh
+				    bash ~/Capstone-Group-09/backend/startpy.sh
 			    else
-				    ssh backend "bash ~/Capstone-Group-09/backend/startbackend.sh"
+				    ssh backend "bash ~/Capstone-Group-09/backend/startpy.sh"
 			    fi
 				elif [[ "$2" == "stop" ]]; then
 					if [ "$(hostname)" = "backend" ]; then
-				    bash ~/Capstone-Group-09/backend/stopbackend.sh
+				    bash ~/Capstone-Group-09/backend/stoppy.sh
 			    else
-				    ssh backend "bash ~/Capstone-Group-09/backend/stopbackend.sh"
+				    ssh backend "bash ~/Capstone-Group-09/backend/stoppy.sh"
 			    fi
 				else
 					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
@@ -26,20 +26,24 @@ while [ $# -gt 0 ]; do
 			if [[ -n "$2" ]]; then
 				if [[ "$2" == "start" ]]; then
 				  if [ "$(hostname)" = "frontend" ]; then
-            systemctl start node_server.service
+            bash ~/Capstone-Group-09/frontend/startnpm.sh
 			    else
-            ssh frontend systemctl start node_server.service
+            ssh frontend "bash ~/Capstone-Group-09/frontend/startnpm.sh"
 			    fi
 				elif [[ "$2" == "stop" ]]; then
 					if [ "$(hostname)" = "frontend" ]; then
-				    # bash ~/Capstone-Group-09/backend/stopfrontend.sh
-            echo "Stopped $(hostname)"
+            bash ~/Capstone-Group-09/frontend/stopnpm.sh
 			    else
-				    # ssh frontend "bash ~/Capstone-Group-09/frontend/stopfrontend.sh"
-            ssh frontend 'echo "Stopped $(hostname)"'
+				    ssh frontend "bash ~/Capstone-Group-09/frontend/stopnpm.sh"
 			    fi
+        elif [[ "$2" == "status" ]]; then
+          if [ "$(hostname)" == "frontend" ]; then
+            systemctl status node_server.service
+          else
+            ssh frontend "systemctl status node_server.service"
+          fi
 				else
-					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
+					echo "Unknown control: \"$2\". Please enter \"start\", \"stop\", or \"status\"."
 					exit 1
 				fi
 			fi
@@ -65,7 +69,7 @@ while [ $# -gt 0 ]; do
             ssh database "systemctl status mariadb"
           fi
 				else
-					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
+					echo "Unknown control: \"$2\". Please enter \"start\", \"stop\", or \"status\"."
 					exit 1
 				fi
 			fi
@@ -91,7 +95,7 @@ while [ $# -gt 0 ]; do
             ssh communication "systemctl status rabbitmq-server"
           fi
 				else
-					echo "Unknown control: \"$2\". Please enter \"start\" or \"stop\"."
+					echo "Unknown control: \"$2\". Please enter \"start\", \"stop\", or \"status\"."
 					exit 1
 				fi
 			fi

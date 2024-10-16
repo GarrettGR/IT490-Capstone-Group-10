@@ -26,11 +26,9 @@ while [ $# -gt 0 ]; do
 			if [[ -n "$2" ]]; then
 				if [[ "$2" == "start" ]]; then
 				  if [ "$(hostname)" = "frontend" ]; then
-				    # bash ~/Capstone-Group-09/frontend/startfrontend.sh
-            cd ~/Capstone-Group-09-master; npm start
+            systemctl start node_server.service
 			    else
-				    # ssh frontend "bash ~/Capstone-Group-09/frontend/startfrontend.sh"
-            ssh frontend "cd ~/Capstone-Group-09-master; npm start"
+            ssh frontend systemctl start node_server.service
 			    fi
 				elif [[ "$2" == "stop" ]]; then
 					if [ "$(hostname)" = "frontend" ]; then

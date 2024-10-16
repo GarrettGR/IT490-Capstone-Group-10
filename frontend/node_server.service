@@ -1,15 +1,15 @@
 [Unit]
-Description=frontend.js - the React Node server for Applicare's frontend
+Description=The React (Node) server for Applicare's frontend
 After=network.target
 
 [Service]
-Environment=NODE_PORT=7012
+Environment=PORT=7012
 # TODO: Add secrets / other variables needed by node/react
 Type=simple
 User=root
 # Group=nogroup
 WorkingDirectory=/root/Capstone-Group-09/frontend/
-ExecStart=/usr/bin/node /root/Capstone-Group-09/frontend/frontend.js
+ExecStart=/bin/npm start
 # ExecStop=
 # ExecReload=
 Restart=on-failure

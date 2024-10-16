@@ -1,0 +1,347 @@
+/* Button CSS */
+.ui.button.round {
+    border-radius:var(--radius-2xl);
+}
+    
+.ui.button.size-xs {
+    height: 36px;
+    padding-left: 14px;
+    padding-right: 14px; 
+    font-size: 14px;
+}
+    .ui.button.size-sm { 
+        height: 42px;
+        padding-left: var(--space-md); 
+        padding-right: var(--space-md);
+}
+
+.ui.button.size-2x1 {
+    height: 60px;
+    padding-left: var (--space-8xl); 
+    padding-right: var(--space-8xl); 
+    font-size: 20px;
+}
+
+.ui.button.size-xl {
+    height: 58px;
+    padding-left: 32px;
+    padding-right: 32px;
+    font-size: 14px;
+}
+
+.ui.button.size-lg {
+    height: 44px;
+    padding-left: var(--space-4xl); 
+    padding-right: var(--space-4xl); 
+    font-size: 14px;
+}
+
+.ui.button.size-3x1 {
+    height: 64px;
+    padding-left: var(--space-8xl);
+    padding-right: var(--space-8xl);
+    font-size: 22px;
+}
+
+.ui.button.size-3x1 {
+    height: 64px;
+    padding-left: var(--space-8xl); 
+    padding-right: var(--space-8xl); 
+    font-size: 22px;
+}
+
+.ui.button.size-md { 
+    height: 42px; 
+    padding-left: 30px; 
+    padding-right: 30px; 
+    font-size: 20px;
+}
+
+.ui.button.fill.teal700 {
+    background-color: var(--teal_700);
+    color: var(--neutral_white);
+}
+
+.ui.button.fill.black_900 {
+    background-color: var(--black_900); 
+    box-shadow: var(--shadow-sm); 
+    color: var(--neutral_white);
+}
+
+.ui.button.outline.teal_700 {
+    box-shadow: var(--shadow-sm); 
+    color: var(--black_1);
+    border: 1px solid var(--teal_700);
+}
+
+.ui.button.fill.black_0 {
+    background-color: var(--black_0);
+}
+
+.ui.button.fill.gray_700_cc {
+    background-color: var(--gray_700_cc);
+    color: var(--neutral_white);
+}
+
+.ui.button.outline.gray_900_02 {
+    color: var(--gray_900_02);
+    border: 1px solid var(--gray_900_02);
+}
+
+.ui.button.fill.gray_900_71 {
+    background-color: var(--gray_900_71);
+    color: var(--neutral_white);
+}
+
+.ui.button.fill.neutral_white { 
+    background-color: var(--neutral_white);
+    color: var(--blue_gray_900);
+}
+    
+.ui.button.fill.outline { 
+    background-color: var(--outline);
+    color: var(--black_1);
+}
+    
+.ui.button.outline.pink_100 {
+    color: var(--blue_gray_900);
+    border: 2px solid var(--pink_100);
+}
+
+.ui.button {
+    text-align: center;
+    display: flex;
+    cursor: pointer; 
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+/* Textarea CSS */
+
+.ui.textarea.round { 
+    border-radius: var(--radius-md);
+}
+
+.ui.textarea.size-xs {
+    height: 94px;
+    padding: var(--space-2xl);
+}
+
+.ui.textarea.taroutlinegray700cc.gray_700_cc {
+    box-shadow: var(--shadow-xl);
+    border: 2px solid var(--gray_700_cc) !important;
+}
+
+/* Input CSS */
+
+.ui.input.round {
+    border-radius: var(--radius-md);
+}
+
+.ui.input.size-xs {
+    height: 50px;
+    padding-left: var(--space-2xl);
+    padding-right: var(--space-2xl);
+}
+
+.ui.input.size-md {
+    height: 56px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.ui.input.size-sm {
+    height: 56px;
+    padding-left: 24px;
+    padding-right: 24px; 
+    font-size: 16px;
+}
+
+.ui.input.outline.gray_700_cc {
+    box-shadow: var(--shadow-xl); 
+    border: 2px solid var(--gray_700_cc);
+}
+
+.ui.input.outline.gray_700_59 {
+    color: var(--gray_700_99);
+    border: 1px solid var(--gray_700_59);
+}
+
+.ui.input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: text;
+    border-style: solid;
+}
+
+/* Text CSS */
+
+.ui.text.size-textxs { 
+    font-size: 9px;
+    font-weight: 400; 
+    font-style: normal;
+}
+
+.ui.text.size-texts {
+    font-size: 11px;
+    font-weight: 400; 
+    font-style: normal;
+}
+
+.ui.text.size-textlg { 
+    font-size: 14px; 
+    font-weight: 400; 
+    font-style: normal;
+}
+
+.ui.text.size-textxl { 
+    font-size: 16px; 
+    font-weight: 400; 
+    font-style: normal;
+}
+
+.ui.text.size-text2x1 {
+    font-size: 18px;
+    font-weight: 400; 
+    font-style: normal;
+}
+
+.ui.text.size-text3x1 {
+    font-size: 20px;
+    font-weight: 400; 
+    font-style: normal;
+}
+    
+.ui.text.size-text4x1 {
+    font-size: 22px;
+    font-weight: 400;
+    font-style: bold;
+}
+
+.ui.text.size-text5x1 { 
+    font-size: 24px;
+    font-weight: 400;
+    font-style: bold;
+    @media only screen and (max-width: 1050px) {
+        font-size: 22px;
+    }
+}
+
+.ui.text {
+    color: var(--blue_gray_900); 
+    font-family: GT Walsheim Pro;
+}
+
+/* Heading CSS */
+
+.ui.heading.size-textmd { 
+    font-size: 12px;
+    font-weight: 500; 
+    font-style: normal;
+}
+
+.ui.heading.size-text6x1 {
+    font-size: 32px;
+    font-weight: 500;
+    font-style: bold;
+    @media only screen and (max-width: 1050px) { 
+        font-size: 30px;
+    }
+    
+    @media only screen and (max-width: 550px) { 
+        font-size: 28px;
+    }
+}
+    
+.ui.heading.size-headingxs {
+    font-size: 19px;
+    font-weight: 700;
+    font-style: bold; 
+}
+    
+.ui.heading.size-headings {
+    font-size: 24px;
+    font-weight: 600;
+    font-style: bold;
+    @media only screen and (max-width: 1050px) {
+        font-size: 22px;
+    }
+}
+
+.ui.heading.size-headingmd {
+    font-size: 25px;
+    font-weight: 600;
+    font-style: bold;
+    @media only screen and (max-width: 1050px) { 
+        font-size: 23px;
+    }
+
+    @media only screen and (max-width: 550px) { 
+        font-size: 21px;
+    }    
+}
+    
+.ui.heading.size-headinglg {
+    font-size: 30px; 
+    font-weight: 600; 
+    font-style: bold;
+    @media only screen and (max-width: 1050px) { 
+        font-size: 28px;
+    }
+    
+    @media only screen and (max-width: 550px) { 
+        font-size: 26px;
+    }
+}
+    
+.ui.heading.size-headingxl {
+    font-size: 45px; 
+    font-weight: 600;
+    font-style: bold;
+    @media only screen and (max-width: 1050px) { 
+        font-size: 41px;
+    }
+
+    @media only screen and (max-width: 550px) { 
+        font-size: 35px;
+    }
+}
+ 
+.ui.heading.size-heading2x1 {
+    font-size: 53px;
+    font-weight: 600; 
+    font-style: bold;
+    @media only screen and (max-width: 1050px) { 
+        font-size: 45px;
+    }
+
+    @media only screen and (max-width: 550px) { 
+        font-size: 39px;
+    }
+}
+    
+.ui.heading.size-heading3x1 {
+    font-size: 96px; 
+    font-weight: 700;
+    font-style: bold;
+    @media only screen and (max-width: 1050px) {
+        font-size: 48px;
+    }
+}
+    
+.ui.heading {
+    color: var(--black_1); 
+    font-family: Work Sans;
+}
+
+/* Container CSS */
+
+.container-xs {
+    max-width: 1024px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}

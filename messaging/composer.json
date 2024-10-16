@@ -1,6 +1,0 @@
-{
-  "scripts":{
-    "startrmq" : "./startrmq.sh"
-    "stoprmq" : "./startrmq.sh"
-  }
-}

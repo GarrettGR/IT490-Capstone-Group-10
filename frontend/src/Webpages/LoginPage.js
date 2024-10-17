@@ -15,9 +15,9 @@ function LoginPage() {
 
                 <div className="signinbox">
                     <div className="signin">
-                        <a href="#">
-                            <h1 className="signin-1 ui heading size-text6xl">Sign In</h1>
-                        </a>
+                        
+                        <h1 className="signin-1 ui heading size-text6xl">Sign In</h1>
+                        
                         <div className="columnotherissu">
                             <div className="columnlabel">
                                 <div className="email-3">
@@ -46,7 +46,7 @@ function LoginPage() {
 
                             <div className="columnlog_in">
                                 <button className="log_in ui button gray_900_71 size-3xl fill">Log in</button> 
-                                <p className="bycreatingan ui text size-textx1">
+                                <p className="bycreatingan ui text size-textxl">
                                     <span className="bycreatingan-span"> By continuing, you agree to the&nbsp;</span> 
                                     <a href="#" className="bycreatingan-span-1"> Terms of use</a>
                                     <span className="bycreatingan-span-2"> &nbsp;</span>
@@ -69,13 +69,13 @@ function LoginPage() {
                     <div className="divider"> 
 
                         <div className="divider_one"></div>            
-                            <p className="or ui text size-text4x1">New to our community</p>            
+                            <p className="or ui text size-text4xl">New to our community</p>            
                         <div className="divider_one"></div>
                                 
                     </div>
 
                     <div class="columnlog_in">
-                        <a href="SignUpPage.html">            
+                        <a href="SignUpPage">            
                             <button class="create_an ui button gray_900_02 size-3xl outline">Create an account</button> 
                         </a>
                     </div>

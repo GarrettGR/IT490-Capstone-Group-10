@@ -79,7 +79,7 @@
 
 
 .columnlog_in {
-    gap: var(--space-3x1);
+    gap: var(--space-3xl);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -136,6 +136,6 @@
     align-self: stretch;
     justify-content: center;
     align-items: center;
-    padding: var(--space-3x1);
+    padding: var(--space-3xl);
     border-top: 1px solid var(--gray_700_3f);
 }

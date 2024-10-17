@@ -15,7 +15,7 @@
         padding-right: var(--space-md);
 }
 
-.ui.button.size-2x1 {
+.ui.button.size-2xl {
     height: 60px;
     padding-left: var (--space-8xl); 
     padding-right: var(--space-8xl); 
@@ -36,14 +36,14 @@
     font-size: 14px;
 }
 
-.ui.button.size-3x1 {
+.ui.button.size-3xl {
     height: 64px;
     padding-left: var(--space-8xl);
     padding-right: var(--space-8xl);
     font-size: 22px;
 }
 
-.ui.button.size-3x1 {
+.ui.button.size-3xl {
     height: 64px;
     padding-left: var(--space-8xl); 
     padding-right: var(--space-8xl); 
@@ -203,25 +203,25 @@
     font-style: normal;
 }
 
-.ui.text.size-text2x1 {
+.ui.text.size-text2xl {
     font-size: 18px;
     font-weight: 400; 
     font-style: normal;
 }
 
-.ui.text.size-text3x1 {
+.ui.text.size-text3xl {
     font-size: 20px;
     font-weight: 400; 
     font-style: normal;
 }
     
-.ui.text.size-text4x1 {
+.ui.text.size-text4xl {
     font-size: 22px;
     font-weight: 400;
     font-style: bold;
 }
 
-.ui.text.size-text5x1 { 
+.ui.text.size-text5xl { 
     font-size: 24px;
     font-weight: 400;
     font-style: bold;
@@ -243,7 +243,7 @@
     font-style: normal;
 }
 
-.ui.heading.size-text6x1 {
+.ui.heading.size-text6xl {
     font-size: 32px;
     font-weight: 500;
     font-style: bold;
@@ -310,7 +310,7 @@
     }
 }
  
-.ui.heading.size-heading2x1 {
+.ui.heading.size-heading2xl {
     font-size: 53px;
     font-weight: 600; 
     font-style: bold;
@@ -323,7 +323,7 @@
     }
 }
     
-.ui.heading.size-heading3x1 {
+.ui.heading.size-heading3xl {
     font-size: 96px; 
     font-weight: 700;
     font-style: bold;

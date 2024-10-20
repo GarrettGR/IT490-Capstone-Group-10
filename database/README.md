@@ -136,8 +136,6 @@ Here's an updated README section that includes commands for inserting a user int
 
 ---
 
-# README
-
 ## Database Setup
 
 This document provides instructions for working with the MariaDB database, specifically for the `users` table.

@@ -18,6 +18,7 @@ function LoginPage() {
                         
                         <h1 className="signin-1 ui heading size-text6xl">Sign In</h1>
                         
+                        {/* The Sign Up Form */}
                         <div className="columnotherissu">
                             <div className="columnlabel">
                                 <div className="email-3">

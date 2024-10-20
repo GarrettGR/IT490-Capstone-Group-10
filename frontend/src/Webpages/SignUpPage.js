@@ -17,6 +17,8 @@ function SignUpPage() {
         <div class="signin">
             
             <h1 class="signin-1 ui heading size-text6xl">Create an Account</h1>
+
+            {/* The Sign Up Form */}
             <div class="columnotherissu">
                 <div class="columnlabel">
                     <div class="email-3">

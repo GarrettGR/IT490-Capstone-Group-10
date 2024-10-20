@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 Environment=rmq_passwd="student123"
+Environment=PYTHONUNBUFFERED=1
 Type=simple
 User=root
 WorkingDirectory=/root/Capstone-Group-09/backend/

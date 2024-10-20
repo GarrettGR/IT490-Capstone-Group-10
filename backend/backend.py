@@ -3,7 +3,7 @@
 import aio_pika
 import json
 import asyncio
-# import os
+import os
 # import datetime
 # import beautifulsoup
 
@@ -22,7 +22,7 @@ async def handle_db_response(payload):
 
 async def send_message(destination, payload):
   message = json.dumps({'to': destination, 'from': 'BE', 'payload': payload})
-  async with aio_pika.connect("amq://guest:guest@100.118.142.26/") as connection:
+  async with aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/") as connection:
     async with connection.channel() as channel:
       await channel.default_exchange.publish(
         aio_pika.Message(body=message.encode()),
@@ -43,7 +43,7 @@ def listen_for_messages(message_type):
   channel.start_consuming()
 
 async def listen_for_messages():
-  connection = await aio_pika.connect("amqp://guest:guest@100.118.142.26/")
+  connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   async with connection:
     async with connection.channel() as channel:
       await channel.set_qos(prefetch_count=1)
@@ -56,8 +56,14 @@ async def listen_for_messages():
               await handle_fe_request(msg['payload'])
             elif msg['from'] == 'DB':
               await handle_db_response(msg['payload'])
-      await channel.basic_consume("request_queue", callback)
-      await channel.basic_consume("response_queue", callback)
+      # await channel.consume("request_queue", callback)
+      # await channel.consume("response_queue", callback)
+      request_queue = await channel.declare_queue('request_queue')
+      response_queue = await channel.declare_queue('response_queue')
+      await request_queue.consume(callback)
+      await response_queue.consume(callback)
+      print("Wating for messages...")
+      await asyncio.Future() # is this needed?
 
 async def main():
   await listen_for_messages()

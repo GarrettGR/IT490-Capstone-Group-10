@@ -46,15 +46,15 @@ async def listen_for_messages():
   async with aio_pika.connect("amqp://guest:guest@100.118.142.26/") as connection:
     async with connection.channel() as channel:
       await channel.set_qos(prefetch_count=1)
-        async def callback(message: aio_pika.IncomingMessage):
-          async with message.process():
-            msg = json.loads(message.body)
-            print(f"Received request: {msg}")
-            if msg['to'] == 'BE':
-              if msg['from'] == 'FE':
-                await handle_fe_request(msg['payload'])
-              elif msg['from'] == 'DB':
-                await handle_db_response(msg['payload'])
+      async def callback(message: aio_pika.IncomingMessage):
+        async with message.process():
+          msg = json.loads(message.body)
+          print(f"Received request: {msg}")
+          if msg['to'] == 'BE':
+            if msg['from'] == 'FE':
+              await handle_fe_request(msg['payload'])
+            elif msg['from'] == 'DB':
+              await handle_db_response(msg['payload'])
         await channel.basic_consume("request_queue", callback)
         await channel.basic_consume("response_queue", callback)
 

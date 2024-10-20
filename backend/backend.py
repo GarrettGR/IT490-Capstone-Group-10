@@ -29,19 +29,6 @@ async def send_message(destination, payload):
         routing_key='response_queue' if destination == 'FE' else 'request_queue',
       )
 
-def listen_for_messages(message_type):
-  def callback(ch, method, properties, body):
-    message = json.loads(body)
-    print(f"Received request: {message}")
-    if message['to'] == 'BE':
-      if message['from'] == 'FE':
-        handle_fe_request(message['payload'])
-      elif message['from'] == 'DB':
-        handle_db_response(message['payload'])
-  channel.basic_consume(queue=f"{message_type}_queue", on_message_callback=callback, auto_ack=True)
-  print('Waiting for requests...')
-  channel.start_consuming()
-
 async def listen_for_messages():
   connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   async with connection:

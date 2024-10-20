@@ -4,6 +4,7 @@ import pika
 import os
 import json
 import mysql.connector
+from mysql.connector import pooling
 
 db_config = {
     'user': 'admiin',
@@ -11,6 +12,8 @@ db_config = {
     'host': 'localhost',
     'database': 'applicare'
 }
+
+pool = pooling.MySQLConnectionPool(pool_name="db_pool", pool_size=5, **db_config)
 
 connection = pika.BlockingConnection(pika.ConnectionParameters('100.118.142.26'))
 channel = connection.channel()
@@ -23,23 +26,24 @@ def listen_for_requests():
     request = json.loads(body)
     print(f"Received query from backend: {request}")
     if request['to'] == 'DB':
-      execute_query(request['query'])
+      execute_query(request['payload'])
   channel.basic_consume(queue='request_queue', on_message_callback=callback, auto_ack=True)
   print('Waiting for database queries...')
   channel.start_consuming()
 
-def execute_query(query):
+def execute_query(payload):
   try:
-    db_connection = mysql.connector.connect(**db_config)
+    db_connection = pool.get_connection()
     cursor = db_connection.cursor()
-    cursor.execute(query)
+    cursor.execute(payload['query'])
     results = cursor.fetchall()
     send_db_response(results)
-    cursor.close()
-    db_connection.close()
   except mysql.connector.Error as err:
     print(f"Error: {err}")
     send_db_response({"error": str(err)})
+  finally:
+    cursor.close()
+    db_connection.close()
 
 def send_db_response(response):
   message = json.dumps({"from": "DB", "to":"BE", "payload": response})

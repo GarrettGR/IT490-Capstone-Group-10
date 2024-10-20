@@ -1,37 +1,33 @@
 #!/usr/bin/env python3
 
-import pika
+import aio_pika
 import json
-import threading
-# import sys
+import asyncio
 # import os
 # import datetime
-# import passlib
 # import beautifulsoup
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('100.118.142.26'))
-channel = connection.channel()
-
-channel.queue_declare(queue='request_queue')  # request queue (combined)
-channel.queue_declare(queue='response_queue')  # response queue (combined)
-
-def handle_fe_request(payload):
+async def handle_fe_request(payload):
   print(f"Processing frontend request: {payload}")
   if 'db_query' in payload:
-    send_message('request', 'DB', payload['db_query'])
+    await send_message('request', 'DB', payload['db_query'])
   else:
     response = {"message": "Processed frontend request successfully"}
-    send_message('response', 'FE', response)
+    await send_message('response', 'FE', response)
 
-def handle_db_response(payload):
+async def handle_db_response(payload):
   print(f"Processing database response: {payload}")
   response = {"message": "Processed database response successfully"}
-  send_message('response', 'FE', response)
+  await send_message('FE', response)
 
-def send_message(message_type, destination, response):
-  message = json.dumps({"to": destination, "from": "BE", "payload": response})
-  channel.basic_publish(exchange='', routing_key=f"{message_type}_queue", body=message)
-  print(f"Sent {message_type} to {destination}: {response}")
+async def send_message(destination, payload):
+  message = json.dumps({'to': destination, 'from': 'BE', 'payload': payload})
+  async with aio_pika.connect("amq://guest:guest@100.118.142.26/") as connection:
+    async wth connection.channel() as channel:
+      await channel.default_exchange.publish(
+        aio_pika.Message(body=message.encode()),
+        routing_key='response_queue' if destination == 'FE' else 'request_queue',
+      )
 
 def listen_for_messages(message_type):
   def callback(ch, method, properties, body):
@@ -46,11 +42,24 @@ def listen_for_messages(message_type):
   print('Waiting for requests...')
   channel.start_consuming()
 
-request_thread = threading.Thread(target=listen_for_messages("request"))
-response_thread = threading.Thread(target=listen_for_messages("response"))
+async def listen_for_messages():
+  async with aio_pika.connect("amqp://guest:guest@100.118.142.26/") as connection:
+    async with connection.channel() as channel:
+      await channel.set_qos(prefetch_count=1)
+        async def callback(message: aio_pika.IncomingMessage):
+          async with message.process():
+            msg = json.loads(message.body)
+            print(f"Received request: {msg}")
+            if msg['to'] == 'BE':
+              if msg['from'] == 'FE':
+                await handle_fe_request(msg['payload'])
+              elif msg['from'] == 'DB':
+                await handle_db_response(msg['payload'])
+        await channel.basic_consume("request_queue", callback)
+        await channel.basic_consume("response_queue", callback)
 
-request_thread.start()
-response_thread.start()
+async def main():
+  await listen_for_messages()
 
-request_thread.join()
-response_thread.join()
+if __name__ == "__main__":
+  asyncio.run(main())

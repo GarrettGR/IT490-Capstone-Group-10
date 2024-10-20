@@ -15,7 +15,7 @@ db_config = {
 
 pool = pooling.MySQLConnectionPool(pool_name="db_pool", pool_size=5, **db_config)
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('100.118.142.26'))
+connection = pika.BlockingConnection(pika.ConnectionParameters('100.118.142.26', credentials=pika.PlainCredentials('admin', os.environ['rmq_passwd'])))
 channel = connection.channel()
 
 channel.queue_declare(queue='request_queue')

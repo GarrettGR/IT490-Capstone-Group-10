@@ -1,40 +1,49 @@
+#!/usr/bin/env python3
+
 import pika
-import pymysql
+import os
 import json
+import mysql.connector
 
-def consume_db_queries():
-  connection = pika.BlockingConnection(pika.ConnectionParameters('100.118.142.26'))
-  channel = connection.channel()
+db_config = {
+    'user': 'admiin',
+    'password': os.environ['db_passwd'],
+    'host': 'localhost',
+    'database': 'applicare'
+}
 
-  # Declare the database request queue
-  channel.queue_declare(queue='backend_db_queue')
+connection = pika.BlockingConnection(pika.ConnectionParameters('100.118.142.26'))
+channel = connection.channel()
 
-  # Declare the response queue
-  channel.queue_declare(queue='db_response_queue')
+channel.queue_declare(queue='request_queue')
+channel.queue_declare(queue='response_queue')
 
+def listen_for_requests():
   def callback(ch, method, properties, body):
-    message = json.loads(body)
-    query = message['query']
-    print(f"Executing query: {query}")
-
-    # Execute query on the actual database
-    result = execute_query(query)  # Function to execute query using pymysql
-
-    # Send response back to RabbitMQ
-    response_message = json.dumps({"result": result})
-    channel.basic_publish(exchange='', routing_key='db_response_queue', body=response_message)
-
-  # Start consuming database queries
-  channel.basic_consume(queue='backend_db_queue', on_message_callback=callback, auto_ack=True)
+    request = json.loads(body)
+    print(f"Received query from backend: {request}")
+    if request['to'] == 'DB':
+      execute_query(request['query'])
+  channel.basic_consume(queue='request_queue', on_message_callback=callback, auto_ack=True)
   print('Waiting for database queries...')
   channel.start_consuming()
 
 def execute_query(query):
-  connection = pymysql.connect(host='localhost', user='admin', password='student123', db='applicare')
-  with connection.cursor() as cursor:
+  try:
+    db_connection = mysql.connector.connect(**db_config)
+    cursor = db_connection.cursor()
     cursor.execute(query)
-    result = cursor.fetchall()
-  connection.close()
-  return result
+    results = cursor.fetchall()
+    send_db_response(results)
+    cursor.close()
+    db_connection.close()
+  except mysql.connector.Error as err:
+    print(f"Error: {err}")
+    send_db_response({"error": str(err)})
 
-consume_db_queries()
+def send_db_response(response):
+  message = json.dumps({"from": "DB", "to":"BE", "payload": response})
+  channel.basic_publish(exchange='', routing_key='response_queue', body=message)
+  print(f"Sent response to backend: {response}")
+
+listen_for_requests()

@@ -2,9 +2,9 @@
 
 import pika
 import json
-import sys
-import os
 import threading
+# import sys
+# import os
 # import datetime
 # import passlib
 # import beautifulsoup
@@ -12,43 +12,45 @@ import threading
 connection = pika.BlockingConnection(pika.ConnectionParameters('100.118.142.26'))
 channel = connection.channel()
 
-channel.queue_declare(queue='fe_to_be')
-channel.queue_declare(queue='be_to_fe')
-channel.queue_declare(queue='db_to_be')
-channel.queue_declare(queue='be_to_db')
+channel.queue_declare(queue='request_queue')  # request queue (combined)
+channel.queue_declare(queue='response_queue')  # response queue (combined)
 
-def listen_for_fe_request():
+def handle_fe_request(payload):
+  print(f"Processing frontend request: {payload}")
+  if 'db_query' in payload:
+    send_message('request', 'DB', payload['db_query'])
+  else:
+    response = {"message": "Processed frontend request successfully"}
+    send_message('response', 'FE', response)
+
+def handle_db_response(payload):
+  print(f"Processing database response: {payload}")
+  response = {"message": "Processed database response successfully"}
+  send_message('response', 'FE', response)
+
+def send_message(message_type, destination, response):
+  message = json.dumps({"to": destination, "from": "BE", "payload": response})
+  channel.basic_publish(exchange='', routing_key=f"{message_type}_queue", body=message)
+  print(f"Sent {message_type} to {destination}: {response}")
+
+def listen_for_messages(message_type):
   def callback(ch, method, properties, body):
-    request = json.loads(body)
-    print(f"Received request from frontend: {request}")
-  channel.basic_consume(queue='fe_to_be', on_message_callback=callback, auto_ack=True)
-  print('Waiting for frontend requests...')
+    message = json.loads(body)
+    print(f"Received request: {message}")
+    if message['to'] == 'BE':
+      if message['from'] == 'FE':
+        handle_fe_request(message['payload'])
+      elif message['from'] == 'DB':
+        handle_db_response(message['payload'])
+  channel.basic_consume(queue=f"{message_type}_queue", on_message_callback=callback, auto_ack=True)
+  print('Waiting for requests...')
   channel.start_consuming()
 
-def send_fe_response(response):
-  message = json.dumps({"response": response})
-  channel.basic_publish(exchange='', routing_key='be_to_fe', body=message)
-  print(f"Send response to frontend: {response}")
+request_thread = threading.Thread(target=listen_for_messages("request"))
+response_thread = threading.Thread(target=listen_for_messages("response"))
 
-def send_db_query(query):
-  message = json.dumps({"query": query})
-  channel.basic_publish(exchange='', routing_key='be_to_db', body=message)
-  print(f"Sent DB query: {query}")
+request_thread.start()
+response_thread.start()
 
-
-def listen_for_db_response():
-  def callback(ch, method, properties, body):
-    response = json.loads(body)
-    print(f"Received response from DB: {response}")
-  channel.basic_consume(queue='db_to_be', on_message_callback=callback, auto_ack=True)
-  print('Waiting for database responses...')
-  channel.start_consuming()
-
-fe_thread = threading.Thread(target=listen_for_fe_request)
-db_thread = threading.Thread(target=listen_for_db_response)
-
-fe_thread.start()
-db_thread.start()
-
-fe_thread.join()
-db_thread.join()
+request_thread.join()
+response_thread.join()

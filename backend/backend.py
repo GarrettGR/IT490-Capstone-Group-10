@@ -23,7 +23,7 @@ async def handle_db_response(payload):
 async def send_message(destination, payload):
   message = json.dumps({'to': destination, 'from': 'BE', 'payload': payload})
   async with aio_pika.connect("amq://guest:guest@100.118.142.26/") as connection:
-    async wth connection.channel() as channel:
+    async with connection.channel() as channel:
       await channel.default_exchange.publish(
         aio_pika.Message(body=message.encode()),
         routing_key='response_queue' if destination == 'FE' else 'request_queue',

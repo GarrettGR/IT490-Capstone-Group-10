@@ -15,7 +15,7 @@ This document provides an overview of the database structure, including the tabl
 - [Queries](#queries)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
-
+- [Database Setup](#database-setup)
 ---
 
 ## Database Tables
@@ -130,6 +130,61 @@ USE your_database_name;
 If you'd like to contribute to the database design or add features, feel free to submit a pull request or create an issue.
 
 ---
+
+## Database Setup
+Here's an updated README section that includes commands for inserting a user into the `users` table and how to retrieve the hashed value of a user's email and first name.
+
+---
+
+# README
+
+## Database Setup
+
+This document provides instructions for working with the MariaDB database, specifically for the `users` table.
+
+### **1. Inserting a User into the `users` Table**
+
+To insert a new user into the `users` table, use the following SQL command. Ensure that the `users` table has the columns `first_name`, `last_name`, `email`, `username`, and `password_hash`.
+
+```sql
+INSERT INTO users (first_name, last_name, email, username, password_hash)
+VALUES ('John', 'Doe', 'johndoe@example.com', 'johndoe', SHA1('password123'));
+```
+
+### **2. Insert Multiple Users**
+
+To insert multiple users at once, use the following command:
+
+```sql
+INSERT INTO users (first_name, last_name, email, username, password_hash)
+VALUES
+('Alice', 'Smith', 'alice@example.com', 'alicesmith', SHA1('alicepassword')),
+('Bob', 'Johnson', 'bob@example.com', 'bobjohnson', SHA1('bobpassword'));
+```
+
+### **3. Retrieving the Hashed Value of a User**
+
+To retrieve the hashed value of a user's email and first name, use the following SQL command. This example uses the `SHA1()` function to generate the hash.
+
+```sql
+SELECT SHA1(CONCAT(email, first_name)) AS hashed_value
+FROM users
+WHERE email = 'johndoe@example.com';
+```
+
+### **4. Example of Retrieving User Data**
+
+To display all information for a specific user, you can run the following command:
+
+```sql
+SELECT * FROM users
+WHERE username = 'johndoe';
+```
+
+---
+
+### **Important Notes:**
+- Ensure that passwords are hashed before storing them in the database for security purposes.
 
 
 

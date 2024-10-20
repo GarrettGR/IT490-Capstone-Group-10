@@ -7,7 +7,7 @@ import mysql.connector
 from mysql.connector import pooling
 
 db_config = {
-    'user': 'admiin',
+    'user': 'admin',
     'password': os.environ['db_passwd'],
     'host': 'localhost',
     'database': 'applicare'

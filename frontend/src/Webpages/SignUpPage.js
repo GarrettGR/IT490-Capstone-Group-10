@@ -20,18 +20,15 @@ function SignUpPage() {
             <div class="columnotherissu">
                 <div class="columnlabel">
                     <div class="email-3">
-
                         <div class="rowabel">
                             <p class="class-2022yanliudesig ui text size-textxl">What should we call you?</p>
                         </div>
                         <label class="email ui input gray_700_59 size-md outline round">
-                            <input name="name" placeholder="Example: Jane" type="text" />
+                            <input name="name" placeholder="Example: Jane Doe" type="text" />
                         </label>
                         <p class="class-2022yanliudesig ui text size-textxl">Put in your First and Last Name</p>
-
                     </div>
                     <div class="email-3">
-
                         <div class="rowlabel">
                             <p class="class-2022yanliudesig ui text size-textxl">What's your Email?</p>
                         </div>
@@ -39,10 +36,8 @@ function SignUpPage() {
                             <input name="email" placeholder="Example: email@email.com" type="text" />
                         </label>
                         <p class="class-2022yanliudesig ui text size-textxl">Put in your valid Email Adress</p>
-
                     </div>
                     <div class="email-3">
-
                         <div class="rowabel">
                             <p class="class-2022yanliudesig ui text size-textxl">Create a Password</p>
                         </div>
@@ -50,11 +45,8 @@ function SignUpPage() {
                             <input name="password" placeholder="Example: Password123" type="text" />
                         </label>
                         <p class="class-2022yanliudesig ui text size-textxl">Use 8 or more characters with a mix of letters, numbers and symbols</p>
-
                     </div>
-
                 </div>
-
                 <div class="columnlog_in">
                     <p class="bycreatingan ui text size-textxl">
                         <span class="bycreatingan-span"> By continuing, you agree to the&nbsp;</span>

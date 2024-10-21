@@ -6,12 +6,15 @@ function LoginPage() {
     const email = emailInputRef.current.value
     const password = passwordInputRef.current.value
     try {
-      const response = await fetch('/api/login', { //TODO: HAVE THIS POINT TO THE RIGHT LOCATION
+      const response = await fetch('/api/form-submit', { //TODO: HAVE THIS POINT TO THE RIGHT LOCATION
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ 
+          email:email,
+          type: "login"
+        }),
       });
       if (response.ok) {
         const data = await response.json();

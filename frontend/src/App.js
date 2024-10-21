@@ -15,6 +15,7 @@ import Footer from './Components/Footer';
 function App() {
   return (
     <div>
+
       <Header />
       <BrowserRouter>
         <Routes>
@@ -25,6 +26,7 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Footer />
+    
     </div>
   )
 }

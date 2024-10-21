@@ -2,6 +2,7 @@ import React from 'react'
 import bcrypt from 'bcryptjs'
 
 function SignUpPage() {
+
   // const nameInputRef = useRef()
   // const emailInputRef = useRef()
   // const passwordInputRef = useRef()
@@ -89,9 +90,7 @@ function SignUpPage() {
 
                 <div className="columnlog_in">
 
-                  <a href="LoginPage">
-                    <input type='submit' value='Create an Account' className="log_in ui button gray_900_71 size-3xl fill"/>
-                  </a>
+                  <input type='submit' value='Create an Account' className="log_in ui button gray_900_71 size-3xl fill"/>
 
                 </div>
 

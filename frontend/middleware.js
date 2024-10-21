@@ -12,33 +12,38 @@ const rmq_ip = "100.118.142.26"
 const rmq_port = 5672
 const rmq_url = `amqp://${rmq_user}:${process.env.rmq_passwd}@${rmq_ip}:${rmq_port}`
 
+let connection;
+let channel;
+const pendingRequests = {}
+
+async function initRmq() {
+  connection = await amqp.connect(rmq_url)
+  channel = await connection.createChannel()
+  await channel.assertQueue('request_queue', { arguments: { 'x-message-ttl': 60000 } })
+  await channel.assertQueue('response_queue', { arguments: { 'x-message-ttl': 60000 } })
+  channel.consume('response_queue', (message) => {
+    const correlation_id = message.properties.correlationId
+    const response = JSON.parse(message.content.toString())
+    if (pendingRequests[correlation_id]) {
+      pendingRequests[correlation_id](response)
+      delete pendingRequests[correlation_id]
+    }
+    channel.ack(message)
+  }, { noAck: false });
+}
+
 async function rmq_handler(payload) {
-  const connection = await amqp.connect(rmq_url)
-  const channel = await connection.createChannel()
-
-  await channel.assertQueue('request_queue', arguments={'x-message-ttl': 60000,})
-  await channel.assertQueue('response_queue', arguments={'x-message-ttl': 60000,})
-
   const correlation_id = get_unique_id()
+  pendingRequests[correlation_id] = (response) => {
+    // handle responses from the back end
+    console.log('Received response:', response)
+  };
   channel.sendToQueue('request_queue', Buffer.from(JSON.stringify(payload)), {
     correlationId: correlation_id,
     headers: {
       to: 'BE',
       from: 'FE',
     },
-  })
-  return new Promise((resolve, reject) => {
-    channel.consume('response_queue',
-      (message) => {
-        if (message.properties.correlationId === correlation_id) {
-          const response = JSON.parse(message.content.toString())
-          resolve(response)
-          channel.close()
-          connection.close()
-        }
-      },
-      { noAck: true }
-    );
   });
 }
 
@@ -48,8 +53,11 @@ function get_unique_id() {
 
 app.post('/api/form-submit', async (req, res) => {
   try {
-    const request = req.body;
-    const response = await rmq_handler(request)
+    const request = req.body
+    const response_promise = new promise((resolve) => {
+      pendingRequests[get_unique_id()] = resolve
+    })
+    const response = await response_promise
     res.json(response)
   } catch (error) {
     console.error('Error handling form submission:', error)
@@ -58,5 +66,6 @@ app.post('/api/form-submit', async (req, res) => {
 });
 
 app.listen(3000, () => {
+  await initRMQ()
   console.log('Server is running on port 3000')
 });

@@ -30,28 +30,34 @@ async def send_message(destination, payload, correlation_id):
                          correlation_id=correlation_id,
                          headers={'to':destination, 'from': 'BE'},
         routing_key='response_queue' if destination == 'FE' else 'request_queue',
-      )
+      ))
 
 async def listen_for_messages():
   connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   async with connection:
     async with connection.channel() as channel:
-      await channel.set_qos(prefetch_count=1)
+      await channel.set_qos(prefetch_count=3)
       async def callback(message: aio_pika.IncomingMessage):
         async with message.process():
-          msg = json.loads(message.body)
-          print(f"Received request: {msg}")
-          if msg['to'] == 'BE':
+          try:
+            msg = json.loads(message.body)
+            print(f"Received request: {msg}")
+            if message.headers.get('to') != machine_hostname:
+              print(f"Message not for this machine. Requeueing...")
+              await message.reject(requeue=True)
+              return
             if msg['from'] == 'FE':
               await handle_fe_request(msg['payload'], message.correlation_id)
             elif msg['from'] == 'DB':
               await handle_db_response(msg['payload'], message.correlation_id)
-      # await channel.consume("request_queue", callback)
-      # await channel.consume("response_queue", callback)
-      request_queue = await channel.declare_queue('request_queue')
-      response_queue = await channel.declare_queue('response_queue')
-      await request_queue.consume(callback, no_ack=True)
-      await response_queue.consume(callback, no_ack=True)
+            await message.ack()
+          except Exception as e:
+            print(f"Error processing message: {e)")
+            message.nack(requeue=True)
+      request_queue = await channel.declare_queue('request_queue', arguments={'x-message-ttl':60_000})
+      response_queue = await channel.declare_queue('response_queue', arguments={'x-message-ttl':60_000})
+      await request_queue.consume(callback, no_ack=False)
+      await response_queue.consume(callback, no_ack=False)
       print("Wating for messages...")
       await asyncio.Future() # is this needed?
 

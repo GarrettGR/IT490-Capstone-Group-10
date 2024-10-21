@@ -16,8 +16,8 @@ async function rmq_handler(payload) {
   const connection = await amqp.connect(rmq_url)
   const channel = await connection.createChannel()
 
-  await channel.assertQueue('request_queue', { durable: false })
-  await channel.assertQueue('response_queue', { durable: false })
+  await channel.assertQueue('request_queue', arguments={'x-message-ttl': 60000,})
+  await channel.assertQueue('response_queue', arguments={'x-message-ttl': 60000,})
 
   const correlation_id = get_unique_id()
   channel.sendToQueue('request_queue', Buffer.from(JSON.stringify(payload)), {
@@ -26,7 +26,6 @@ async function rmq_handler(payload) {
       to: 'BE',
       from: 'FE',
     },
-    // replyTo: 'response_queue'
   })
   return new Promise((resolve, reject) => {
     channel.consume('response_queue',

@@ -9,16 +9,15 @@ import os
 
 async def handle_fe_request(payload):
   print(f"Processing frontend request: {payload}")
-  if 'db_query' in payload:
-    await send_message('request', 'DB', payload['db_query'])
-  else:
-    response = {"message": "Processed frontend request successfully"}
-    await send_message('response', 'FE', response)
+  # Process the message
+    # send a query to DB if needed:
+    # await send_message('request', 'DB', db_query_payload)
+    await send_message('response', 'FE', {'message': 'sent successfully'})
 
 async def handle_db_response(payload):
   print(f"Processing database response: {payload}")
-  response = {"message": "Processed database response successfully"}
-  await send_message('FE', response)
+  response = {'message": "Processed database response successfully'}
+  await send_message('response', 'FE', response)
 
 async def send_message(destination, payload):
   message = json.dumps({'to': destination, 'from': 'BE', 'payload': payload})
@@ -40,15 +39,15 @@ async def listen_for_messages():
           print(f"Received request: {msg}")
           if msg['to'] == 'BE':
             if msg['from'] == 'FE':
-              await handle_fe_request(msg['payload'])
+              await handle_fe_request(msg['payload'], message.correlation_id)
             elif msg['from'] == 'DB':
-              await handle_db_response(msg['payload'])
+              await handle_db_response(msg['payload'], message.correlation_id)
       # await channel.consume("request_queue", callback)
       # await channel.consume("response_queue", callback)
       request_queue = await channel.declare_queue('request_queue')
       response_queue = await channel.declare_queue('response_queue')
-      await request_queue.consume(callback)
-      await response_queue.consume(callback)
+      await request_queue.consume(callback, no_ack=True)
+      await response_queue.consume(callback, no_ack=True)
       print("Wating for messages...")
       await asyncio.Future() # is this needed?
 

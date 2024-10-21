@@ -1,51 +1,63 @@
 #!/usr/bin/node
 
-// const http = require('http')
-// const fs = require('fs')
-// const path = require('path')
+const express = require('express')
 const amqp = require('amqplib')
 const { parse } = require('querystring')
+
+const app = express()
+app.use(express.json())
 
 const rmq_user = "admin"
 const rmq_ip = "100.118.142.26"
 const rmq_port = 5672
-const queue_name = 'request_queue'
+const rmq_url = `amqp://${rmq_user}:${process.env.rmq_passwd}@${rmq_ip}:${rmq_port}`
 
-const http_rmq_proxy = async () => {
-  // const payload = //TODO: AWAIT OR ASYNC FOR A HTTP 'POST' REQUEST
-  amqp.connect(`amqp://${rmq_user}:${process.env.rmq_passwd}@${rmq_ip}:${rmq_port}`, (error, connection) => {
-    if (error) {
-      console.error('Connection error: ', error)
-      return
-    }
-    connection.createChannel((error, channel) => {
-      if (error) {
-        console.error('Channel error: ', error)
-        return
-      }
-      // Recieve 'payload' as an HTTP 'POST'
-      const message = JSON.stringify({ 'to': 'BE', 'from': 'FE', 'payload': payload })
-      channel.assertQueue(queue_name, { durable: false })
-      console.log('Sent to RabbitMQ: ', message)
-    });
-  });
-};
+async function rmq_handler(payload) {
+  const connection = await amqp.connect(rmq_url)
+  const channel = await connection.createChannel()
 
-const rmq_http_proxy = async () => {
-  amqp.connect(`amqp://${rmq_user}:${process.env.rmq_passwd}@${rmq_ip}:${rmq_port}`, (error, connection) => {
-    if (error) {
-      console.error('Connection error: ', error)
-      return
-    }
-    connection.createChannel((error, channel) => {
-      if (error) {
-        console.error('Channel error: ', error)
-        return
-      }
-      channel.consume(QUEUE_NAME, (message) => {
-        // Forward as an HTTP 'POST'
-        console.log('Received message:', message.const.toString())
-      }, { noAck: false })
-    });
+  await channel.assertQueue('request_queue', { durable: false })
+  await channel.assertQueue('response_queue', { durable: false })
+
+  const correlation_id = get_unique_id()
+  channel.sendToQueue('request_queue', Buffer.from(JSON.stringify(payload)), {
+    correlationId: correlation_id,
+    headers: {
+      to: 'BE',
+      from: 'FE',
+    },
+    // replyTo: 'response_queue'
+  })
+  return new Promise((resolve, reject) => {
+    channel.consume('response_queue',
+      (message) => {
+        if (message.properties.correlationId === correlation_id) {
+          const response = JSON.parse(message.content.toString())
+          resolve(response)
+          channel.close()
+          connection.close()
+        }
+      },
+      { noAck: true }
+    );
   });
 }
+
+function get_unique_id() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+}
+
+app.post('/api/form-submit', async (req, res) => {
+  try {
+    const request = req.body;
+    const response = await rmq_handler(request)
+    res.json(response)
+  } catch (error) {
+    console.error('Error handling form submission:', error)
+    res.status(500).json({ message: 'Internal Server Error' })
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000')
+});

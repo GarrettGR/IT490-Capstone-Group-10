@@ -47,6 +47,19 @@ async function rmq_handler(payload) {
   });
 }
 
+async function gracefulShutdown() {
+  console.log('Shutting down...')
+  if (channel) {
+    await channel.close()
+    console.log('Channel closed')
+  }
+  if (connection) {
+    await connection.close()
+    console.log('Connection closed')
+  }
+  process.exit(0)
+}
+
 function get_unique_id() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
@@ -68,4 +81,6 @@ app.post('/api/form-submit', async (req, res) => {
 app.listen(3000, () => {
   await initRMQ()
   console.log('Server is running on port 3000')
+  process.on('SIGTERM', gracefulShutdown)
+  process.on('SIGINT', gracefulShutdown)
 });

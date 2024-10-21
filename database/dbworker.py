@@ -57,8 +57,7 @@ def send_db_response(response, correlation_id):
   message = json.dumps({"payload": response})
   channel.basic_publish(exchange='', routing_key='response_queue', body=message, 
                         properties=pika.BasicProperties(correlation_id=correlation_id,
-                                                        headers={'to': 'DB', 'from':'DB' }
-                                                        ))
+                                                        headers={'to': 'DB', 'from':'DB' }))
   print(f"Sent response to backend: {response}")
 
 listen_for_requests()

@@ -2,21 +2,21 @@ import React from 'react'
 
 function LoginPage() {
 
-  // const handleLoginFormSubmit = async () => {
-  //   const email = emailInputRef.current.value
-  //   const password = passwordInputRef.current.value
-  //   try {
-  //     const response = await fetch('/api/login', { //TODO: HAVE THIS POINT TO THE RIGHT LOCATION
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ email }),
-  //     });
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       const storedHash = data.hashedPassword;
-  //       const passwordMatch = await bcrypt.compare(password, storedHash); //TODO: THIS SHOULD REALLY BE HANDLED BACKEND!!
+  const handleLoginFormSubmit = async () => {
+    const email = emailInputRef.current.value
+    const password = passwordInputRef.current.value
+    try {
+      const response = await fetch('/api/login', { //TODO: HAVE THIS POINT TO THE RIGHT LOCATION
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const storedHash = data.hashedPassword;
+        const passwordMatch = await bcrypt.compare(password, storedHash); //TODO: THIS SHOULD REALLY BE HANDLED BACKEND!!
 
   //       if (passwordMatch) {
   //         console.log('Login successful!');

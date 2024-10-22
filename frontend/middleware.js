@@ -2,9 +2,16 @@
 
 const express = require('express')
 const amqp = require('amqplib')
+const cors = require('cors') // Import CORS middleware
 
 const app = express()
 app.use(express.json())
+
+// Enable CORS for specific origin
+app.use(cors({
+  origin: 'http://localhost:3000', // Replace with your frontend URL if needed
+  methods: ['GET', 'POST'], // Allow these methods
+}))
 
 const rmq_user = "admin"
 const rmq_ip = "100.118.142.26"

@@ -103,7 +103,7 @@ function SignUpPage() {
                     </div>
 
                     <label className="email ui input gray_700_59 size-md outline round">
-                      <input id='password' name="password" placeholder="Example: Password123" type="text" required/>
+                      <input id='password' name="password" placeholder="Example: Password123" type="text" value={formData.password} onChange={handleChange}required/>
                     </label>
 
                     <p className="class-2022yanliudesig ui text size-textxl">Use 8 or more characters with a mix of letters, numbers and symbols</p>

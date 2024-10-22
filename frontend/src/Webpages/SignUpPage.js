@@ -11,6 +11,8 @@ function SignUpPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Print form data to console
+    console.log('Submitting form data:', formData);
     try {
       const response = await fetch('http://localhost:3000/api/form-submit', { //CHECK THIS 
         method: 'POST',

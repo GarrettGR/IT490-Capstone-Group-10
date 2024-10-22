@@ -58,7 +58,7 @@ async def listen_for_messages():
           print(f"JSON decoding error: {e}")
           await message.nack(requeue=True)
         except aio_pika.exceptions.MessageProcessError as e:
-          print(f"Message processing error: {e}")
+          print(f"Message processing error")
         except Exception as e:
           print(f"Error processing message: {e}")
           await message.nack(requeue=True)

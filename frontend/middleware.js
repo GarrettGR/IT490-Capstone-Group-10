@@ -80,6 +80,7 @@ app.post('/api/form-submit', async (req, res) => {
   try {
     const request = req.body;
     const correlation_id = get_unique_id();
+    console.log(`Recieved request: ${correlation_id} -- body: ${request}`)
     const response_promise = new Promise((resolve) => {
       pendingRequests[correlation_id] = resolve
     });

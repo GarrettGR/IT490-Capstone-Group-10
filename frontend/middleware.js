@@ -85,7 +85,7 @@ app.post('/api/form-submit', async (req, res) => {
       pending_requests[correlation_id] = resolve
     });
     await rmq_handler(request, correlation_id)
-    const response = await response_promise
+    const response = await response_promise.body
     if (request.query.includes('SELECT')) {
       const user = response.results[0]
       const is_password_valid = await bcrypt.compare(request.password, user[0])
@@ -98,9 +98,6 @@ app.post('/api/form-submit', async (req, res) => {
       if (response.affected_rows > 0) {
         res.json({ status: 'success', message: 'Signup successful!' })
       } else {
-        if (response.body.status === 'success') {
-          res.json({ status: 'success', message: 'it was the extra body tag' })
-        }
         res.json({ status: 'error', message: 'Signup failed.' })
       }
     } else {

@@ -9,7 +9,7 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-      console.log('Submitting login data:', formData)
+    console.log('Submitting login data:', formData)
     try {
       const response = await fetch('http://100.112.216.76:3000/api/form-submit', {
         method: 'POST',
@@ -19,12 +19,13 @@ function LoginPage() {
       const result = await response.json()
       console.log(result)
       if (result.status === 'success') {
-        alert('Login successful!')
+        alert(`Hello, ${result.first_name}!`)
+        window.location.href = '/'
       } else {
         alert(result.message || 'Invalid email or password.')
       }
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Error:', error);
     }
   };
 

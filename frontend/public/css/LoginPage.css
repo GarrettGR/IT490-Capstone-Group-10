@@ -31,12 +31,13 @@
     }
 }
 
-.signinbox { 
+.loginbox { 
     margin-top: 26px;
     gap: var(--space-7xl); 
     display: flex; 
     width: 44%;
     flex-direction: column;
+    margin-left: 500px;
     @media only screen and (max-width: 1050px) { 
         width: 100%;
         padding-left: var(--space-5xl); 
@@ -44,7 +45,7 @@
     }    
 }
     
-.signin {
+.login {
     gap: var(--space-10xl);
     display: flex;
     flex-direction: column;

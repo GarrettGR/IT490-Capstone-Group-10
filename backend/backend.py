@@ -6,7 +6,7 @@ import asyncio
 import os
 
 async def handle_fe_request(body, correlation_id):
-  print(f"Processing frontend request: {body}")
+  print(f"Processing frontend request: {correlation_id}")
   # Process the message
   # send a query to DB if needed:
   # await send_message('DB', db_query_body, correlation_id)
@@ -17,7 +17,7 @@ async def handle_fe_request(body, correlation_id):
     await send_message('FE', processed_response, correlation_id)
 
 async def handle_db_response(body, correlation_id):
-  print(f"Processing database response: {body}")
+  print(f"Processing database response: {correlation_id}")
   # Process the response from the database...
   processed_response = json.dumps({'message': 'Processed database response successfully', 'body': body})
   await send_message('FE', processed_response, correlation_id)

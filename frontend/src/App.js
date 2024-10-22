@@ -1,6 +1,11 @@
 import React from 'react';
+
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './contexts/UserContext';
+
+import logo from './logo.svg';
+import './App.css';
+
 import Header from './Components/Header';
 import Footer from './Components/Footer';
 import ApplicareLoading from './Webpages/ApplicareLoading';

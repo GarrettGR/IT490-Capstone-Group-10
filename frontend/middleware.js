@@ -19,8 +19,8 @@ const pendingRequests = {}
 async function init_rmq() {
   connection = await amqp.connect(rmq_url)
   channel = await connection.createChannel()
-  await channel.assertQueue('request_queue', { arguments: { 'x-message-ttl': 60000 } })
-  await channel.assertQueue('response_queue', { arguments: { 'x-message-ttl': 60000 } })
+  await channel.assertQueue('request_queue', { durable: false, arguments: { 'x-message-ttl': 60000 } })
+  await channel.assertQueue('response_queue', { durable: false, arguments: { 'x-message-ttl': 60000 } })
   channel.consume('response_queue', (message) => {
     const correlation_id = message.properties.correlationId
     const response = JSON.parse(message.content.toString())

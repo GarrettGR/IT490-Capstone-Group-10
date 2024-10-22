@@ -15,6 +15,7 @@ function LoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: `SELECT * FROM users WHERE email='${formData.email}'`, password: formData.password }),
+        mode: 'no-cors'
       });
       const result = await response.json()
       console.log(result)

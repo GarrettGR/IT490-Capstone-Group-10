@@ -19,6 +19,7 @@ function SignUpPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: `INSERT INTO users (name, email, password) VALUES ('${formData.name}', '${formData.email}', '${hashedPassword}')` }),
+        mode: 'no-cors'
       });
       const result = await response.json()
       console.log(result)

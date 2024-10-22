@@ -19,7 +19,7 @@ function SignUpPage() {
       const response = await fetch('http://100.112.216.76:3000/api/form-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `INSERT INTO users (first_name, last_name, email, password) VALUES ('${firstName}', '${lastName}', '${formData.email}', '${hashedPassword}')` }),
+        body: JSON.stringify({ query: `INSERT INTO users (first_name, last_name, email, password_hash) VALUES ('${firstName}', '${lastName}', '${formData.email}', '${hashedPassword}')` }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

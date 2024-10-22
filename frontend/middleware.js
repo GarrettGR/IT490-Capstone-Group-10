@@ -16,7 +16,7 @@ let connection;
 let channel;
 const pendingRequests = {}
 
-async function initRmq() {
+async function init_rmq() {
   connection = await amqp.connect(rmq_url)
   channel = await connection.createChannel()
   await channel.assertQueue('request_queue', { arguments: { 'x-message-ttl': 60000 } })
@@ -47,7 +47,7 @@ async function rmq_handler(payload) {
   });
 }
 
-async function gracefulShutdown() {
+async function graceful_shutdown() {
   console.log('Shutting down...')
   if (channel) {
     await channel.close()
@@ -79,7 +79,7 @@ app.post('/api/form-submit', async (req, res) => {
 });
 
 app.listen(3000, async () => {
-  await initRMQ()
+  await init_rmq()
   console.log('Server is running on port 3000')
   process.on('SIGTERM', gracefulShutdown)
   process.on('SIGINT', gracefulShutdown)

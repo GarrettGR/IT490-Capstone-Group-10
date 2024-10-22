@@ -43,11 +43,11 @@ def listen_for_requests():
 def serialize_row(row):
   return [item.isoformat() if isinstance(item, datetime) else item for item in row]
 
-def execute_query(payload, correlation_id):
+def execute_query(body, correlation_id):
   try:
     db_connection = pool.get_connection()
     cursor = db_connection.cursor()
-    cursor.execute(payload['query'])
+    cursor.execute(body['query'])
     results = cursor.fetchall()
     print(f"Query results: {results}")
     serialized_results = [serialize_row(row) for row in results]
@@ -60,7 +60,7 @@ def execute_query(payload, correlation_id):
     db_connection.close()
 
 def send_db_response(response, correlation_id):
-  message = json.dumps({"payload": response})
+  message = json.dumps({"body": response})
   try:
     channel.basic_publish(exchange='', routing_key='response_queue', body=message, 
                           properties=pika.BasicProperties(correlation_id=correlation_id,

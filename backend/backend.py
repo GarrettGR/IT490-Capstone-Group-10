@@ -5,22 +5,22 @@ import json
 import asyncio
 import os
 
-async def handle_fe_request(payload, correlation_id):
-  print(f"Processing frontend request: {payload}")
+async def handle_fe_request(body, correlation_id):
+  print(f"Processing frontend request: {body}")
   # Process the message
   # send a query to DB if needed:
-  # await send_message('DB', db_query_payload, correlation_id)
+  # await send_message('DB', db_query_body, correlation_id)
   processed_response = json.dumps({'message': 'sent successfully'})
   await send_message('FE', processed_response, correlation_id)
 
-async def handle_db_response(payload, correlation_id):
-  print(f"Processing database response: {payload}")
+async def handle_db_response(body, correlation_id):
+  print(f"Processing database response: {body}")
   # Process the response from the database...
   processed_response = json.dumps({'message': 'Processed database response successfully'})
   await send_message('FE', processed_response, correlation_id)
 
-async def send_message(destination, payload, correlation_id):
-  message = json.dumps({'payload': payload})
+async def send_message(destination, body, correlation_id):
+  message = json.dumps({'body': body})
   async with aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/") as connection:
     async with connection.channel() as channel:
       await channel.default_exchange.publish(

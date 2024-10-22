@@ -1,7 +1,0 @@
-RabbitMQ initialized
-Server is running on port 3000
-Sending message to request_queue: { query: 'SELECT * FROM users' } 4fgnfzeu0cbom5myx9ual
-Message sent to request_queue with correlation_id: 4fgnfzeu0cbom5myx9ual
-Shutting down...
-Channel closed
-Connection closed

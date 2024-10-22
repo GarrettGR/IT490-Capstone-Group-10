@@ -14,7 +14,7 @@ function LoginPage() {
       const response = await fetch('http://100.112.216.76:3000/api/form-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `SELECT * FROM users WHERE email='${formData.email}'`, password: formData.password }),
+        body: JSON.stringify({ query: `SELECT password_hash, first_name FROM users WHERE email='${formData.email}'`, password: formData.password }),
       });
       const result = await response.json()
       console.log(result)

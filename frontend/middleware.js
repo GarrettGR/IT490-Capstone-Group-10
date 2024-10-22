@@ -87,10 +87,10 @@ app.post('/api/form-submit', async (req, res) => {
     await rmq_handler(request, correlation_id)
     const response = await response_promise
     if (request.query.includes('SELECT')) {
-      const user = response[0]
-      const is_password_valid = await bcrypt.compare(request.password, user.password)
+      const user = response.results[0]
+      const is_password_valid = await bcrypt.compare(request.password, user[0])
       if (is_password_valid) {
-        res.json({ status: 'success', user })
+        res.json({ status: 'success', message: `Welcome back, ${user[1]}!` })
       } else {
         res.json({ status: 'error', message: 'Invalid email or password.' })
       }

@@ -21,6 +21,9 @@ function SignUpPage() {
         body: JSON.stringify({ query: `INSERT INTO users (name, email, password) VALUES ('${formData.name}', '${formData.email}', '${hashedPassword}')` }),
         mode: 'no-cors'
       });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
       const result = await response.json()
       console.log(result)
       if (result.status === 'success') {

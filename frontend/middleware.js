@@ -73,6 +73,9 @@ function get_unique_id() {
 app.post('/api/form-submit', async (req, res) => {
   try {
     const request = req.body
+    if (!request || !request.query) {
+      return res.status(400).json({ status: 'error', message: 'Invalid request payload.' });
+    }
     const correlation_id = get_unique_id()
     console.log(`Received request: ${correlation_id} -- body: ${JSON.stringify(request)}`)
     const response_promise = new Promise((resolve) => {

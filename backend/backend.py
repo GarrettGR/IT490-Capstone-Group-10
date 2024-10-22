@@ -49,8 +49,10 @@ async def listen_for_messages():
               return
             if message.headers.get('from') == 'FE':
               await handle_fe_request(msg, message.correlation_id)
+              await message.ack()
             elif message.headers.get('from') == 'DB':
               await handle_db_response(msg, message.correlation_id)
+              await message.ack()
         except json.JSONDecodeError as e:
           print(f"JSON decoding error: {e}")
           await message.nack(requeue=True)

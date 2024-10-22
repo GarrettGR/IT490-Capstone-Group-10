@@ -23,3 +23,7 @@ echo "Response: $RESPONSE"
 # Test 6
 RESPONSE=$(curl -s -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/json" -d '{"query": "SELECT * FROM users WHERE email = \"jane.doe@example.org\""}')
 echo "Response: $RESPONSE"
+
+# Test 5
+RESPONSE=$(curl -s -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/json" -d '{"query": "SELECT email FROM users}')
+echo "Response: $RESPONSE"

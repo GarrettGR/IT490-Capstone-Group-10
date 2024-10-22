@@ -23,7 +23,7 @@ async def handle_db_response(body, correlation_id):
   await send_message('FE', processed_response, correlation_id)
 
 async def send_message(destination, body, correlation_id):
-  message = json.dumps({'body': body})
+  message = json.dumps(body)
   async with aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/") as connection:
     async with connection.channel() as channel:
       await channel.default_exchange.publish(
@@ -49,9 +49,9 @@ async def listen_for_messages():
               print(f"Message not for this machine. Requeueing...")
               await message.reject(requeue=True)
               return
-            if msg['from'] == 'FE':
+            if message.headers.get('from') == 'FE':
               await handle_fe_request(msg, message.correlation_id)
-            elif msg['from'] == 'DB':
+            elif message.headers.get('from') == 'DB':
               await handle_db_response(msg, message.correlation_id)
         except aio_pika.exceptions.MessageProcessError as e:
           print(f"Message processing error: {e}")

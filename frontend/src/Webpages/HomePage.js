@@ -15,15 +15,15 @@ function HomePage() {
 
                     <div className="columndigital">
 
-                      <button className="digital ui button teal_700 size-xs fill">Digital Marketing Agency</button>
+                      <button className="digital ui button teal_700 size-xs fill">AppliCare</button>
 
                       <div className="rowadvanced">
-                        <h1 className="advanced ui heading size-heading2xl">Advanced Analytics To Grow Your Business</h1>
+                        <h1 className="advanced ui heading size-heading2xl">Welcome to AppliCare</h1>
                       </div>
 
                       <div className="rowadvanced">
                         <p className="description-1 ui text size-textxl">
-                          This is a bunch of random words that will be used to create the description.
+                          An application that allows maintanance for your household appliances.
                         </p>
                       </div>
 
@@ -56,8 +56,8 @@ function HomePage() {
               <div className="columnsectioni">
 
                 <div className="flex-col-center-center community">
-                  <h2 className="sectiontitle ui heading size-headingmd">Manage you entire community in a single system</h2>
-                  <p className="description ui text size-texts">Who is Nextcent suitable for?</p>
+                  <h2 className="sectiontitle ui heading size-headingmd">Manage you entire cataloge of household appliances</h2>
+                  <p className="description ui text size-texts">What are you currently looking for?</p>
                 </div>
 
                 <div className="listmembershipo">
@@ -65,30 +65,30 @@ function HomePage() {
                   <div className="columnmembershi">
                     <div className="member">
                       <img src="https://e7.pngegg.com/pngimages/406/844/png-clipart-computer-icons-person-user-spark-icon-people-share-icon-thumbnail.png" alt="Membershiporgan" className="membershiporgan" />
-                      <h3 className="membershiporgan-1 ui heading size-headingxs">Membership Organisations</h3>
+                      <h3 className="membershiporgan-1 ui heading size-headingxs">Contact local workers</h3>
                     </div>
                     <p className="ourmembershipte ui text size-textxs">
-                      Our membership management software provides full automation of membership renewals and payements
+                      Our worker management software provides full access to contact any local workers.
                     </p>
                   </div>
 
                   <div className="columnmembershi">
                     <div className="member">
                       <img src="https://cdn-icons-png.flaticon.com/512/3885/3885073.png" alt="Membershiporgan" className="membershiporgan" />
-                      <h4 className="membershiporgan-1 ui heading size-headingxs">National Associations</h4>
+                      <h4 className="membershiporgan-1 ui heading size-headingxs">Parts Locator</h4>
                     </div>
                     <p className="ourmembershipte ui text size-textxs">
-                      Our membership management software provides full automation of membership renewals and payments
+                      Our system allows users to find the location of parts they are looking for.
                     </p>
                   </div>
 
                   <div className="columnmembershi">
                     <div className="member">
                       <img src="https://cdn-icons-png.flaticon.com/512/992/992577.png" alt="Membershiporgan" className="membershiporgan" />
-                      <h5 className="membershiporgan-1 ui heading size-headingxs">Clubs and Groups</h5>
+                      <h5 className="membershiporgan-1 ui heading size-headingxs">Hands on Instructions</h5>
                     </div>
                     <p className="ourmembershipte ui text-textxs">
-                      Our membership management software provides full automation of membership renewals and payments
+                      Our service also allows users to partake in fixing their appliance on their own.
                     </p>
                   </div>
 

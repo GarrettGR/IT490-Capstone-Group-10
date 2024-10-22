@@ -1,11 +1,13 @@
 #!/usr/bin/node
 
 const express = require('express')
+const cors = require('cors')
 const amqp = require('amqplib')
 const bcrypt = require('bcryptjs')
 
 const app = express()
 app.use(express.json())
+app.use(cors());
 
 const rmq_user = "admin"
 const rmq_ip = "100.118.142.26"

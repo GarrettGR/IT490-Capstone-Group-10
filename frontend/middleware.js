@@ -87,7 +87,7 @@ app.post('/api/form-submit', async (req, res) => {
     await rmq_handler(request, correlation_id)
     const response = await response_promise
     if (request.query.includes('SELECT')) {
-      const user = response.results[0]
+      const user = response.results.length > 0 ? response.results[0] : null
       if (!user) {
         res.json({ status: 'error', message: 'Invalid email or password.' })
         return

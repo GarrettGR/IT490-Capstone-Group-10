@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Test 1
-# RESPONSE=$(curl -s -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/json" -d '{"query": "SELECT * FROM users"}')
-# echo "Response: $RESPONSE"
+RESPONSE=$(curl -s -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/json" -d '{"query": "SELECT * FROM users"}')
+echo "Response: $RESPONSE"
 
 # Test 2
 RESPONSE=$(curl -s -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/json" -d '{"query": "SELECT * FROM users WHERE id = 1"}')

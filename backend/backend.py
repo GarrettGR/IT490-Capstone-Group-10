@@ -15,8 +15,8 @@ async def handle_fe_request(body, correlation_id):
 
 async def handle_db_response(body, correlation_id):
   print(f"Processing database response: {correlation_id}")
-  processed_response = json.dumps({'message': 'Processed database response successfully', 'body': body})
-  await send_message('FE', processed_response, correlation_id)
+  # processed_response = json.dumps({'message': 'Processed database response successfully', 'body': body})
+  await send_message('FE', body, correlation_id)
 
 async def send_message(destination, body, correlation_id):
   message = json.dumps(body)

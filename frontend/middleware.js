@@ -2,7 +2,6 @@
 
 const express = require('express')
 const amqp = require('amqplib')
-const { parse } = require('querystring')
 
 const app = express()
 app.use(express.json())
@@ -81,6 +80,6 @@ app.post('/api/form-submit', async (req, res) => {
 app.listen(3000, async () => {
   await init_rmq()
   console.log('Server is running on port 3000')
-  process.on('SIGTERM', gracefulShutdown)
-  process.on('SIGINT', gracefulShutdown)
+  process.on('SIGTERM', graceful_shutdown)
+  process.on('SIGINT', graceful_shutdown)
 });

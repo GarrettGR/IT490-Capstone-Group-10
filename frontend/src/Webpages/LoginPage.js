@@ -23,7 +23,7 @@ function LoginPage() {
       if (result.status === 'success') {
         login(result.message.split(', ')[1].replace('!', ''))
         alert(`Hello, ${result.message.split(', ')[1].replace('!', '')}!`)
-        window.location.href = '/'
+        // window.location.href = '/'
       } else {
         alert(result.message || 'Invalid email or password.')
       }
@@ -63,6 +63,11 @@ function LoginPage() {
                 <input type='submit' value='Login' className="log_in ui button gray_900_71 size-3xl fill"/>
               </div>
             </form>
+            <div class="columnlog_in">
+                    <a href="SignUpPage">            
+                        <button class="create_an ui button gray_900_02 size-3xl outline">Create an account</button> 
+                    </a>
+                </div>
           </div>
         </div>
       </div>

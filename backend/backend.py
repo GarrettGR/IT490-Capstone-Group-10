@@ -10,11 +10,11 @@ async def handle_fe_request(body, correlation_id):
   # Process the message
   # send a query to DB if needed:
   # await send_message('DB', db_query_body, correlation_id)
-  if body.contains('query'):
+  if 'query' in body:
     await send_message('DB', body, correlation_id)
   else:
     processed_response = json.dumps({'message': 'sent successfully'})
-  await send_message('FE', processed_response, correlation_id)
+    await send_message('FE', processed_response, correlation_id)
 
 async def handle_db_response(body, correlation_id):
   print(f"Processing database response: {body}")
@@ -41,8 +41,8 @@ async def listen_for_messages():
     async with connection.channel() as channel:
       await channel.set_qos(prefetch_count=3)
       async def callback(message: aio_pika.IncomingMessage):
-        async with message.process():
-          try:
+        try:
+          async with message.process():
             msg = json.loads(message.body)
             print(f"Received request: {msg}")
             if message.headers.get('to') != 'BE':
@@ -51,13 +51,13 @@ async def listen_for_messages():
               return
             if msg['from'] == 'FE':
               await handle_fe_request(msg, message.correlation_id)
-              await message.ack()
             elif msg['from'] == 'DB':
               await handle_db_response(msg, message.correlation_id)
-              await message.ack()
-          except Exception as e:
-            print(f"Error processing message: {e}")
-            await message.nack(requeue=True)
+        except aio_pika.exceptions.MessageProcessError as e:
+          print(f"Message processing error: {e}")
+        except Exception as e:
+          print(f"Error processing message: {e}")
+          await message.nack(requeue=True)
       request_queue = await channel.declare_queue('request_queue', durable=True, arguments={'x-message-ttl': 60_000})
       response_queue = await channel.declare_queue('response_queue', durable=True, arguments={'x-message-ttl': 60_000})
       await request_queue.consume(callback, no_ack=False)

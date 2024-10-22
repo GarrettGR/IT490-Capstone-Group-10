@@ -48,7 +48,7 @@ def execute_query(payload, correlation_id):
     send_db_response(results, correlation_id)
   except mysql.connector.Error as err:
     print(f"Error: {err}")
-    send_db_response({"error": str(err)})
+    send_db_response({"error": str(err)}, correlation_id)
   finally:
     cursor.close()
     db_connection.close()
@@ -57,7 +57,7 @@ def send_db_response(response, correlation_id):
   message = json.dumps({"payload": response})
   channel.basic_publish(exchange='', routing_key='response_queue', body=message, 
                         properties=pika.BasicProperties(correlation_id=correlation_id,
-                                                        headers={'to': 'DB', 'from':'DB' }))
+                                                        headers={'to': 'FE', 'from':'DB' }))
   print(f"Sent response to backend: {response}")
 
 listen_for_requests()

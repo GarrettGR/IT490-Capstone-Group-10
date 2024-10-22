@@ -12,13 +12,13 @@ async def handle_fe_request(payload, correlation_id):
   # Process the message
     # send a query to DB if needed:
     # await send_message('DB', db_query_payload, correlation_id)
-    processed_response = json.dumps({'message': 'sent successfully'})
-    await send_message('FE', processed_response, correlation_id)
+  processed_response = json.dumps({'message': 'sent successfully'})
+  await send_message('FE', processed_response, correlation_id)
 
 async def handle_db_response(payload, correlation_id):
   print(f"Processing database response: {payload}")
   # Process the response from the database...
-  processed_response = json.dumps({'message": "Processed database response successfully'})
+  processed_response = json.dumps({'message': 'Processed database response successfully'})
   await send_message('FE', processed_response, correlation_id)
 
 async def send_message(destination, payload, correlation_id):
@@ -42,7 +42,7 @@ async def listen_for_messages():
           try:
             msg = json.loads(message.body)
             print(f"Received request: {msg}")
-            if message.headers.get('to') != machine_hostname:
+            if message.headers.get('to') != 'BE':
               print(f"Message not for this machine. Requeueing...")
               await message.reject(requeue=True)
               return
@@ -52,7 +52,7 @@ async def listen_for_messages():
               await handle_db_response(msg['payload'], message.correlation_id)
             await message.ack()
           except Exception as e:
-            print(f"Error processing message: {e)")
+            print(f"Error processing message: {e}")
             message.nack(requeue=True)
       request_queue = await channel.declare_queue('request_queue', arguments={'x-message-ttl':60_000})
       response_queue = await channel.declare_queue('response_queue', arguments={'x-message-ttl':60_000})

@@ -38,6 +38,7 @@ async function init_rmq() {
 
 async function rmq_handler(payload, correlation_id) {
   try {
+    console.log('Sending message to request_queue:', payload, correlation_id);
     channel.sendToQueue('request_queue', Buffer.from(JSON.stringify(payload)), {
       correlationId: correlation_id,
       headers: {

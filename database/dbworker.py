@@ -51,6 +51,7 @@ def execute_query(body, correlation_id):
     if cursor.description is None:
       affected_rows = cursor.rowcount
       if affected_rows > 0:
+        db_connection.commit()
         send_db_response({"status": "success", "affected_rows": affected_rows}, correlation_id)
       else:
         send_db_response({"status": "error", "message": "No rows affected."}, correlation_id)

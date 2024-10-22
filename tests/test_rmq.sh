@@ -25,5 +25,5 @@ RESPONSE=$(curl -s -X POST http://localhost:3000/api/form-submit -H "Content-Typ
 echo "Response: $RESPONSE"
 
 # Test 5
-RESPONSE=$(curl -s -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/json" -d '{"query": "SELECT email FROM users}')
+RESPONSE=$(curl -s -X POST http://localhost:3000/api/form-submit -H "Content-Type: application/json" -d '{"query": "SELECT email FROM users"}')
 echo "Response: $RESPONSE"

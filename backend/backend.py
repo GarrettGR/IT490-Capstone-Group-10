@@ -20,7 +20,9 @@ async def handle_db_response(body, correlation_id):
 
 async def send_message(destination, body, correlation_id):
   message = json.dumps(body)
-  connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
+  # connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
+  # async with connection:
+  connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   async with connection:
     async with connection.channel() as channel:
       await channel.default_exchange.publish(
@@ -32,25 +34,26 @@ async def send_message(destination, body, correlation_id):
         routing_key='response_queue' if destination == 'FE' else 'request_queue',
       )
 
-  connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
+async def listen_for_messages():
   connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   async with connection:
     async with connection.channel() as channel:
-      await channel.set_qos(prefetch_count=3)
+      await channel.set_qos(prefetch_count=1) # reduce pre-fetch count to 1
       async def callback(message: aio_pika.IncomingMessage):
         try:
-          raw_body = message.body.decode()
-          print(f"Received raw message body: {raw_body}")
-          msg = json.loads(raw_body)
-          print(f"Decoded message: {msg}")
-          if message.headers.get('to') != 'BE':
-            print(f"Message not for this machine. Requeueing...")
-            await message.reject(requeue=True)
-            return
-          if message.headers.get('from') == 'FE':
-            await handle_fe_request(msg, message.correlation_id)
-          elif message.headers.get('from') == 'DB':
-            await handle_db_response(msg, message.correlation_id)
+          async with message.process():
+            msg = json.loads(message.body)
+            print(f"Received request: {message.correlation_id}")
+            if message.headers.get('to') != 'BE':
+              print(f"Message not for this machine. Requeueing...")
+              await message.reject(requeue=True)
+              return
+            if message.headers.get('from') == 'FE':
+              await handle_fe_request(msg, message.correlation_id)
+              await message.ack()
+            elif message.headers.get('from') == 'DB':
+              await handle_db_response(msg, message.correlation_id)
+              await message.ack()
         except json.JSONDecodeError as e:
           print(f"JSON decoding error: {e}")
           await message.nack(requeue=True)

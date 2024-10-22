@@ -49,7 +49,7 @@ async function rmq_handler(body, correlation_id) {
     channel.sendToQueue('request_queue', Buffer.from(JSON.stringify(body)), {
       correlationId: correlation_id,
       headers: {
-        to: 'BE',
+        to: (body['query'] !== undefined) ? 'DB' : 'BE', // routing is duplicated on BE
         from: 'FE',
       },
     });

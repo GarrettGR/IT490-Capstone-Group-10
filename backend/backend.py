@@ -47,9 +47,9 @@ async def listen_for_messages():
               await message.reject(requeue=True)
               return
             if msg['from'] == 'FE':
-              await handle_fe_request(msg['payload'], message.correlation_id)
+              await handle_fe_request(msg, message.correlation_id)
             elif msg['from'] == 'DB':
-              await handle_db_response(msg['payload'], message.correlation_id)
+              await handle_db_response(msg, message.correlation_id)
             await message.ack()
           except Exception as e:
             print(f"Error processing message: {e}")

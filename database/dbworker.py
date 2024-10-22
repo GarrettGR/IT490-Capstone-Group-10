@@ -30,7 +30,7 @@ def listen_for_requests():
         print(f"Message not for this machine. Requeueing...")
         ch.basic_reject(delivery_tag=method.delivery_tag, requeue=True)
         return
-      execute_query(request['payload'], properties.correlation_id)
+      execute_query(request, properties.correlation_id)
       ch.basic_ack(delivery_tag=method.delivery_tag)
     except Exception as e:
       print(f"Error processing message: {e}")

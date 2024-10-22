@@ -15,7 +15,7 @@ function SignUpPage() {
       const saltRounds = 10
       const salt = await bcrypt.genSalt(saltRounds)
       const hashedPassword = await bcrypt.hash(formData.password, salt)
-      const response = await fetch('http://localhost:3000/api/form-submit', {
+      const response = await fetch('http://100.112.216.76:3000/api/form-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: `INSERT INTO users (name, email, password) VALUES ('${formData.name}', '${formData.email}', '${hashedPassword}')` }),

@@ -16,34 +16,39 @@ let channel;
 const pendingRequests = {}
 
 async function init_rmq() {
-  connection = await amqp.connect(rmq_url)
-  channel = await connection.createChannel()
-  await channel.assertQueue('request_queue', { durable: true, arguments: { 'x-message-ttl': 60000 } })
-  await channel.assertQueue('response_queue', { durable: true, arguments: { 'x-message-ttl': 60000 } })
-  channel.consume('response_queue', (message) => {
-    const correlation_id = message.properties.correlationId
-    const response = JSON.parse(message.content.toString())
-    if (pendingRequests[correlation_id]) {
-      pendingRequests[correlation_id](response)
-      delete pendingRequests[correlation_id]
-    }
-    channel.ack(message)
-  }, { noAck: false });
+  try {
+    connection = await amqp.connect(rmq_url)
+    channel = await connection.createChannel()
+    await channel.assertQueue('request_queue', { durable: true, arguments: { 'x-message-ttl': 60000 } })
+    await channel.assertQueue('response_queue', { durable: true, arguments: { 'x-message-ttl': 60000 } })
+    channel.consume('response_queue', (message) => {
+      const correlation_id = message.properties.correlationId
+      const response = JSON.parse(message.content.toString())
+      if (pendingRequests[correlation_id]) {
+        pendingRequests[correlation_id](response)
+        delete pendingRequests[correlation_id]
+      }
+      channel.ack(message)
+    }, { noAck: false });
+    console.log('RabbitMQ initialized')
+  } catch (error) {
+    console.error('Error initializing RabbitMQ:', error)
+  }
 }
 
-async function rmq_handler(payload) {
-  const correlation_id = get_unique_id()
-  pendingRequests[correlation_id] = (response) => {
-    // handle responses from the back end
-    console.log('Received response:', response)
-  };
-  channel.sendToQueue('request_queue', Buffer.from(JSON.stringify(payload)), {
-    correlationId: correlation_id,
-    headers: {
-      to: 'BE',
-      from: 'FE',
-    },
-  });
+async function rmq_handler(payload, correlation_id) {
+  try {
+    channel.sendToQueue('request_queue', Buffer.from(JSON.stringify(payload)), {
+      correlationId: correlation_id,
+      headers: {
+        to: 'BE',
+        from: 'FE',
+      },
+    });
+    console.log('Message sent to request_queue with correlation_id:', correlation_id)
+  } catch (error) {
+    console.error('Error sending message to request_queue:', error)
+  }
 }
 
 async function graceful_shutdown() {
@@ -65,10 +70,12 @@ function get_unique_id() {
 
 app.post('/api/form-submit', async (req, res) => {
   try {
-    const request = req.body
+    const request = req.body;
+    const correlation_id = get_unique_id();
     const response_promise = new Promise((resolve) => {
-      pendingRequests[get_unique_id()] = resolve
-    })
+      pendingRequests[correlation_id] = resolve
+    });
+    await rmq_handler(request, correlation_id)
     const response = await response_promise
     res.json(response)
   } catch (error) {

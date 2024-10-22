@@ -1,9 +1,9 @@
 #!/usr/bin/node
 
-const express = require('express')
-const cors = require('cors')
-const amqp = require('amqplib')
-const bcrypt = require('bcryptjs')
+import express from 'express'
+import cors from 'cors'
+import amqp from 'amqplib'
+import bcrypt from 'bcryptjs'
 
 const app = express()
 app.use(express.json())
@@ -95,9 +95,12 @@ app.post('/api/form-submit', async (req, res) => {
         res.json({ status: 'error', message: 'Invalid email or password.' })
       }
     } else if (request.query.includes('INSERT')) {
-      if (response.affected_rows > 0) {
+      if (response.status === 'success' && response.affected_rows > 0) {
         res.json({ status: 'success', message: 'Signup successful!' })
       } else {
+        if (response.body.status === 'success') {
+          res.json({ status: 'success', message: 'it was the extra body tag' })
+        }
         res.json({ status: 'error', message: 'Signup failed.' })
       }
     } else {

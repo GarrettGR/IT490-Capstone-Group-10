@@ -22,7 +22,7 @@ async def send_message(destination, body, correlation_id):
   message = json.dumps(body)
   # connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   # async with connection:
-  connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
+  connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   async with connection:
     async with connection.channel() as channel:
       await channel.default_exchange.publish(

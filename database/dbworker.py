@@ -48,10 +48,17 @@ def execute_query(body, correlation_id):
     db_connection = pool.get_connection()
     cursor = db_connection.cursor()
     cursor.execute(body['query'])
-    results = cursor.fetchall()
-    print(f"Query results: {results}")
-    serialized_results = [serialize_row(row) for row in results]
-    send_db_response(serialized_results, correlation_id)
+    if cursor.description is None:
+      affected_rows = cursor.rowcount
+      if affected_rows > 0:
+        send_db_response({"status": "success", "affected_rows": affected_rows}, correlation_id)
+      else:
+        send_db_response({"status": "error", "message": "No rows affected."}, correlation_id)
+    else:
+      results = cursor.fetchall()
+      print(f"Query results: {results}")
+      serialized_results = [serialize_row(row) for row in results]
+      send_db_response({"status": "success", "results": serialized_results}, correlation_id)
   except mysql.connector.Error as err:
     print(f"Error: {err}")
     send_db_response({"error": str(err)}, correlation_id)

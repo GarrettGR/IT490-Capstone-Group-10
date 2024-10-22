@@ -27,6 +27,7 @@ async function init_rmq() {
     channel.consume('response_queue', (message) => {
       const correlation_id = message.properties.correlationId
       const response = JSON.parse(message.content.toString())
+      console.log(`Received response: ${correlation_id} -- body: ${JSON.stringify(response)}`)
       if (pendingRequests[correlation_id]) {
         pendingRequests[correlation_id](response)
         delete pendingRequests[correlation_id]

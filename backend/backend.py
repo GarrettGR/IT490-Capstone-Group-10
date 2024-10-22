@@ -22,7 +22,8 @@ async def send_message(destination, body, correlation_id):
   message = json.dumps(body)
   # connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   # async with connection:
-  async with aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/") as connection:
+  connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
+  async with connection:
     async with connection.channel() as channel:
       await channel.default_exchange.publish(
         aio_pika.Message(
@@ -37,12 +38,12 @@ async def listen_for_messages():
   connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   async with connection:
     async with connection.channel() as channel:
-      await channel.set_qos(prefetch_count=3)
+      await channel.set_qos(prefetch_count=1) # reduce pre-fetch count to 1
       async def callback(message: aio_pika.IncomingMessage):
         try:
           async with message.process():
             msg = json.loads(message.body)
-            print(f"Received request: {msg}")
+            print(f"Received request: {message.correlation_id}")
             if message.headers.get('to') != 'BE':
               print(f"Message not for this machine. Requeueing...")
               await message.reject(requeue=True)

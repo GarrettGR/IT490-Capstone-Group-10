@@ -67,7 +67,7 @@ function get_unique_id() {
 app.post('/api/form-submit', async (req, res) => {
   try {
     const request = req.body
-    const response_promise = new promise((resolve) => {
+    const response_promise = new Promise((resolve) => {
       pendingRequests[get_unique_id()] = resolve
     })
     const response = await response_promise
@@ -78,7 +78,7 @@ app.post('/api/form-submit', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
+app.listen(3000, async () => {
   await initRMQ()
   console.log('Server is running on port 3000')
   process.on('SIGTERM', gracefulShutdown)

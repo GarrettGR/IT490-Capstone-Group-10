@@ -2,16 +2,10 @@
 
 const express = require('express')
 const amqp = require('amqplib')
-const cors = require('cors') // Import CORS middleware
+const bcrypt = require('bcryptjs')
 
 const app = express()
 app.use(express.json())
-
-// Enable CORS for specific origin
-app.use(cors({
-  origin: 'http://localhost:3000', // Replace with your frontend URL if needed
-  methods: ['GET', 'POST'], // Allow these methods
-}))
 
 const rmq_user = "admin"
 const rmq_ip = "100.118.142.26"
@@ -45,11 +39,11 @@ async function init_rmq() {
 
 async function rmq_handler(body, correlation_id) {
   try {
-    console.log('Sending message to request_queue:', body, correlation_id);
+    console.log('Sending message to request_queue:', body, correlation_id)
     channel.sendToQueue('request_queue', Buffer.from(JSON.stringify(body)), {
       correlationId: correlation_id,
       headers: {
-        to: (body['query'] !== undefined) ? 'DB' : 'BE', // routing is duplicated on BE
+        to: (body['query'] !== undefined) ? 'DB' : 'BE', // routing is duplicated on BE (?)
         from: 'FE',
       },
     });
@@ -78,15 +72,31 @@ function get_unique_id() {
 
 app.post('/api/form-submit', async (req, res) => {
   try {
-    const request = req.body;
-    const correlation_id = get_unique_id();
-    console.log(`Recieved request: ${correlation_id} -- body: ${request}`)
+    const request = req.body
+    const correlation_id = get_unique_id()
+    console.log(`Received request: ${correlation_id} -- body: ${JSON.stringify(request)}`)
     const response_promise = new Promise((resolve) => {
       pendingRequests[correlation_id] = resolve
     });
     await rmq_handler(request, correlation_id)
     const response = await response_promise
-    res.json(response)
+    if (request.query.includes('SELECT')) {
+      const user = response[0]
+      const isPasswordValid = await bcrypt.compare(request.password, user.password)
+      if (isPasswordValid) {
+        res.json({ status: 'success', user })
+      } else {
+        res.json({ status: 'error', message: 'Invalid email or password.' })
+      }
+    } else if (request.query.includes('INSERT')) {
+      if (response.affectedRows > 0) {
+        res.json({ status: 'success', message: 'Signup successful!' })
+      } else {
+        res.json({ status: 'error', message: 'Signup failed.' })
+      }
+    } else {
+      res.json(response)
+    }
   } catch (error) {
     console.error('Error handling form submission:', error)
     res.status(500).json({ message: 'Internal Server Error' })

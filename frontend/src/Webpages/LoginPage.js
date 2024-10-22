@@ -1,109 +1,69 @@
-import React from 'react'
+import React, { useState } from 'react';
 
 function LoginPage() {
+  const [formData, setFormData] = useState({ email: '', password: '' })
 
-  // const handleLoginFormSubmit = async () => {
-  //   const email = emailInputRef.current.value
-  //   const password = passwordInputRef.current.value
-  //   try {
-  //     const response = await fetch('/api/login', { //TODO: HAVE THIS POINT TO THE RIGHT LOCATION
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ email }),
-  //     });
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       const storedHash = data.hashedPassword;
-  //       const passwordMatch = await bcrypt.compare(password, storedHash); //TODO: THIS SHOULD REALLY BE HANDLED BACKEND!!
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  };
 
-  // //       if (passwordMatch) {
-  // //         console.log('Login successful!');
-  // //         // redirect or perform other actions for a successful login
-  // //       } else {
-  // //         console.error('Incorrect password. Login failed.');
-  // //       }
-  // //     } else {
-  // //       console.error('Failed to authenticate user.');
-  // //     }
-  // //   } catch (error) {
-  // //     console.error('Error during user login:', error);
-  //   }
-  // }}
-
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+      console.log('Submitting login data:', formData)
+    try {
+      const response = await fetch('http://localhost:3000/api/form-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: `SELECT * FROM users WHERE email='${formData.email}'`, password: formData.password }),
+      });
+      const result = await response.json()
+      console.log(result)
+      if (result.status === 'success') {
+        alert('Login successful!')
+      } else {
+        alert(result.message || 'Invalid email or password.')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  };
 
   return (
     <div>
-      
-        <div className="trouble-shooting">
-          <div className="signinbox">
-
-            <form id='login_form'>
-
-              <div className="signin">
-
-                <h1 className="signin-1 ui heading size-text6xl">Sign In</h1>
-
-                <div className="columnotherissu">
-
-                  <div className="columnlabel">
-
-                    <div className="email-3">
-
-                      <div className="rowlabel">
-                        <p className="class-2022yanliudesig ui text size-textxl">Email</p>
-                      </div>
-                      <label className="email ui input gray_700_59 size-md outline round">
-                        <input id='email' name="email" type="text" required/>
-                      </label>
-
-                    </div>
-
-                    <div className="email-3">
-
-                      <div className="rowlabel">
-                        <p className="class-2022yanliudesig ui text size-textxl">Password</p>
-                      </div>
-                      <label className="email ui input gray_700_59 size-md outline round">
-                      <input id='password' name="password" type="text" />
-                      </label>
-
-                    </div>
-
-                    
-
+      <div className="loginbox">
+        <div className="login">
+          <h1 className="login-1 ui heading size-text6xl">Login</h1>
+          <div className="columnotherissu">
+            <form method="POST" id='login_form' onSubmit={handleSubmit}>
+              <div className="columnlabel">
+                <div className="email-3">
+                  <div className="rowlabel">
+                    <p className="class-2022yanliudesig ui text size-textxl">What's your Email?</p>
                   </div>
-
-                  <div className="columnlog_in">
-
-                    <input type='submit' value='Login' class="log_in ui button gray_900_71 size-3xl fill" />
-
-                  </div>
-
+                  <label className="email ui input gray_700_59 size-md outline round">
+                    <input id='email' name="email" placeholder="Example: email@email.com" type="text" value={formData.email} onChange={handleChange} required/>
+                  </label>
+                  <p className="class-2022yanliudesig ui text size-textxl">Put in your valid Email Address</p>
                 </div>
-
+                <div className="email-3">
+                  <div className="rowlabel">
+                    <p className="class-2022yanliudesig ui text size-textxl">Enter your Password</p>
+                  </div>
+                  <label className="email ui input gray_700_59 size-md outline round">
+                    <input id='password' name="password" placeholder="Example: Password123" type="password" value={formData.password} onChange={handleChange} required/>
+                  </label>
+                  <p className="class-2022yanliudesig ui text size-textxl">Use 8 or more characters with a mix of letters, numbers, and symbols</p>
+                </div>
               </div>
-
-              <div className="divider">
-                <div className="divider_one"></div>
-                <p className="or ui text size-text4xl">New to our community</p>
-                <div className="divider_one"></div>
+              <div className="columnlog_in">
+                <input type='submit' value='Login' className="log_in ui button gray_900_71 size-3xl fill"/>
               </div>
-
             </form>
-
-            <div className="columnlog_in">
-                <a href="SignUpPage">
-                  <button className="create_an ui button gray_900_02 size-3xl outline">Create an account</button>
-                </a>
-              </div>
-
           </div>
         </div>
-      
+      </div>
     </div>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;

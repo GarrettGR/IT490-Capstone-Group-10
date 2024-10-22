@@ -5,6 +5,7 @@ import os
 import json
 import mysql.connector
 from mysql.connector import pooling
+from datetime import datetime
 
 db_config = {
     'user': 'admin',
@@ -38,6 +39,9 @@ def listen_for_requests():
   channel.basic_consume(queue='request_queue', on_message_callback=callback, auto_ack=False)
   print('Waiting for database queries...')
   channel.start_consuming()
+
+def serialize_row(row):
+  return [item.isoformat() if isinstance(item, datetime) else item for item in row]
 
 def execute_query(payload, correlation_id):
   try:

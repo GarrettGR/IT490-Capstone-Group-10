@@ -77,7 +77,7 @@ app.post('/api/form-submit', async (req, res) => {
   try {
     const request = req.body
     if (!request || !request.query) {
-      return res.status(400).json({ status: 'error', message: 'Invalid request payload.' });
+      return res.status(400).json({ status: 'error', message: 'Invalid request payload.' })
     }
     const correlation_id = get_unique_id()
     console.log(`Received request: ${correlation_id} -- body: ${JSON.stringify(request)}`)
@@ -85,12 +85,16 @@ app.post('/api/form-submit', async (req, res) => {
       pending_requests[correlation_id] = resolve
     });
     await rmq_handler(request, correlation_id)
-    const response = await response_promise.body
+    const response = await response_promise
     if (request.query.includes('SELECT')) {
       const user = response.results[0]
-      const is_password_valid = await bcrypt.compare(request.password, user[0])
+      if (!user) {
+        res.json({ status: 'error', message: 'Invalid email or password.' })
+        return
+      }
+        const is_password_valid = await bcrypt.compare(request.password, user[0])
       if (is_password_valid) {
-        res.json({ status: 'success', message: `Welcome back, ${user[1]}!` })
+        es.json({ status: 'success', message: `Welcome back, ${user[1]}!` })
       } else {
         res.json({ status: 'error', message: 'Invalid email or password.' })
       }

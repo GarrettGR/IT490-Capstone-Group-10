@@ -50,7 +50,8 @@ def execute_query(payload, correlation_id):
     cursor.execute(payload['query'])
     results = cursor.fetchall()
     print(f"Query results: {results}")
-    send_db_response(results, correlation_id)
+    serialized_results = [serialize_row(row) for row in results]
+    send_db_response(serialized_results, correlation_id)
   except mysql.connector.Error as err:
     print(f"Error: {err}")
     send_db_response({"error": str(err)}, correlation_id)

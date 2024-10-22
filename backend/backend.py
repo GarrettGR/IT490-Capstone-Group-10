@@ -20,7 +20,8 @@ async def handle_db_response(body, correlation_id):
 
 async def send_message(destination, body, correlation_id):
   message = json.dumps(body)
-  async with aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/") as connection:
+  connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
+  async with connection:
     async with connection.channel() as channel:
       await channel.default_exchange.publish(
         aio_pika.Message(
@@ -31,7 +32,7 @@ async def send_message(destination, body, correlation_id):
         routing_key='response_queue' if destination == 'FE' else 'request_queue',
       )
 
-async def listen_for_messages():
+  connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   async with connection:
     async with connection.channel() as channel:

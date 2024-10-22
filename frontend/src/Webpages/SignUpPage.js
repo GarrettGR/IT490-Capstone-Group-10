@@ -15,10 +15,11 @@ function SignUpPage() {
       const saltRounds = 10
       const salt = await bcrypt.genSalt(saltRounds)
       const hashedPassword = await bcrypt.hash(formData.password, salt)
+      const [firstName, lastName] = formData.name.split(' ')
       const response = await fetch('http://100.112.216.76:3000/api/form-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `INSERT INTO users (name, email, password) VALUES ('${formData.name}', '${formData.email}', '${hashedPassword}')` }),
+        body: JSON.stringify({ query: `INSERT INTO users (first_name, last_name, email, password) VALUES ('${firstName}', '${lastName}', '${formData.email}', '${hashedPassword}')` }),
       });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

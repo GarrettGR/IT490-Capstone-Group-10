@@ -26,7 +26,7 @@ def listen_for_requests():
   def callback(ch, method, properties, body):
     try:
       request = json.loads(body)
-      print(f"Received query from backend: {request}")
+      print(f"Received message: {request}")
       if properties.headers.get('to') != 'DB':
         print(f"Message not for this machine. Requeueing...")
         ch.basic_reject(delivery_tag=method.delivery_tag, requeue=True)

@@ -16,7 +16,7 @@ const rmq_url = `amqp://${rmq_user}:${process.env.rmq_passwd}@${rmq_ip}:${rmq_po
 
 let connection;
 let channel;
-const pendingRequests = {}
+const pending_requests = {}
 
 async function init_rmq() {
   try {
@@ -28,9 +28,9 @@ async function init_rmq() {
       const correlation_id = message.properties.correlationId
       const response = JSON.parse(message.content.toString())
       console.log(`Received response: ${correlation_id} -- body: ${JSON.stringify(response)}`)
-      if (pendingRequests[correlation_id]) {
-        pendingRequests[correlation_id](response)
-        delete pendingRequests[correlation_id]
+      if (pending_requests[correlation_id]) {
+        pending_requests[correlation_id](response)
+        delete pending_requests[correlation_id]
       }
       channel.ack(message)
     }, { noAck: false });
@@ -82,20 +82,20 @@ app.post('/api/form-submit', async (req, res) => {
     const correlation_id = get_unique_id()
     console.log(`Received request: ${correlation_id} -- body: ${JSON.stringify(request)}`)
     const response_promise = new Promise((resolve) => {
-      pendingRequests[correlation_id] = resolve
+      pending_requests[correlation_id] = resolve
     });
     await rmq_handler(request, correlation_id)
     const response = await response_promise
     if (request.query.includes('SELECT')) {
       const user = response[0]
-      const isPasswordValid = await bcrypt.compare(request.password, user.password)
-      if (isPasswordValid) {
+      const is_password_valid = await bcrypt.compare(request.password, user.password)
+      if (is_password_valid) {
         res.json({ status: 'success', user })
       } else {
         res.json({ status: 'error', message: 'Invalid email or password.' })
       }
     } else if (request.query.includes('INSERT')) {
-      if (response.affectedRows > 0) {
+      if (response.affected_rows > 0) {
         res.json({ status: 'success', message: 'Signup successful!' })
       } else {
         res.json({ status: 'error', message: 'Signup failed.' })

@@ -23,7 +23,7 @@ function LoginPage() {
       if (result.status === 'success') {
         login(result.message.split(', ')[1].replace('!', ''))
         alert(`Hello, ${result.message.split(', ')[1].replace('!', '')}!`)
-        // window.location.href = '/'
+        window.location.href = '/'
       } else {
         alert(result.message || 'Invalid email or password.')
       }

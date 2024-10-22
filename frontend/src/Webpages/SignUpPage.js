@@ -1,7 +1,28 @@
 import React from 'react'
+import { useState } from 'react'
 import bcrypt from 'bcryptjs'
 
 function SignUpPage() {
+  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:3000/api/form-submit', { //CHECK THIS 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const result = await response.json();
+      console.log(result);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   // const nameInputRef = useRef()
   // const emailInputRef = useRef()
@@ -30,6 +51,7 @@ function SignUpPage() {
   //     console.error('Error during user signup:', error);
   //   }
   // };
+  
 
   return (
     <div>
@@ -41,7 +63,7 @@ function SignUpPage() {
             {/* The Sign Up Form */}
             <div className="columnotherissu">
 
-              <form method="POST" id='signup_form'>
+              <form method="POST" id='signup_form' onSubmit={handleSubmit}>
 
                 <div className="columnlabel">
 
@@ -51,7 +73,7 @@ function SignUpPage() {
                       <p className="class-2022yanliudesig ui text size-textxl">What should we call you?</p>
                     </div>
                     <label className="email ui input gray_700_59 size-md outline round">
-                      <input id='name' name="name" placeholder="Example: Jane Doe" type="text" required/>
+                      <input id='name' name="name" placeholder="Example: Jane Doe" type="text" value={formData.name} onChange={handleChange} required/>
                     </label>
                     
                     <p className="class-2022yanliudesig ui text size-textxl">Put in your First and Last Name</p>
@@ -65,7 +87,7 @@ function SignUpPage() {
                     </div>
 
                     <label className="email ui input gray_700_59 size-md outline round">
-                      <input id='email' name="email" placeholder="Example: email@email.com" type="text" required/>
+                      <input id='email' name="email" placeholder="Example: email@email.com" type="text" value={formData.email} onChange={handleChange} required/>
                     </label>
 
                     <p className="class-2022yanliudesig ui text size-textxl">Put in your valid Email Adress</p>

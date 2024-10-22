@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react'
+import { UserContext } from '../contexts/UserContext'
 
 function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' })
+  const { login } = useContext(UserContext)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -19,13 +21,14 @@ function LoginPage() {
       const result = await response.json()
       console.log(result)
       if (result.status === 'success') {
-        alert(`Hello, ${result.first_name}!`)
+        login(result.message.split(', ')[1].replace('!', ''))
+        alert(`Hello, ${result.message.split(', ')[1].replace('!', '')}!`)
         window.location.href = '/'
       } else {
         alert(result.message || 'Invalid email or password.')
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error:', error)
     }
   };
 

@@ -28,6 +28,7 @@ function SignUpPage() {
       console.log(result)
       if (result.status === 'success') {
         alert('Signup successful!')
+	window.location.href='/LoginPage'
       } else {
         alert(result.message || 'Signup failed.')
       }

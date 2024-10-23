@@ -1,6 +1,9 @@
 import React from 'react'
+import { UserContext } from '../contexts/UserContext'
 
 function HomePage() {
+  const { login } = useContext(UserContext) 
+
   return (
     <div>
 

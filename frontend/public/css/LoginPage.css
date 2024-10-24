@@ -144,4 +144,5 @@
 .forgot-password-button {
     text-decoration: underline;
     cursor: pointer;
+    padding-top: 10px;
 }

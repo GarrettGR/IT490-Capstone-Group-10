@@ -138,8 +138,9 @@ function LoginPage() {
                 <h2>Forgot Password</h2>
                 {!securityQuestion ? (
                   <form onSubmit={handleForgotPasswordSubmit}>
-                    <label className="email ui input gray_700_59 size-md outline round">Email:</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+                    <label className="email ui input gray_700_59 size-md outline round">Email:
+                      <input id="email" type="email" name="email" value={formData.email} onChange={handleChange} required />
+                    </label>
                     <div className="columnlog_in">
                       <input type='submit' className="log_in ui button gray_900_71 size-3xl fill" />
                     </div>

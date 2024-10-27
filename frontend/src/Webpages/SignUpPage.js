@@ -20,7 +20,10 @@ function SignUpPage() {
       const response = await fetch('http://143.198.177.105:3000/api/form-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `INSERT INTO users (first_name, last_name, email, password_hash, security_question_1, security_question_1_hash) VALUES ('${firstName}', '${lastName}', '${formData.email}', '${hashedPassword}', '${formData.securityQuestion}', '${hashedSecurityAnswer}')` 
+        body: JSON.stringify({ query: 
+                              `INSERT INTO users
+                              (first_name,      last_name,     email,               password_hash,       security_question_1,            security_answer_1) VALUES
+                              ('${firstName}', '${lastName}', '${formData.email}', '${hashedPassword}', '${formData.securityQuestion}', '${hashedSecurityAnswer}')`
         }),
       });
       if (!response.ok) {

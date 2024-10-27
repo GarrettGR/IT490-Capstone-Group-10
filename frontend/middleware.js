@@ -73,6 +73,60 @@ function get_unique_id() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
+app.post('/api/login', async (req, res) => {
+  try {
+    const request = req.body
+    if (!request || !request.query) {
+      return res.status(400).json({ status: 'error', message: 'Invalid request payload sent for login form.'})
+    }
+    const correlation_id = get_unique_id()
+    console.log(`Recieved request: ${correlation_id} -- body: ${JSON.stringify(request)}.`)
+    const response_promise = new Promise((resolve) => {
+      pending_requests[correlation_id] = resolve
+    });
+    await rmq_handler(request, correlation_id)
+    const response = await response_promise
+    const user = response.body.results.length > 0 ? response.body.results[0] : null
+    if (!user) {
+      res.json({ status: 'error', message: 'Invalid email or password.' })
+      return
+    }
+    const is_password_valid = await bcrypt.compare(request.password, user[0])
+    if (is_password_valid) {
+      res.json({ status: 'success', message: `Welcome back, ${user[1]}!` })
+    } else {
+      res.json({ status: 'error', message: 'Invalid email or password.' })
+    }
+  } catch (error) {
+    console.error('Error encountered while handling login form submission: ', error)
+    res.status(500).json({ status: 'error', message: "Internal server error encountered while handling login form submission."})
+  }
+});
+
+app.post('/api/signup', async (req, res) => {
+  try {
+    const request = req.body
+    if (!request || !request.query) {
+      return res.status(400).json({ status: 'error', message: 'Invalid request payload sent for signup form.'})
+    }
+    const correlation_id = get_unique_id()
+    console.log(`Recieved request: ${correlation_id} -- body: ${JSON.stringify(request)}.`)
+    const response_promise = new Promise((resolve) => {
+      pending_requests[correlation_id] = resolve
+    });
+    await rmq_handler(request, correlation_id)
+    const response = await response_promise
+    if (response.body.affected_rows > 0) {
+      res.json({ status: 'success', message: 'Signup successful!' })
+    } else {
+      res.json({ status: 'error', message: 'Signup failed.' })
+    }
+  } catch (error) {
+    console.error('Error encountered while handling signup form submission: ', errr)
+    res.status(500).json({ status: 'error', message: "Internal server error encountered while handling signup form submission."})
+  }
+});
+
 app.post('/api/form-submit', async (req, res) => {
   try {
     const request = req.body

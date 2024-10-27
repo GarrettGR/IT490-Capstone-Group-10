@@ -163,7 +163,7 @@ app.post('/api/form-submit', async (req, res) => {
     }
   } catch (error) {
     console.error('Error handling form submission:', error)
-    res.status(500).json({ message: 'Internal Server Error' })
+    res.status(500).json({ message: 'Internal Server Error', error: error.message })
   }
 });
 

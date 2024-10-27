@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import bcrypt from 'bcryptjs';
 
 function SignUpPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' })
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', securityQuestion: '', securityAnswer: '' })
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })

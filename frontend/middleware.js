@@ -127,6 +127,7 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 app.post('/api/form-submit', async (req, res) => {
   try {
     const request = req.body
@@ -163,10 +164,12 @@ app.post('/api/form-submit', async (req, res) => {
     }
   } catch (error) {
     console.error('Error handling form submission:', error)
-    res.status(500).json({ message: 'Internal Server Error' })
+    res.status(500).json({ message: 'Internal Server Error', error: error.message })
   }
 });
 
+=======
+>>>>>>> ffe76db (point forms to new api endpoints, remove old endpoint)
 app.listen(3000, async () => {
   await init_rmq()
   console.log('Server is running on port 3000')

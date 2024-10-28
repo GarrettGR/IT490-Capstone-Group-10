@@ -17,7 +17,7 @@ function SignUpPage() {
       const hashedPassword = await bcrypt.hash(formData.password, salt)
       const hashedSecurityAnswer = await bcrypt.hash(formData.securityAnswer, salt)
       const [firstName, lastName] = formData.name.split(' ')
-      const response = await fetch('http://143.198.177.105:3000/api/form-submit', {
+      const response = await fetch('http://143.198.177.105:3000/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: 

@@ -3,7 +3,7 @@
     align-self: stretch; 
     display: flex;
     justify-content: center; 
-    padding: var(--space-1g);
+    padding: var(--space-lg);
 }
 
 .arrow_right {
@@ -20,7 +20,7 @@
     box-shadow: var(--shadow-xs);
     width: 32%;
     flex-direction: column;
-    padding: var(--space-3x1) var(--space-x1); 
+    padding: var(--space-3xl) var(--space-xl); 
     border-radius: var(--radius-xs);
     @media only screen and (max-width: 1050px) { 
         width: 100%;
@@ -134,7 +134,7 @@
 }
 
 .columndigital {
-    gap: var(--space-5x1);
+    gap: var(--space-5xl);
     display: flex;
     flex: 1;
     flex-direction: column;

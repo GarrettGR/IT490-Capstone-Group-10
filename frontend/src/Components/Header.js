@@ -22,7 +22,7 @@ function Header() {
                 </a>
               </li>
               <li>
-                <a href="TroubleShooting">
+                <a href="OurServices">
                   <p className="home ui text size-text3xl">Our Services</p>
                 </a>
               </li>

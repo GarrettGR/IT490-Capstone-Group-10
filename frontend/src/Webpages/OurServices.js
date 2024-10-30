@@ -1,6 +1,6 @@
 import React from 'react'
 
-function TroubleShooting() {
+function OurServices() {
     return (
         <div>
             {/* <!-- Search Bar --> */}
@@ -144,4 +144,4 @@ function TroubleShooting() {
     )
 }
 
-export default TroubleShooting
+export default OurServices

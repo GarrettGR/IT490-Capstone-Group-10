@@ -31,7 +31,7 @@ function HomePage() {
                       </div>
 
                       <div className="rowget_started">
-                        <a href='TroubleShooting'>
+                        <a href='OurServices'>
                           <button className="get_started ui button black_900 size-xl fill">
                             <span>Get Started</span>
                             <img src="https://img.icons8.com/?size=100&id=39969&format=png&color=FFFFFF" alt="Arrow Right" className="arrow_right" />

@@ -3,7 +3,7 @@ import React from 'react'
 function ProfessionalServices() {
   return (
     <div>
-      This is for Professionaal Services
+      This is for Professional Services
     </div>
   )
 }

@@ -27,7 +27,7 @@ function Header() {
                 </a>
               </li>
               <li>
-                <a href="ProfessionalServices">
+                <a href="ServiceMap">
                   <p className="home ui text size-text3xl">Service Map</p>
                 </a>
               </li>

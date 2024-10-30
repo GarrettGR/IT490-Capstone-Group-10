@@ -14,7 +14,7 @@ import LoginPage from './Webpages/LoginPage';
 import SignUpPage from './Webpages/SignUpPage';
 import OurServices from './Webpages/OurServices';
 import SavedAppliances from './Webpages/SavedAppliances';
-import ProfessionalServices from './Webpages/ProfessionalServices';
+import ServiceMap from './Webpages/ServiceMap';
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
             <Route path='/SignUpPage' element={<SignUpPage />} />
             <Route path='/OurServices' element={<OurServices />} />
             <Route path='/SavedAppliances' element={<SavedAppliances />} />
-            <Route path='/ProfessionalServices' element={<ProfessionalServices />} />
+            <Route path='/ServiceMap' element={<ServiceMap />} />
             
           </Routes>
         </BrowserRouter>

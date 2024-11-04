@@ -18,6 +18,7 @@ let connection;
 let channel;
 const pending_requests = {}
 
+// Initialize RabbitMQ
 async function init_rmq() {
   try {
     connection = await amqp.connect(rmq_url)
@@ -40,6 +41,7 @@ async function init_rmq() {
   }
 }
 
+// RabbitMQ Handler
 async function rmq_handler(body, correlation_id) {
   try {
     console.log('Sending message to request_queue:', body, correlation_id)
@@ -56,6 +58,7 @@ async function rmq_handler(body, correlation_id) {
   }
 }
 
+// Graceful Shutdown
 async function graceful_shutdown() {
   console.log('Shutting down...')
   if (channel) {
@@ -69,10 +72,12 @@ async function graceful_shutdown() {
   process.exit(0)
 }
 
+// Get Unique ID
 function get_unique_id() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
+// Login API
 app.post('/api/login', async (req, res) => {
   try {
     const request = req.body
@@ -103,6 +108,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// SignUp API
 app.post('/api/signup', async (req, res) => {
   try {
     const request = req.body
@@ -127,6 +133,7 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
+// Form-Submit API
 app.post('/api/form-submit', async (req, res) => {
   try {
     const request = req.body
@@ -167,6 +174,7 @@ app.post('/api/form-submit', async (req, res) => {
   }
 });
 
+// Listener
 app.listen(3000, async () => {
   await init_rmq()
   console.log('Server is running on port 3000')

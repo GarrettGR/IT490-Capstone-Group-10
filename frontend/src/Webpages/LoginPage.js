@@ -138,8 +138,8 @@ function LoginPage() {
                 <h2>Forgot Password</h2>
                 {!securityQuestion ? (
                   <form onSubmit={handleForgotPasswordSubmit}>
-                    <label className="email ui input gray_700_59 size-md outline round">Email:
-                      <input id="email" type="email" name="email" value={formData.email} onChange={handleChange} required />
+                    <label className="email ui input gray_700_59 size-md outline round">
+                      <input id="email" type="email" name="email" placeholder='Email' value={formData.email} onChange={handleChange} required />
                     </label>
                     <div className="columnlog_in">
                       <input type='submit' className="log_in ui button gray_900_71 size-3xl fill" />
@@ -148,10 +148,10 @@ function LoginPage() {
                 ) : (
                   <form onSubmit={handleSecurityAnswerSubmit}>
                     <p>{securityQuestion}</p>
-                    <label className="email ui input gray_700_59 size-md outline round">Answer:</label>
-                    <input type="text" name="securityAnswer" value={securityAnswer} onChange={(e) => setSecurityAnswer(e.target.value)} required />
-                    <label className="email ui input gray_700_59 size-md outline round">New Password:</label>
-                    <input type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+                    <label className="email ui input gray_700_59 size-md outline round"></label>
+                    <input type="text" name="securityAnswer"placeholder='Answer' value={securityAnswer} onChange={(e) => setSecurityAnswer(e.target.value)} required />
+                    <label className="email ui input gray_700_59 size-md outline round"></label>
+                    <input type="password" name="newPassword" placeholder='New Password' value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
                     <div>
                       <button type="submit" className='log_in ui button gray_900_71 size-3xl fill'>Reset Password</button>
                     </div>

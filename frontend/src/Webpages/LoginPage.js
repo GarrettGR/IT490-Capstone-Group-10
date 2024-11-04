@@ -20,10 +20,10 @@ function LoginPage() {
     console.log('Submitting forgot password request:', formData.email);
     try {
       // Step 1: Fetch the security question for the provided email
-      const response = await fetch('http://143.198.177.105:3000/api/form-submit', {
+      const response = await fetch('http://143.198.177.105:3000/api/recovery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `SELECT security_question FROM users WHERE email='${formData.email}'` }),
+        body: JSON.stringify({ query: `SELECT security_question_1 FROM email WHERE email='${formData.email}'` }),
       });
       const result = await response.json();
       console.log(result);
@@ -43,10 +43,10 @@ function LoginPage() {
     console.log('Submitting security answer:', securityAnswer);
     try {
       // Step 2: Validate the security answer
-      const response = await fetch('http://143.198.177.105:3000/api/form-submit', {
+      const response = await fetch('http://143.198.177.105:3000/api/recovery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `SELECT security_answer_hash FROM users WHERE email='${formData.email}'` }),
+        body: JSON.stringify({ query: `SELECT security_answer_1 FROM users WHERE email='${formData.email}'` }),
       });
       const result = await response.json();
       const isAnswerValid = await bcrypt.compare(securityAnswer, result.body.results[0][0]);
@@ -54,7 +54,7 @@ function LoginPage() {
       if (isAnswerValid) {
         // Step 3: Allow password reset if the security answer is correct
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        const resetResponse = await fetch('http://143.198.177.105:3000/api/form-submit', {
+        const resetResponse = await fetch('http://143.198.177.105:3000/api/recovery', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query: `UPDATE users SET password_hash='${hashedNewPassword}' WHERE email='${formData.email}'` }),

@@ -133,8 +133,8 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-// Form-Submit API
-app.post('/api/form-submit', async (req, res) => {
+// Recovery API
+app.post('/api/recovery', async (req, res) => {
   try {
     const request = req.body
     if (!request || !request.query) {
@@ -147,24 +147,34 @@ app.post('/api/form-submit', async (req, res) => {
     });
     await rmq_handler(request, correlation_id)
     const response = await response_promise
-    if (request.query.includes('SELECT')) {
+    //Check if the query is requesting the security question
+    if (request.query.includes('SELECT security_question_1 FROM email WHERE email=')) {
       const user = response.body.results.length > 0 ? response.body.results[0] : null
       if (!user) {
-        res.json({ status: 'error', message: 'Invalid email or password.' })
-        return
-      }
-      const is_password_valid = await bcrypt.compare(request.password, user[0])
-      if (is_password_valid) {
-        res.json({ status: 'success', message: `Welcome back, ${user[1]}!` })
+        res.json({ status: 'error', message: 'Email not found.' })
       } else {
+        //Return the security question if email exists
+        res.json({ status: 'success', body: {results: [[user[0]]] } })
+      }
+    }else if (request.query.includes('SELECT')){
+      //Handle regular login SELECT queries
+      const user = response.body.results.length > 0 ? response.body.results[0] : null
+      if(!user) {
         res.json({ status: 'error', message: 'Invalid email or password.' })
+      } else {
+        const is_password_valid = await bcrypt.compare(request.password, user[0])
+        if (is_password_valid) {
+          res.json({ status: 'success', message: `Welcome back, ${user[1]}!` })
+        } else {
+            res.json({ status: 'error', message: 'Invalid email or password.' })
+        }
       }
     } else if (request.query.includes('INSERT')) {
-      if (response.body.affected_rows > 0) {
-        res.json({ status: 'success', message: 'Signup successful!' })
-      } else {
-        res.json({ status: 'error', message: 'Signup failed.' })
-      }
+        if (response.body.affected_rows > 0) {
+          res.json({ status: 'success', message: 'Signup successful!' })
+        } else {
+          res.json({ status: 'error', message: 'Signup failed.' })
+        }
     } else {
       res.json(response.body)
     }

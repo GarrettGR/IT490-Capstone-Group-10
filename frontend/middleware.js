@@ -18,6 +18,7 @@ let connection;
 let channel;
 const pending_requests = {}
 
+// Initialize RabbitMQ
 async function init_rmq() {
   try {
     connection = await amqp.connect(rmq_url)
@@ -40,6 +41,7 @@ async function init_rmq() {
   }
 }
 
+// RabbitMQ Handler
 async function rmq_handler(body, correlation_id) {
   try {
     console.log('Sending message to request_queue:', body, correlation_id)
@@ -56,6 +58,7 @@ async function rmq_handler(body, correlation_id) {
   }
 }
 
+// Graceful Shutdown
 async function graceful_shutdown() {
   console.log('Shutting down...')
   if (channel) {
@@ -69,10 +72,12 @@ async function graceful_shutdown() {
   process.exit(0)
 }
 
+// Get Unique ID
 function get_unique_id() {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 }
 
+// Login API
 app.post('/api/login', async (req, res) => {
   try {
     const request = req.body
@@ -103,6 +108,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// SignUp API
 app.post('/api/signup', async (req, res) => {
   try {
     const request = req.body
@@ -127,8 +133,8 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-app.post('/api/form-submit', async (req, res) => {
+// Recovery API
+app.post('/api/recovery', async (req, res) => {
   try {
     const request = req.body
     if (!request || !request.query) {
@@ -141,24 +147,34 @@ app.post('/api/form-submit', async (req, res) => {
     });
     await rmq_handler(request, correlation_id)
     const response = await response_promise
-    if (request.query.includes('SELECT')) {
+    //Check if the query is requesting the security question
+    if (request.query.includes('SELECT security_question_1 FROM email WHERE email=')) {
       const user = response.body.results.length > 0 ? response.body.results[0] : null
       if (!user) {
-        res.json({ status: 'error', message: 'Invalid email or password.' })
-        return
-      }
-      const is_password_valid = await bcrypt.compare(request.password, user[0])
-      if (is_password_valid) {
-        res.json({ status: 'success', message: `Welcome back, ${user[1]}!` })
+        res.json({ status: 'error', message: 'Email not found.' })
       } else {
+        //Return the security question if email exists
+        res.json({ status: 'success', body: {results: [[user[0]]] } })
+      }
+    }else if (request.query.includes('SELECT')){
+      //Handle regular login SELECT queries
+      const user = response.body.results.length > 0 ? response.body.results[0] : null
+      if(!user) {
         res.json({ status: 'error', message: 'Invalid email or password.' })
+      } else {
+        const is_password_valid = await bcrypt.compare(request.password, user[0])
+        if (is_password_valid) {
+          res.json({ status: 'success', message: `Welcome back, ${user[1]}!` })
+        } else {
+            res.json({ status: 'error', message: 'Invalid email or password.' })
+        }
       }
     } else if (request.query.includes('INSERT')) {
-      if (response.body.affected_rows > 0) {
-        res.json({ status: 'success', message: 'Signup successful!' })
-      } else {
-        res.json({ status: 'error', message: 'Signup failed.' })
-      }
+        if (response.body.affected_rows > 0) {
+          res.json({ status: 'success', message: 'Signup successful!' })
+        } else {
+          res.json({ status: 'error', message: 'Signup failed.' })
+        }
     } else {
       res.json(response.body)
     }
@@ -168,8 +184,7 @@ app.post('/api/form-submit', async (req, res) => {
   }
 });
 
-=======
->>>>>>> ffe76db (point forms to new api endpoints, remove old endpoint)
+// Listener
 app.listen(3000, async () => {
   await init_rmq()
   console.log('Server is running on port 3000')

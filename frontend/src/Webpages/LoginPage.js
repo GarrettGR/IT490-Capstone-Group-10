@@ -20,10 +20,10 @@ function LoginPage() {
     console.log('Submitting forgot password request:', formData.email);
     try {
       // Step 1: Fetch the security question for the provided email
-      const response = await fetch('http://143.198.177.105:3000/api/form-submit', {
+      const response = await fetch('http://143.198.177.105:3000/api/recovery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `SELECT security_question_1 FROM users WHERE email='${formData.email}'` }),
+        body: JSON.stringify({ query: `SELECT security_question FROM users WHERE email='${formData.email}'` }),
       });
       const result = await response.json();
       console.log(result);
@@ -43,7 +43,7 @@ function LoginPage() {
     console.log('Submitting security answer:', securityAnswer);
     try {
       // Step 2: Validate the security answer
-      const response = await fetch('http://143.198.177.105:3000/api/form-submit', {
+      const response = await fetch('http://143.198.177.105:3000/api/recovery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: `SELECT security_answer_1 FROM users WHERE email='${formData.email}'` }),
@@ -54,7 +54,7 @@ function LoginPage() {
       if (isAnswerValid) {
         // Step 3: Allow password reset if the security answer is correct
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        const resetResponse = await fetch('http://143.198.177.105:3000/api/form-submit', {
+        const resetResponse = await fetch('http://143.198.177.105:3000/api/recovery', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query: `UPDATE users SET password_hash='${hashedNewPassword}' WHERE email='${formData.email}'` }),
@@ -138,8 +138,8 @@ function LoginPage() {
                 <h2>Forgot Password</h2>
                 {!securityQuestion ? (
                   <form onSubmit={handleForgotPasswordSubmit}>
-                    <label className="email ui input gray_700_59 size-md outline round">Email:
-                      <input id="email" type="email" name="email" value={formData.email} onChange={handleChange} required />
+                    <label className="email ui input gray_700_59 size-md outline round">
+                      <input id="email" type="email" name="email" placeholder='Email' value={formData.email} onChange={handleChange} required />
                     </label>
                     <div className="columnlog_in">
                       <input type='submit' className="log_in ui button gray_900_71 size-3xl fill" />
@@ -148,10 +148,10 @@ function LoginPage() {
                 ) : (
                   <form onSubmit={handleSecurityAnswerSubmit}>
                     <p>{securityQuestion}</p>
-                    <label className="email ui input gray_700_59 size-md outline round">Answer:</label>
-                    <input type="text" name="securityAnswer" value={securityAnswer} onChange={(e) => setSecurityAnswer(e.target.value)} required />
-                    <label className="email ui input gray_700_59 size-md outline round">New Password:</label>
-                    <input type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+                    <label className="email ui input gray_700_59 size-md outline round"></label>
+                    <input type="text" name="securityAnswer"placeholder='Answer' value={securityAnswer} onChange={(e) => setSecurityAnswer(e.target.value)} required />
+                    <label className="email ui input gray_700_59 size-md outline round"></label>
+                    <input type="password" name="newPassword" placeholder='New Password' value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
                     <div>
                       <button type="submit" className='log_in ui button gray_900_71 size-3xl fill'>Reset Password</button>
                     </div>

@@ -18,6 +18,13 @@ function OurServices() {
                 </div>
             </div>
 
+            {/* Save Button */}
+            <div>
+                <a href="SavedAppliances">
+                    <button class="SaveButton">Saved Appliances</button>
+                </a>
+            </div>
+
             <div className="userprofile-4">
 
                 {/* <!-- Washers --> */}

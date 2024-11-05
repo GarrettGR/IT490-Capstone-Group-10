@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import bcrypt from 'bcryptjs';
 
 function SignUpPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', securityQuestion: '', securityAnswer: '' })
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', securityQuestion_1: '', securityAnswer_1: '' })
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -15,7 +15,7 @@ function SignUpPage() {
       const saltRounds = 10
       const salt = await bcrypt.genSalt(saltRounds)
       const hashedPassword = await bcrypt.hash(formData.password, salt)
-      const hashedSecurityAnswer = await bcrypt.hash(formData.securityAnswer, salt)
+      const hashedsecurityAnswer_1 = await bcrypt.hash(formData.securityAnswer_1, salt)
       const [firstName, lastName] = formData.name.split(' ')
       const response = await fetch('http://143.198.177.105:3000/api/signup', {
         method: 'POST',
@@ -23,7 +23,7 @@ function SignUpPage() {
         body: JSON.stringify({ query: 
                               `INSERT INTO users
                               (first_name,      last_name,     email,               password_hash,       security_question_1,            security_answer_1) VALUES
-                              ('${firstName}', '${lastName}', '${formData.email}', '${hashedPassword}', '${formData.securityQuestion}', '${hashedSecurityAnswer}')`
+                              ('${firstName}', '${lastName}', '${formData.email}', '${hashedPassword}', '${formData.securityQuestion_1}', '${hashedsecurityAnswer_1}')`
         }),
       });
       if (!response.ok) {
@@ -92,7 +92,7 @@ function SignUpPage() {
                     <p className='class-2022yanliudesig ui text size-textxl'>Select a Security Question</p>
                   </div>
                   <label className='email ui input gray_700_59 size-md outline round'>
-                    <select id="securityQuestion" name="securityQuestion" value={formData.securityQuestion} onChange={handleChange} required>
+                    <select id="securityQuestion_1" name="securityQuestion_1" value={formData.securityQuestion_1} onChange={handleChange} required>
                       <option value="" disabled>Select a Security Question</option>
                       <option value="What was the name of your first pet?">What was the name of your first pet?</option>
                       <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
@@ -108,7 +108,7 @@ function SignUpPage() {
                     <p className="class-2022yanliudesig ui text size-textxl">Answer the Security Question</p>
                   </div>
                   <label className="email ui input gray_700_59 size-md outline round">
-                    <input id="securityAnswer" name="securityAnswer" placeholder="Answer" type="text" value={formData.securityAnswer} onChange={handleChange} required />
+                    <input id="securityAnswer_1" name="securityAnswer_1" placeholder="Answer" type="text" value={formData.securityAnswer_1} onChange={handleChange} required />
                   </label>
                 </div>
               </div>

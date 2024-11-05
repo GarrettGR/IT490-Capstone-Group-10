@@ -17,7 +17,7 @@ function Header() {
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a href="About">
                   <p className="about ui text size-text3xl">About</p>
                 </a>
               </li>

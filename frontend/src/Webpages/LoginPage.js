@@ -23,7 +23,7 @@ function LoginPage() {
       const response = await fetch('http://143.198.177.105:3000/api/form-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `SELECT security_question FROM users WHERE email='${formData.email}'` }),
+        body: JSON.stringify({ query: `SELECT security_question_1 FROM users WHERE email='${formData.email}'` }),
       });
       const result = await response.json();
       console.log(result);
@@ -46,7 +46,7 @@ function LoginPage() {
       const response = await fetch('http://143.198.177.105:3000/api/form-submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: `SELECT security_answer_hash FROM users WHERE email='${formData.email}'` }),
+        body: JSON.stringify({ query: `SELECT security_answer_1 FROM users WHERE email='${formData.email}'` }),
       });
       const result = await response.json();
       const isAnswerValid = await bcrypt.compare(securityAnswer, result.body.results[0][0]);

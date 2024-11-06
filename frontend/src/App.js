@@ -10,6 +10,7 @@ import Header from './Components/Header';
 import Footer from './Components/Footer';
 import ApplicareLoading from './Webpages/ApplicareLoading';
 import HomePage from './Webpages/HomePage';
+import About from './Webpages/About';
 import LoginPage from './Webpages/LoginPage';
 import SignUpPage from './Webpages/SignUpPage';
 import OurServices from './Webpages/OurServices';
@@ -25,6 +26,7 @@ function App() {
           <Routes>
             <Route path='/' element={<ApplicareLoading />} />
             <Route path='/HomePage' element={<HomePage />} />
+            <Route path='/About' element={<About />} />
             <Route path='/LoginPage' element={<LoginPage />} />
             <Route path='/SignUpPage' element={<SignUpPage />} />
             <Route path='/OurServices' element={<OurServices />} />

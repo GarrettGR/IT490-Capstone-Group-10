@@ -37,7 +37,7 @@ function HomePage() {
                             <img src="https://img.icons8.com/?size=100&id=39969&format=png&color=FFFFFF" alt="Arrow Right" className="arrow_right" />
                           </button>
                         </a>
-                        <a href='#'>
+                        <a href='About'>
                           <button className="how_it_works ui button teal_700 size-xl outline">
                             <span>How it Works</span>
                             <img src="https://cdn-icons-png.flaticon.com/512/664/664866.png" alt="Arrow Right" className="arrow_right" />

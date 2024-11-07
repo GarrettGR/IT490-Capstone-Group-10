@@ -57,14 +57,14 @@ function Header() {
           {/* Saved/Bookmark Icon */}
           <div>
             <a href='SavedAppliances'>
-              <FaBookmark size={30} color="black" />  
+              <FaBookmark size={30} color="black" style={{ marginLeft: '30px' }} />  
             </a>
           </div>
 
           {/* Shopping Cart Icon */}
           <div >
             <a href='ShoppingCart'>
-              <FaShoppingCart size={30} color="black" />
+              <FaShoppingCart size={30} color="black" style={{ marginLeft: '30px' }} />
             </a>
             {/* Display cart item count */}
             {cartItems.length > 0 && (

@@ -6,21 +6,6 @@ function Header() {
   const { user, logout } = useContext(UserContext);
   const [cartItems, setCartItems] = useState([]); // Cart state to store items added
 
-  // Example function to simulate adding an item to the cart
-  const handleAddToCart = (item) => {
-    setCartItems([...cartItems, item]);
-  };
-
-  // Function to handle clicking the cart icon
-  const handleCartClick = () => {
-    alert('Redirecting to the shopping cart page...');
-  };
-
-  // Function to handle clicking the saved/bookmark icon
-  const handleSavedClick = () => {
-    alert('Redirecting to your saved items...');
-  };
-
   return (
     <div>
       <header className="header">
@@ -70,14 +55,14 @@ function Header() {
           </div>
 
           {/* Saved/Bookmark Icon */}
-          <div className="icon-container" onClick={handleSavedClick} title="Saved Items">
+          <div>
             <a href='SavedAppliances'>
               <FaBookmark size={30} color="black" />  
             </a>
           </div>
 
           {/* Shopping Cart Icon */}
-          <div className="icon-container" onClick={handleCartClick} title="Shopping Cart">
+          <div >
             <a href='ShoppingCart'>
               <FaShoppingCart size={30} color="black" />
             </a>

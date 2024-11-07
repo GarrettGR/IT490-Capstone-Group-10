@@ -71,12 +71,16 @@ function Header() {
 
           {/* Saved/Bookmark Icon */}
           <div className="icon-container" onClick={handleSavedClick} title="Saved Items">
-            <FaBookmark size={30} color="black" />
+            <a href='SavedAppliances'>
+              <FaBookmark size={30} color="black" />  
+            </a>
           </div>
 
           {/* Shopping Cart Icon */}
           <div className="icon-container" onClick={handleCartClick} title="Shopping Cart">
-            <FaShoppingCart size={30} color="black" />
+            <a href='ShoppingCart'>
+              <FaShoppingCart size={30} color="black" />
+            </a>
             {/* Display cart item count */}
             {cartItems.length > 0 && (
               <span className="cart-item-count">{cartItems.length}</span>

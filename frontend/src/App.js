@@ -15,6 +15,7 @@ import LoginPage from './Webpages/LoginPage';
 import SignUpPage from './Webpages/SignUpPage';
 import OurServices from './Webpages/OurServices';
 import SavedAppliances from './Webpages/SavedAppliances';
+import ShoppingCart from './Webpages/ShoppingCart';
 import ServiceMap from './Webpages/ServiceMap';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path='/SignUpPage' element={<SignUpPage />} />
             <Route path='/OurServices' element={<OurServices />} />
             <Route path='/SavedAppliances' element={<SavedAppliances />} />
+            <Route path='/ShoppingCart' element={<ShoppingCart />} />
             <Route path='/ServiceMap' element={<ServiceMap />} />
             
           </Routes>

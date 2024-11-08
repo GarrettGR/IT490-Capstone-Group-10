@@ -4,20 +4,21 @@
     height: 340px;
     width: 100%;
     position: relative;
+    background-color: var(--blue_a200_7f);
+    display: grid;
+    justify-items: center;
 }
 
 .createfrom_one {
     height: 340px;
     background-color: var(--neutral_white);
     box-shadow: var(--shadow-md);
-    width: 100%;
+    width: 400px;
     position: absolute;
-    left: 0px;
-    bottom: 0px;
-    top: 0px;
-    margin-top: auto;
-    margin-bottom: auto;
     border-radius: var(--radius-lg);
+    top: 10px;
+    left: 10px;
+    bottom: 10px;
 }
 
 .description-3 {
@@ -91,7 +92,7 @@
     opacity: 0.5;
     align-self: end;
     background-color: var(--black_0);
-    width: 12%;
+    width: 35px;
     display: flex;
     padding: var(--space-md);
     border-radius: var(--radius-sm);
@@ -104,7 +105,7 @@
 .bookmark_one {
     height: 20px;
     width: 20px;
-    margin-left: 11px;
+    margin-left: 3px;
     cursor: pointer;
 }
 
@@ -112,8 +113,7 @@
     color: var(--black_1) !important;
     margin-left: 8px;
     padding-left: var(--space-4xl);
-    padding-right:
-        var(--space-4xl);
+    padding-right: var(--space-4xl);
     letter-spacing: 0.4px;
     font-family: Work Sans;
     font-size: 14px;
@@ -159,30 +159,6 @@
         padding-right: var(--space-5xl);
     }
 }
-
-.SaveButton {
-    padding: 12px 24px;            
-    font-size: 16px;               
-    color: #ffffff;                
-    background-color: #007bff;     
-    border: none;                  
-    border-radius: 8px;            
-    cursor: pointer;
-    margin-left: 700px;               
-    transition: background-color 0.3s ease, transform 0.2s ease; 
-  }
-  
-  /* Hover effect */
-  .SaveButton:hover {
-    background-color: #0056b3;     
-    transform: scale(1.05);        
-  }
-  
-  /* Active (pressed) effect */
-  .SaveButton:active {
-    background-color: #00408a;     
-    transform: scale(1.0);         
-  }
 
 .fieldcontent {
     margin-bottom: 22px;

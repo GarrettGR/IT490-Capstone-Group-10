@@ -44,34 +44,29 @@ function OurServices() {
       {/* Render filtered services */}
       {filteredServices.map(service => (
         <div key={service.id} className="userprofile-5">
-          <div className="createfrom_one"></div>
-          <div className="description-3">
-            <div className="image-1">
-              {/* Use the image URL directly here */}
-              <img
-                src={service.image} // Dynamically set the image source from the 'image' property
-                alt={service.name}
-                className="washers_one"
-              />
-              <div className="columnbookmark">
-                <div className="iconbutton">
-                  <img src="https://cdn-icons-png.flaticon.com/512/709/709496.png" alt="Bookmark" className="bookmark_one" />
+          <div className="createfrom_one">
+            <div className="description-3">
+              <div className="image-1">
+                {/* Use the image URL directly here */}
+                <img
+                  src={service.image} // Dynamically set the image source from the 'image' property
+                  alt={service.name}
+                  className="washers_one"
+                />
+                <div className="columnbookmark">
+                  <div className="iconbutton">
+                    <img src="https://cdn-icons-png.flaticon.com/512/709/709496.png" alt="Bookmark" className="bookmark_one" />
+                  </div>
+                  <button className="fortyeight ui button outline size-lg fill">4.8</button>
                 </div>
-                <button className="fortyeight ui button outline size-lg fill">4.8</button>
               </div>
+              <h1 className="washers ui heading size-textmd">{service.name}</h1>
+              <h2 className="description-9 ui heading size-textmd">{service.description}</h2>
             </div>
-            <h1 className="washers ui heading size-textmd">{service.name}</h1>
-            <h2 className="description-9 ui heading size-textmd">{service.description}</h2>
           </div>
         </div>
       ))}
 
-      {/* Save Button */}
-      <div>
-        <a href="SavedAppliances">
-          <button className="SaveButton">Saved Appliances</button>
-        </a>
-      </div>
     </div>
   );
 }

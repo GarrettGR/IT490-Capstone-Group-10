@@ -14,11 +14,10 @@ function Header() {
           <img
             src="https://i.ibb.co/3RSppjG/android-chrome-192x192.png"
             alt="Applicare"
-            width="40"
-            height="40"
+            width="60"
+            height="60"
             className="d-inline-block align-top"
           />{' '}
-          Applicareone
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />

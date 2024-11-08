@@ -5,6 +5,7 @@ import { UserProvider } from './contexts/UserContext';
 
 import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Header from './Components/Header';
 import Footer from './Components/Footer';

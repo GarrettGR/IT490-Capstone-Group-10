@@ -1,79 +1,72 @@
 import React, { useContext, useState } from 'react';
 import { UserContext } from '../contexts/UserContext';
 import { FaShoppingCart, FaBookmark, FaUserCircle } from 'react-icons/fa';
+import { Navbar, Nav, Button, Container, Badge } from 'react-bootstrap';
 
 function Header() {
   const { user, logout } = useContext(UserContext);
   const [cartItems, setCartItems] = useState([]); // Cart state to store items added
 
   return (
-    <div>
-      <header className="header">
-        <img
-          src="https://i.ibb.co/3RSppjG/android-chrome-192x192.png"
-          alt="Applicareone"
-          className="applicareone"
-        />
-        <div className="row container-xs">
-          <div className="rowsign_in">
-            <ul className="rowhome">
-              <li>
-                <a href="HomePage">
-                  <p className="home ui text size-text3xl">Home</p>
-                </a>
-              </li>
-              <li>
-                <a href="About">
-                  <p className="about ui text size-text3xl">About</p>
-                </a>
-              </li>
-              <li>
-                <a href="OurServices">
-                  <p className="home ui text size-text3xl">Our Services</p>
-                </a>
-              </li>
-             
-            </ul>
+    <Navbar bg="light" expand="lg" className="shadow-sm">
+      <Container>
+        <Navbar.Brand href="HomePage">
+          <img
+            src="https://i.ibb.co/3RSppjG/android-chrome-192x192.png"
+            alt="Applicareone"
+            width="40"
+            height="40"
+            className="d-inline-block align-top"
+          />{' '}
+          Applicareone
+        </Navbar.Brand>
+
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link href="HomePage">Home</Nav.Link>
+            <Nav.Link href="About">About</Nav.Link>
+            <Nav.Link href="OurServices">Our Services</Nav.Link>
+          </Nav>
+
+          <Nav className="align-items-center">
+            {/* User login/logout */}
             {user ? (
-              <div>
-                <button
-                  className="sign_in ui button pink_100 size-md outline round"
-                  onClick={logout}
-                >
-                  <FaUserCircle size={20} style={{ marginRight: '5px' }} />
-                  {user} (Logout)
-                </button>
-              </div>
+              <Button variant="outline-primary" onClick={logout} className="me-3">
+                <FaUserCircle size={20} className="me-2" />
+                {user} (Logout)
+              </Button>
             ) : (
-              <a href="LoginPage">
-                <button className="sign_in ui button pink_100 size-md outline round">
-                  <FaUserCircle size={20} style={{ marginRight: '5px' }} />
+              <Nav.Link href="LoginPage">
+                <Button variant="outline-primary" className="me-3">
+                  <FaUserCircle size={20} className="me-2" />
                   Sign In
-                </button>
-              </a>
+                </Button>
+              </Nav.Link>
             )}
-          </div>
 
-          {/* Saved/Bookmark Icon */}
-          <div>
-            <a href='SavedAppliances'>
-              <FaBookmark size={30} color="black" style={{ marginLeft: '30px' }} />  
-            </a>
-          </div>
+            {/* Saved Appliances Icon */}
+            <Nav.Link href="SavedAppliances">
+              <FaBookmark size={25} className="text-dark me-3" />
+            </Nav.Link>
 
-          {/* Shopping Cart Icon */}
-          <div >
-            <a href='ShoppingCart'>
-              <FaShoppingCart size={30} color="black" style={{ marginLeft: '30px' }} />
-            </a>
-            {/* Display cart item count */}
-            {cartItems.length > 0 && (
-              <span className="cart-item-count">{cartItems.length}</span>
-            )}
-          </div>
-        </div>
-      </header>
-    </div>
+            {/* Shopping Cart Icon */}
+            <Nav.Link href="ShoppingCart" className="position-relative">
+              <FaShoppingCart size={25} className="text-dark" />
+              {cartItems.length > 0 && (
+                <Badge
+                  pill
+                  bg="danger"
+                  className="position-absolute top-0 start-100 translate-middle"
+                >
+                  {cartItems.length}
+                </Badge>
+              )}
+            </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }
 

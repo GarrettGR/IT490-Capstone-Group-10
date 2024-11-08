@@ -13,7 +13,7 @@ function Header() {
         <Navbar.Brand href="HomePage">
           <img
             src="https://i.ibb.co/3RSppjG/android-chrome-192x192.png"
-            alt="Applicareone"
+            alt="Applicare"
             width="40"
             height="40"
             className="d-inline-block align-top"

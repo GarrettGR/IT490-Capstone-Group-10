@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
 
 function OurServices() {
   // Initialize 'services' with an array of services (can be fetched from an API or predefined)
@@ -21,53 +22,34 @@ function OurServices() {
   };
 
   return (
-    <div>
+    <Container>
       {/* Search Bar */}
-      <div className="inputsearch">
-        <div className="fieldcontent">
-          <div className="rowwhatservices">
-            <input
-              name="text"
-              placeholder="What services are you looking for?"
-              type="text"
-              onChange={handleSearch} // Handle search input change
-            />
-          </div>
-          <div className="suffix">
-            <div className="icon">
-              <input type="image" src="https://cdn-icons-png.flaticon.com/512/54/54481.png" className="icon_one" alt="Submit" />
-            </div>
-          </div>
-        </div>
-      </div>
+      <Row className="my-4">
+        <Col md={{ span: 8, offset: 2 }}>
+          <Form.Control
+            type="text"
+            placeholder="What services are you looking for?"
+            onChange={handleSearch} // Handle search input change
+          />
+        </Col>
+      </Row>
 
       {/* Render filtered services */}
-      {filteredServices.map(service => (
-        <div key={service.id} className="userprofile-5">
-          <div className="createfrom_one">
-            <div className="description-3">
-              <div className="image-1">
-                {/* Use the image URL directly here */}
-                <img
-                  src={service.image} // Dynamically set the image source from the 'image' property
-                  alt={service.name}
-                  className="washers_one"
-                />
-                <div className="columnbookmark">
-                  <div className="iconbutton">
-                    <img src="https://cdn-icons-png.flaticon.com/512/709/709496.png" alt="Bookmark" className="bookmark_one" />
-                  </div>
-                  <button className="fortyeight ui button outline size-lg fill">4.8</button>
-                </div>
-              </div>
-              <h1 className="washers ui heading size-textmd">{service.name}</h1>
-              <h2 className="description-9 ui heading size-textmd">{service.description}</h2>
-            </div>
-          </div>
-        </div>
-      ))}
-
-    </div>
+      <Row>
+        {filteredServices.map(service => (
+          <Col key={service.id} md={4} className="mb-4">
+            <Card>
+              <Card.Img variant="top" src={service.image} alt={service.name} />
+              <Card.Body>
+                <Card.Title>{service.name}</Card.Title>
+                <Card.Text>{service.description}</Card.Text>
+                <Button variant="outline-primary">Details</Button>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </Container>
   );
 }
 

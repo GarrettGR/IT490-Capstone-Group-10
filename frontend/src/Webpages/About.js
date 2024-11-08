@@ -55,38 +55,50 @@ function About () {
       </Row>
 
       <Row>
-        {/* Example Team Member Cards */}
-        <Col md={4} className="mb-4">
+        {/* Team Member Cards */}
+
+        <Col md={3} className="mb-3">
           <Card>
             <Card.Img variant="top" src="https://via.placeholder.com/150" alt="Team Member" />
             <Card.Body>
-              <Card.Title>John Doe</Card.Title>
-              <Card.Text>CEO & Founder</Card.Text>
+              <Card.Title>Garrett Gonzalez-Rivas</Card.Title>
+              <Card.Text>Backend</Card.Text>
             </Card.Body>
           </Card>
         </Col>
 
-        <Col md={4} className="mb-4">
+        <Col md={3} className="mb-3">
           <Card>
             <Card.Img variant="top" src="https://via.placeholder.com/150" alt="Team Member" />
             <Card.Body>
-              <Card.Title>Jane Smith</Card.Title>
-              <Card.Text>Head of Development</Card.Text>
+              <Card.Title>Shakawath Hussain</Card.Title>
+              <Card.Text>Frontend</Card.Text>
             </Card.Body>
           </Card>
         </Col>
 
-        <Col md={4} className="mb-4">
+        <Col md={3} className="mb-3">
           <Card>
             <Card.Img variant="top" src="https://via.placeholder.com/150" alt="Team Member" />
             <Card.Body>
-              <Card.Title>Alex Brown</Card.Title>
-              <Card.Text>Marketing Lead</Card.Text>
+              <Card.Title>Yashi Rastogi</Card.Title>
+              <Card.Text>RabbitMQ</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col md={3} className="mb-3">
+          <Card>
+            <Card.Img variant="top" src="https://via.placeholder.com/150" alt="Team Member" />
+            <Card.Body>
+              <Card.Title>Jasmin Rutter</Card.Title>
+              <Card.Text>Database</Card.Text>
             </Card.Body>
           </Card>
         </Col>
       </Row>
     </Container>
+    
   );
 };
 

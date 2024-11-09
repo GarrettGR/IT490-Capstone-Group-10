@@ -17,8 +17,10 @@ import SignUpPage from './Webpages/SignUpPage';
 import OurServices from './Webpages/OurServices';
 import SavedAppliances from './Webpages/SavedAppliances';
 import ShoppingCart from './Webpages/ShoppingCart';
-import ServiceMap from './Webpages/ServiceMap';
+import ServiceMap from './Webpages/ServiceMap'
+// Common Issues Pages
 import CommonIssuesWashers from './Webpages/CommonIssues/CommonIssuesWashers';
+import CommonIssuesDryers from './Webpages/CommonIssues/CommonIssuesDryers';
 
 function App() {
   return (
@@ -38,6 +40,7 @@ function App() {
             <Route path='/ServiceMap' element={<ServiceMap />} />
             {/* Common Issues Pages */}
             <Route path="/CommonIssuesWashers" element={<CommonIssuesWashers />} />
+            <Route path="/CommonIssuesDryers" element={<CommonIssuesDryers />} />
             
           </Routes>
         </BrowserRouter>

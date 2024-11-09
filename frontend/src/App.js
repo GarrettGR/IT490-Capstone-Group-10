@@ -21,6 +21,7 @@ import ServiceMap from './Webpages/ServiceMap'
 // Common Issues Pages
 import CommonIssuesWashers from './Webpages/CommonIssues/CommonIssuesWashers';
 import CommonIssuesDryers from './Webpages/CommonIssues/CommonIssuesDryers';
+import CommonIssuesFridge from './Webpages/CommonIssues/CommonIssuesFridge';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
             {/* Common Issues Pages */}
             <Route path="/CommonIssuesWashers" element={<CommonIssuesWashers />} />
             <Route path="/CommonIssuesDryers" element={<CommonIssuesDryers />} />
+            <Route path="/CommonIssuesFridge" element={<CommonIssuesFridge />} />
             
           </Routes>
         </BrowserRouter>

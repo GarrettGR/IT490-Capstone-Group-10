@@ -18,6 +18,7 @@ import OurServices from './Webpages/OurServices';
 import SavedAppliances from './Webpages/SavedAppliances';
 import ShoppingCart from './Webpages/ShoppingCart';
 import ServiceMap from './Webpages/ServiceMap';
+import CommonIssuesWashers from './Webpages/CommonIssues/CommonIssuesWashers';
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
             <Route path='/SavedAppliances' element={<SavedAppliances />} />
             <Route path='/ShoppingCart' element={<ShoppingCart />} />
             <Route path='/ServiceMap' element={<ServiceMap />} />
+            {/* Common Issues Pages */}
+            <Route path="/CommonIssuesWashers" element={<CommonIssuesWashers />} />
             
           </Routes>
         </BrowserRouter>

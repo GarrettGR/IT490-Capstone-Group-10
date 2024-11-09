@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 function OurServices() {
+  const navigate = useNavigate();
+
   // Initialize 'services' with an array of services (can be fetched from an API or predefined)
   const [services, setServices] = useState([
-    { id: 1, name: 'Washers', description: 'Won\'t start, Not draining properly, Excessive vibration/noise', image: 'https://png.pngtree.com/png-vector/20240403/ourmid/pngtree-washing-machine-isolated-on-transparent-background-png-image_12260985.png' },
+    { id: 1, name: 'Washers', description: 'Won\'t start, Not draining properly, Excessive vibration/noise', image: 'https://png.pngtree.com/png-vector/20240403/ourmid/pngtree-washing-machine-isolated-on-transparent-background-png-image_12260985.png', route: '/CommonIssuesWashers' },
     { id: 2, name: 'Dryers', description: 'Not heating up, Takes too long to dry, Drum not spinning', image: 'https://www.pngall.com/wp-content/uploads/12/Clothes-Dryer-Machine-PNG-Photo.png' },
     { id: 3, name: 'Refrigerators', description: 'Not cooling properly, Leaking water, Ice maker not working', image: 'https://i.pinimg.com/originals/83/1c/03/831c0321a1f22eb4a37a36145493a909.png' },
     { id: 4, name: 'Dishwashers', description: 'Not cleaning dishes properly, Water not draining, Leaks during operation', image: 'https://png.pngtree.com/png-clipart/20231104/original/pngtree-realistic-dishwasher-png-image_13504893.png' },
@@ -25,11 +28,12 @@ function OurServices() {
     <Container>
       {/* Search Bar */}
       <Row className="my-4">
-        <Col md={{ span: 8, offset: 2 }}>
+        <Col md={{ span: 8}}>
           <Form.Control
             type="text"
             placeholder="What services are you looking for?"
             onChange={handleSearch} // Handle search input change
+            style={{ border: '2px solid black', padding: "10px", borderRadius: "5px" }}
           />
         </Col>
       </Row>
@@ -43,7 +47,7 @@ function OurServices() {
               <Card.Body>
                 <Card.Title>{service.name}</Card.Title>
                 <Card.Text>{service.description}</Card.Text>
-                <Button variant="outline-primary">Details</Button>
+                <Button variant="outline-primary" onClick={() => navigate(service.route)}>Details</Button>
               </Card.Body>
             </Card>
           </Col>

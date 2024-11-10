@@ -16,34 +16,34 @@ function CommonIssuesWashers() {
           <Col md={4} className="mb-3">
             <ul class="list-group">
               <li class="list-group-item">
-                <a href="#">Won't Start</a>
+                <a href="ApplianceParts">Won't Start</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Not Draining Properly</a>
+                <a href="ApplianceParts">Not Draining Properly</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Excessive Vibrations / Noise</a>
+                <a href="ApplianceParts">Excessive Vibrations / Noise</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Not Spinning or Agitating</a>
+                <a href="ApplianceParts">Not Spinning or Agitating</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Water Leaks</a>
+                <a href="ApplianceParts">Water Leaks</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Unusual Noises</a>
+                <a href="ApplianceParts">Unusual Noises</a>
               </li>
               <li class="list-group-item">
-                <a href="#">No Water</a>
+                <a href="ApplianceParts">No Water</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Overflowing with Water</a>
+                <a href="ApplianceParts">Overflowing with Water</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Not Cleaning Properly</a>
+                <a href="ApplianceParts">Not Cleaning Properly</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Door Not Closing</a>
+                <a href="ApplianceParts">Door Not Closing</a>
               </li>
             </ul>
           </Col>

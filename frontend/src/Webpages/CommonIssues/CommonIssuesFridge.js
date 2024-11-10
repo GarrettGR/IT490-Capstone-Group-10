@@ -16,34 +16,34 @@ function CommonIssuesFridge() {
           <Col md={4} className="mb-3">
             <ul class="list-group">
               <li class="list-group-item">
-                <a href="#">Fridge Not Cooling</a>
+                <a href="ApplianceParts">Fridge Not Cooling</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Freezer Not Freezing</a>
+                <a href="ApplianceParts">Freezer Not Freezing</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Water Leakage</a>
+                <a href="ApplianceParts">Water Leakage</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Excessive Frost Build-Up</a>
+                <a href="ApplianceParts">Excessive Frost Build-Up</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Strange Noises</a>
+                <a href="ApplianceParts">Strange Noises</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Ice Maker Not Working</a>
+                <a href="ApplianceParts">Ice Maker Not Working</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Water Dispensor Not Working</a>
+                <a href="ApplianceParts">Water Dispensor Not Working</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Inconsistant Temperature</a>
+                <a href="ApplianceParts">Inconsistant Temperature</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Doors Not Sealing Properly</a>
+                <a href="ApplianceParts">Doors Not Sealing Properly</a>
               </li>
               <li class="list-group-item">
-                <a href="#">Interior Light Not Working</a>
+                <a href="ApplianceParts">Interior Light Not Working</a>
               </li>
             </ul>
           </Col>

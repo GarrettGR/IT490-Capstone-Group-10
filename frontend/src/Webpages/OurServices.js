@@ -27,13 +27,13 @@ function OurServices() {
   return (
     <Container>
       {/* Search Bar */}
-      <Row className="my-4">
+      <Row className="my-4" style={{backgroundColor: "var(--blue_a200_7f)", padding: "30px", borderRadius: "20px"}}>
         <Col md={{ span: 8}}>
           <Form.Control
             type="text"
             placeholder="What services are you looking for?"
             onChange={handleSearch} // Handle search input change
-            style={{ border: '2px solid black', padding: "10px", borderRadius: "5px" }}
+            style={{ border: '2px solid black', padding: "10px", borderRadius: "5px", backgroundColor: "white" }}
           />
         </Col>
       </Row>

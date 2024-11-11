@@ -7,7 +7,6 @@ function HomePage() {
       <Container fluid className="home-page">
         <Row className="justify-content-center" style={{ backgroundColor: "var(--blue_a200_7f)", padding: "5px" }}>
           <Col xs={12} md={6} className="text-center py-5">
-            <h1 style={{fontSize:"20px", backgroundColor:"teal", borderRadius: "16px", color:"white", padding: "10px"}}>Applicare</h1>
 
             <h1 className="display-4 mb-3" style={{fontWeight:"bold", marginTop:"60px"}}>Welcome to AppliCare</h1>
             <p className="lead mb-4">

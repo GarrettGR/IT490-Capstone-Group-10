@@ -317,3 +317,15 @@
         margin-right: 0px;
     }
 }
+
+.carousel-img {
+    width: 100%; 
+    height: 400px; 
+    object-fit: contain; 
+}
+
+.bottomCards-img {
+    width: 100%; 
+    height: 200px; 
+    object-fit: contain;
+}

@@ -7,12 +7,12 @@ function OurServices() {
 
   // Initialize 'services' with an array of services
   const [services, setServices] = useState([
-    { id: 1, name: 'Washers', image: 'https://png.pngtree.com/png-vector/20240403/ourmid/pngtree-washing-machine-isolated-on-transparent-background-png-image_12260985.png' },
-    { id: 2, name: 'Dryers', image: 'https://www.pngall.com/wp-content/uploads/12/Clothes-Dryer-Machine-PNG-Photo.png' },
-    { id: 3, name: 'Refrigerators', image: 'https://i.pinimg.com/originals/83/1c/03/831c0321a1f22eb4a37a36145493a909.png' },
-    { id: 4, name: 'Dishwashers', image: 'https://png.pngtree.com/png-clipart/20231104/original/pngtree-realistic-dishwasher-png-image_13504893.png' },
-    { id: 5, name: 'Microwaves', image: 'https://pngimg.com/d/microwave_PNG15734.png' },
-    { id: 6, name: 'Ovens', image: 'https://www.fulgor-milano.com/sites/default/files/styles/product_grid_320x320_/public/2022-12/F6PDF364GS1%20-%20Product%20Grid.png?itok=YAPNiVYv' },
+    { id: 1, name: 'Washers', image: '/images/WasherIMG.png' },
+    { id: 2, name: 'Dryers', image: '/images/DryerIMG.png' },
+    { id: 3, name: 'Refrigerators', image: '/images/FridgeIMG.png' },
+    { id: 4, name: 'Dishwashers', image: '/images/DishWashIMG.png' },
+    { id: 5, name: 'Microwaves', image: '/images/MicroIMG.png' },
+    { id: 6, name: 'Ovens', image: '/images/OvenIMG.png' },
   ]);
 
   const [filteredServices, setFilteredServices] = useState(services); // State for filtered services

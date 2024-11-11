@@ -142,7 +142,7 @@ function About() {
                       style={{
                         backgroundColor: "#f4f6f9", // Light gray background for inputs
                         borderColor: "#5c6bc0", // Darker blue border
-                        borderRadius: "8px", // Rounded corners for inputs
+                        padding: "8px", 
                       }}
                     />
                   </Col>
@@ -158,7 +158,7 @@ function About() {
                       style={{
                         backgroundColor: "#f4f6f9", // Light gray background for inputs
                         borderColor: "#5c6bc0", // Darker blue border
-                        borderRadius: "8px", // Rounded corners for inputs
+                        padding: "8px",
                       }}
                     />
                   </Col>

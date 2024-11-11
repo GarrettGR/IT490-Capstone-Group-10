@@ -26,7 +26,7 @@ function HomePage() {
                 </Button>
               </a>
               <a href="About">
-                <Button variant="outline-teal" size="lg" border="black">
+                <Button variant="outline-teal" size="lg" style={{borderColor:"black"}}>
                   How it Works
                   <img
                     src="https://cdn-icons-png.flaticon.com/512/664/664866.png"

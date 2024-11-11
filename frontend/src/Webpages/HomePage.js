@@ -1,116 +1,96 @@
 import React from 'react'
-// import { UserContext } from '../contexts/UserContext'
+import { Button, Container, Row, Col } from 'react-bootstrap'
 
 function HomePage() {
-  // const { login } = useContext(UserContext) 
-
   return (
     <div>
+      <Container fluid className="home-page">
+        <Row className="justify-content-center">
+          <Col xs={12} md={6} className="text-center py-5">
+            <Button variant="teal" size="lg" className="w-100 mb-4">
+              AppliCare
+            </Button>
 
-      <body>
+            <h1 className="display-4 mb-3">Welcome to AppliCare</h1>
+            <p className="lead mb-4">
+              An application that allows maintenance for your household appliances.
+            </p>
 
-        <div className="home-page">
-          <div>
-            <div className="columnview">
-              <div className="row_one">
-                <div className="infobox">
-                  <div className="rowdigital">
-
-                    <div className="columndigital">
-
-                      <button className="digital ui button teal_700 size-xs fill">AppliCare</button>
-
-                      <div className="rowadvanced">
-                        <h1 className="advanced ui heading size-heading2xl">Welcome to AppliCare</h1>
-                      </div>
-
-                      <div className="rowadvanced">
-                        <p className="description-1 ui text size-textxl">
-                          An application that allows maintanance for your household appliances.
-                        </p>
-                      </div>
-
-                      <div className="rowget_started">
-                        <a href='OurServices'>
-                          <button className="get_started ui button black_900 size-xl fill">
-                            <span>Get Started</span>
-                            <img src="https://img.icons8.com/?size=100&id=39969&format=png&color=FFFFFF" alt="Arrow Right" className="arrow_right" />
-                          </button>
-                        </a>
-                        <a href='About'>
-                          <button className="how_it_works ui button teal_700 size-xl outline">
-                            <span>How it Works</span>
-                            <img src="https://cdn-icons-png.flaticon.com/512/664/664866.png" alt="Arrow Right" className="arrow_right" />
-                          </button>
-                        </a>
-                      </div>
-
-                    </div>
-
-                    <div className="stackview">
-
-                      <div className="view"></div>
-                      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZpuraoMCj_Bot0IN2YS5ZGDIH06u36Bqs1A&s" alt="Image" className="image" />
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-              <div className="columnsectioni">
-
-                <div className="flex-col-center-center community">
-                  <h2 className="sectiontitle ui heading size-headingmd">Manage you entire cataloge of household appliances</h2>
-                  <p className="description ui text size-texts">What are you currently looking for?</p>
-                </div>
-
-                <div className="listmembershipo">
-
-                  <div className="columnmembershi">
-                    <div className="member">
-                      <img src="https://e7.pngegg.com/pngimages/406/844/png-clipart-computer-icons-person-user-spark-icon-people-share-icon-thumbnail.png" alt="Membershiporgan" className="membershiporgan" />
-                      <h3 className="membershiporgan-1 ui heading size-headingxs">Contact local workers</h3>
-                    </div>
-                    <p className="ourmembershipte ui text size-textxs">
-                      Our worker management software provides full access to contact any local workers.
-                    </p>
-                  </div>
-
-                  <div className="columnmembershi">
-                    <div className="member">
-                      <img src="https://cdn-icons-png.flaticon.com/512/3885/3885073.png" alt="Membershiporgan" className="membershiporgan" />
-                      <h4 className="membershiporgan-1 ui heading size-headingxs">Parts Locator</h4>
-                    </div>
-                    <p className="ourmembershipte ui text size-textxs">
-                      Our system allows users to find the location of parts they are looking for.
-                    </p>
-                  </div>
-
-                  <div className="columnmembershi">
-                    <div className="member">
-                      <img src="https://cdn-icons-png.flaticon.com/512/992/992577.png" alt="Membershiporgan" className="membershiporgan" />
-                      <h5 className="membershiporgan-1 ui heading size-headingxs">Hands on Instructions</h5>
-                    </div>
-                    <p className="ourmembershipte ui text-textxs">
-                      Our service also allows users to partake in fixing their appliance on their own.
-                    </p>
-                  </div>
-
-                </div>
-
-              </div>
+            <div className="d-flex justify-content-center mb-4">
+              <a href="OurServices">
+                <Button variant="dark" size="lg" className="me-3">
+                  Get Started
+                  <img
+                    src="https://img.icons8.com/?size=100&id=39969&format=png&color=FFFFFF"
+                    alt="Arrow Right"
+                    className="arrow_right ms-2"
+                  />
+                </Button>
+              </a>
+              <a href="About">
+                <Button variant="outline-teal" size="lg">
+                  How it Works
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/664/664866.png"
+                    alt="Arrow Right"
+                    className="arrow_right ms-2"
+                  />
+                </Button>
+              </a>
             </div>
+          </Col>
+          <Col xs={12} md={6} className="text-center py-5">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZpuraoMCj_Bot0IN2YS5ZGDIH06u36Bqs1A&s"
+              alt="Image"
+              className="img-fluid"
+            />
+          </Col>
+        </Row>
 
-          </div>
+        <Row className="bg-light py-5">
+          <Col xs={12} className="text-center">
+            <h2 className="h3">Manage your entire catalog of household appliances</h2>
+            <p>What are you currently looking for?</p>
+          </Col>
+        </Row>
 
-        </div>
-
-      </body>
-
-
+        <Row className="py-5">
+          <Col xs={12} md={4} className="mb-4 text-center">
+            <img
+              src="https://e7.pngegg.com/pngimages/406/844/png-clipart-computer-icons-person-user-spark-icon-people-share-icon-thumbnail.png"
+              alt="Contact Workers"
+              className="img-fluid mb-3"
+            />
+            <h3>Contact Local Workers</h3>
+            <p>
+              Our worker management software provides full access to contact any local workers.
+            </p>
+          </Col>
+          <Col xs={12} md={4} className="mb-4 text-center">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3885/3885073.png"
+              alt="Parts Locator"
+              className="img-fluid mb-3"
+            />
+            <h4>Parts Locator</h4>
+            <p>
+              Our system allows users to find the location of parts they are looking for.
+            </p>
+          </Col>
+          <Col xs={12} md={4} className="mb-4 text-center">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/992/992577.png"
+              alt="Hands-on Instructions"
+              className="img-fluid mb-3"
+            />
+            <h5>Hands-on Instructions</h5>
+            <p>
+              Our service also allows users to partake in fixing their appliance on their own.
+            </p>
+          </Col>
+        </Row>
+      </Container>
     </div>
   )
 }

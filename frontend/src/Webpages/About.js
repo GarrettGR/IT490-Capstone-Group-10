@@ -1,7 +1,26 @@
-import React from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 function About() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission, e.g., sending to a server or logging it
+    console.log('Form submitted', formData);
+  };
+
   return (
     <div style={{ backgroundColor: "var(--gray_50)" }}>
       <Container className="my-5">
@@ -61,7 +80,6 @@ function About() {
 
         <Row>
           {/* Team Member Cards */}
-
           <Col md={3} className="mb-3">
             <Card>
               <Card.Img variant="top" src="https://via.placeholder.com/150" alt="Team Member" />
@@ -100,6 +118,87 @@ function About() {
                 <Card.Text>Database</Card.Text>
               </Card.Body>
             </Card>
+          </Col>
+        </Row>
+
+        {/* Contact Form Section */}
+        <Row className="my-5">
+          <Col>
+            <div style={{ backgroundColor: "var(--blue_a200_7f)", borderRadius: "16px", padding: "20px" }}>
+              <h4 className="text-center" style={{ fontWeight: "bold" }}>Contact Us</h4>
+              <p className="text-center">Have any questions? We'd love to hear from you!</p>
+
+              <Form onSubmit={handleSubmit}>
+                <Row>
+                  <Col md={6} className="mb-3">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Your Name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      style={{
+                        backgroundColor: "#f4f6f9", // Light gray background for inputs
+                        borderColor: "#5c6bc0", // Darker blue border
+                        borderRadius: "8px", // Rounded corners for inputs
+                      }}
+                    />
+                  </Col>
+                  <Col md={6} className="mb-3">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="Your Email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      style={{
+                        backgroundColor: "#f4f6f9", // Light gray background for inputs
+                        borderColor: "#5c6bc0", // Darker blue border
+                        borderRadius: "8px", // Rounded corners for inputs
+                      }}
+                    />
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col className="mb-3">
+                    <Form.Label>Message</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={4}
+                      placeholder="Your Message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      style={{
+                        backgroundColor: "#f4f6f9", // Light gray background for inputs
+                        borderColor: "#5c6bc0", // Darker blue border
+                        borderRadius: "8px", // Rounded corners for inputs
+                      }}
+                    />
+                  </Col>
+                </Row>
+
+                <Button
+                  variant="dark"
+                  type="submit"
+                  className="w-100 mt-3"
+                  style={{
+                    backgroundColor: "#5c6bc0", // Custom background color for the submit button
+                    border: "none",
+                    borderRadius: "8px", // Rounded corners
+                    padding: "10px", // Add padding to the button
+                  }}
+                >
+                  Submit
+                </Button>
+              </Form>
+            </div>
           </Col>
         </Row>
       </Container>

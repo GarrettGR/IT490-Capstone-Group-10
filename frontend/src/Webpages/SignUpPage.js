@@ -43,81 +43,90 @@ function SignUpPage() {
   };
 
   return (
-    <div>
-      <div className="signinbox">
-        <div className="signin">
-          <h1 className="signin-1 ui heading size-text6xl">Create an Account</h1>
-          <div className="columnotherissu">
+    <div className="container-fluid min-vh-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#f0f8ff' }}>
+      <div className="card shadow-lg p-4" style={{ maxWidth: '500px', width: '100%', backgroundColor: '#f8f9fa', borderRadius: '10px' }}>
+        <h1 className="text-center mb-4" style={{ color: '#003366' }}>Create an Account</h1>
 
-            {/* SignUp Form */}
-            <form method="POST" id='signup_form' onSubmit={handleSubmit}>
-              <div className="columnlabel">
-
-                {/* First and Last Name Input */}
-                <div className="email-3">
-                  <div className="rowlabel">
-                    <p className="class-2022yanliudesig ui text size-textxl">What should we call you?</p>
-                  </div>
-                  <label className="email ui input gray_700_59 size-md outline round">
-                    <input id='name' name="name" placeholder="Example: Jane Doe" type="text" value={formData.name} onChange={handleChange} required/>
-                  </label>
-                  <p className="class-2022yanliudesig ui text size-textxl">Put in your First and Last Name</p>
-                </div>
-
-                {/* Email Input */}
-                <div className="email-3">
-                  <div className="rowlabel">
-                    <p className="class-2022yanliudesig ui text size-textxl">What's your Email?</p>
-                  </div>
-                  <label className="email ui input gray_700_59 size-md outline round">
-                    <input id='email' name="email" placeholder="Example: email@email.com" type="email" value={formData.email} onChange={handleChange} required/>
-                  </label>
-                  <p className="class-2022yanliudesig ui text size-textxl">Put in your valid Email Address</p>
-                </div>
-
-                {/* Password Input */}
-                <div className="email-3">
-                  <div className="rowlabel">
-                    <p className="class-2022yanliudesig ui text size-textxl">Create a Password</p>
-                  </div>
-                  <label className="email ui input gray_700_59 size-md outline round">
-                    <input id='password' name="password" placeholder="Example: Password123" type="password" value={formData.password} onChange={handleChange} required/>
-                  </label>
-                  <p className="class-2022yanliudesig ui text size-textxl">Use 8 or more characters with a mix of letters, numbers, and symbols</p>
-                </div>
-
-                {/* Security Question 1 Input */}
-                <div className='email-3'>
-                  <div className='rowlabel'>
-                    <p className='class-2022yanliudesig ui text size-textxl'>Select a Security Question</p>
-                  </div>
-                  <label className='email ui input gray_700_59 size-md outline round'>
-                    <select id="securityQuestion_1" name="securityQuestion_1" value={formData.securityQuestion_1} onChange={handleChange} required>
-                      <option value="" disabled>Select a Security Question</option>
-                      <option value="What was the name of your first pet?">What was the name of your first pet?</option>
-                      <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
-                      <option value="What was the name of your elementary school?">What was the name of your elementary school?</option>
-                      <option value="What is your favorite color?">What was the name of your favorite color?</option>
-                    </select>
-                  </label>
-                </div>
-
-                {/* Security Question Answer 1 Input */}
-                <div className="email-3">
-                  <div className="rowlabel">
-                    <p className="class-2022yanliudesig ui text size-textxl">Answer the Security Question</p>
-                  </div>
-                  <label className="email ui input gray_700_59 size-md outline round">
-                    <input id="securityAnswer_1" name="securityAnswer_1" placeholder="Answer" type="text" value={formData.securityAnswer_1} onChange={handleChange} required />
-                  </label>
-                </div>
-              </div>
-              <div className="columnlog_in">
-                <input type='submit' value='Create an Account' className="log_in ui button gray_900_71 size-3xl fill"/>
-              </div>
-            </form>
+        <form method="POST" id="signup_form" onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label fw-semibold" style={{ color: '#005b96' }}>What should we call you?</label>
+            <input
+              id="name"
+              name="name"
+              placeholder="Example: Jane Doe"
+              type="text"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+            <small className="text-muted">Enter your First and Last Name</small>
           </div>
-        </div>
+
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label fw-semibold" style={{ color: '#005b96' }}>What's your Email?</label>
+            <input
+              id="email"
+              name="email"
+              placeholder="Example: email@email.com"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+            <small className="text-muted">Enter a valid email address</small>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="password" className="form-label fw-semibold" style={{ color: '#005b96' }}>Create a Password</label>
+            <input
+              id="password"
+              name="password"
+              placeholder="Example: Password123"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+            <small className="text-muted">Use 8+ characters with a mix of letters, numbers, and symbols</small>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="securityQuestion_1" className="form-label fw-semibold" style={{ color: '#005b96' }}>Select a Security Question</label>
+            <select
+              id="securityQuestion_1"
+              name="securityQuestion_1"
+              value={formData.securityQuestion_1}
+              onChange={handleChange}
+              className="form-select"
+              required
+            >
+              <option value="" disabled>Select a Security Question</option>
+              <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+              <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+              <option value="What was the name of your elementary school?">What was the name of your elementary school?</option>
+              <option value="What is your favorite color?">What is your favorite color?</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="securityAnswer_1" className="form-label fw-semibold" style={{ color: '#005b96' }}>Answer the Security Question</label>
+            <input
+              id="securityAnswer_1"
+              name="securityAnswer_1"
+              placeholder="Answer"
+              type="text"
+              value={formData.securityAnswer_1}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn w-100" style={{ backgroundColor: '#007bff', color: '#fff' }}>Create an Account</button>
+        </form>
       </div>
     </div>
   );

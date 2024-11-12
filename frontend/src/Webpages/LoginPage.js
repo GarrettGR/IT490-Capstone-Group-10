@@ -98,74 +98,111 @@ function LoginPage() {
   };
 
   return (
-    <div>
-      <div className="loginbox">
-        <div className="login">
-          <h1 className="login-1 ui heading size-text6xl">Login</h1>
-          <div className="columnotherissu">
+    <div className="container-fluid min-vh-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: '#f0f8ff' }}>
+      <div className="card shadow-lg p-4" style={{ maxWidth: '500px', width: '100%', backgroundColor: '#f8f9fa', borderRadius: '10px' }}>
+        <h1 className="text-center mb-4" style={{ color: '#003366' }}>Login</h1>
 
-            {!forgotPasswordMode ? (
-              <form method="POST" id='login_form' onSubmit={handleSubmit}>
-                <div className="columnlabel">
-                  <div className="email-3">
-                    <div className="rowlabel">
-                      <p className="class-2022yanliudesig ui text size-textxl">What's your Email?</p>
-                    </div>
-                    <label className="email ui input gray_700_59 size-md outline round">
-                      <input id='email' name="email" placeholder="Example: email@email.com" type="text" value={formData.email} onChange={handleChange} required />
-                    </label>
-                    <p className="class-2022yanliudesig ui text size-textxl">Put in your valid Email Address</p>
-                  </div>
-                  <div className="email-3">
-                    <div className="rowlabel">
-                      <p className="class-2022yanliudesig ui text size-textxl">Enter your Password</p>
-                    </div>
-                    <label className="email ui input gray_700_59 size-md outline round">
-                      <input id='password' name="password" placeholder="Example: Password123" type="password" value={formData.password} onChange={handleChange} required />
-                    </label>
-                    <p className="class-2022yanliudesig ui text size-textxl">Use 8 or more characters with a mix of letters, numbers, and symbols</p>
-                  </div>
+        {!forgotPasswordMode ? (
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label fw-semibold" style={{ color: '#005b96' }}>Email</label>
+              <input
+                id="email"
+                name="email"
+                placeholder="Example: email@email.com"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+              <small className="text-muted">Enter a valid email address</small>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label fw-semibold" style={{ color: '#005b96' }}>Password</label>
+              <input
+                id="password"
+                name="password"
+                placeholder="Enter password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+              <small className="text-muted">8+ characters with letters, numbers, and symbols</small>
+            </div>
+
+            <button type="submit" className="btn w-100" style={{ backgroundColor: '#007bff', color: '#fff' }}>Login</button>
+
+            <div className="text-center mt-3">
+              <button
+                type="button"
+                onClick={() => setForgotPasswordMode(true)}
+                className="btn btn-link"
+                style={{ color: '#007bff' }}
+              >
+                Forgot Password?
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <h2 className="text-center" style={{ color: '#003366' }}>Forgot Password</h2>
+            {!securityQuestion ? (
+              <form onSubmit={handleForgotPasswordSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label fw-semibold" style={{ color: '#005b96' }}>Enter your email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="form-control"
+                    required
+                  />
                 </div>
-                <div className="columnlog_in">
-                  <input type='submit' value='Login' className="log_in ui button gray_900_71 size-3xl fill" />
-                </div>
-                <div className="forgot-password">
-                  <button onClick={() => setForgotPasswordMode(true)} className="forgot-password-button">Forgot Password?</button>
-                </div>
+                <button type="submit" className="btn w-100" style={{ backgroundColor: '#007bff', color: '#fff' }}>Submit</button>
               </form>
             ) : (
-              <div>
-                <h2>Forgot Password</h2>
-                {!securityQuestion ? (
-                  <form onSubmit={handleForgotPasswordSubmit}>
-                    <label className="email ui input gray_700_59 size-md outline round">
-                      <input id="email" type="email" name="email" placeholder='Email' value={formData.email} onChange={handleChange} required />
-                    </label>
-                    <div className="columnlog_in">
-                      <input type='submit' className="log_in ui button gray_900_71 size-3xl fill" />
-                    </div>
-                  </form>
-                ) : (
-                  <form onSubmit={handleSecurityAnswerSubmit}>
-                    <p>{securityQuestion}</p>
-                    <label className="email ui input gray_700_59 size-md outline round"></label>
-                    <input type="text" name="securityAnswer"placeholder='Answer' value={securityAnswer} onChange={(e) => setSecurityAnswer(e.target.value)} required />
-                    <label className="email ui input gray_700_59 size-md outline round"></label>
-                    <input type="password" name="newPassword" placeholder='New Password' value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-                    <div>
-                      <button type="submit" className='log_in ui button gray_900_71 size-3xl fill'>Reset Password</button>
-                    </div>
-                  </form>
-                )}
-              </div>
+              <form onSubmit={handleSecurityAnswerSubmit}>
+                <p className="fw-semibold" style={{ color: '#005b96' }}>{securityQuestion}</p>
+                <div className="mb-3">
+                  <label htmlFor="securityAnswer" className="form-label fw-semibold" style={{ color: '#005b96' }}>Security Answer</label>
+                  <input
+                    type="text"
+                    name="securityAnswer"
+                    placeholder="Answer"
+                    value={securityAnswer}
+                    onChange={(e) => setSecurityAnswer(e.target.value)}
+                    className="form-control"
+                    required
+                  />
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="newPassword" className="form-label fw-semibold" style={{ color: '#005b96' }}>New Password</label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    placeholder="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="form-control"
+                    required
+                  />
+                </div>
+                <button type="submit" className="btn w-100" style={{ backgroundColor: '#007bff', color: '#fff' }}>Reset Password</button>
+              </form>
             )}
-
-            <div class="columnlog_in">
-              <a href="SignUpPage">
-                <button class="create_an ui button gray_900_02 size-3xl outline">Create an account</button>
-              </a>
-            </div>
           </div>
+        )}
+
+        <div className="text-center mt-4">
+          <p className="mb-2" style={{ color: '#003366' }}>Don't have an account?</p>
+          <a href="/SignUpPage" className="btn w-100" style={{ borderColor: '#007bff', color: '#007bff' }}>Create an account</a>
         </div>
       </div>
     </div>

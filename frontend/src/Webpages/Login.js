@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react'
 import { UserContext } from '../contexts/UserContext'
 import bcrypt from 'bcryptjs';
 
-function LoginPage() {
+function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [forgotPasswordMode, setForgotPasswordMode] = useState(false); // Track if user is in forgot password mode
   const [securityAnswer, setSecurityAnswer] = useState('');
@@ -209,4 +209,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default Login;

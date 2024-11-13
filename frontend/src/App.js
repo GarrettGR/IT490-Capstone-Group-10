@@ -10,10 +10,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
 import ApplicareLoading from './Webpages/ApplicareLoading';
-import HomePage from './Webpages/HomePage';
+import Home from './Webpages/Home';
 import About from './Webpages/About';
-import LoginPage from './Webpages/LoginPage';
-import SignUpPage from './Webpages/SignUpPage';
+import Login from './Webpages/Login';
+import SignUp from './Webpages/SignUp';
 import OurServices from './Webpages/OurServices';
 import SavedAppliances from './Webpages/SavedAppliances';
 import ShoppingCart from './Webpages/ShoppingCart';
@@ -28,10 +28,10 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<ApplicareLoading />} />
-            <Route path='/HomePage' element={<HomePage />} />
+            <Route path='/Home' element={<Home />} />
             <Route path='/About' element={<About />} />
-            <Route path='/LoginPage' element={<LoginPage />} />
-            <Route path='/SignUpPage' element={<SignUpPage />} />
+            <Route path='/Login' element={<Login />} />
+            <Route path='/SignUp' element={<SignUp />} />
             <Route path='/OurServices' element={<OurServices />} />
             <Route path='/SavedAppliances' element={<SavedAppliances />} />
             <Route path='/ShoppingCart' element={<ShoppingCart />} />

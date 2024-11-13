@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import bcrypt from 'bcryptjs';
 
-function SignUpPage() {
+function SignUp() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', securityQuestion_1: '', securityAnswer_1: '' })
 
   const handleChange = (e) => {
@@ -132,4 +132,4 @@ function SignUpPage() {
   );
 }
 
-export default SignUpPage;
+export default SignUp;

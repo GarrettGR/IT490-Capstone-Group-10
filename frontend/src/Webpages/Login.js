@@ -202,7 +202,7 @@ function Login() {
 
         <div className="text-center mt-4">
           <p className="mb-2" style={{ color: '#003366' }}>Don't have an account?</p>
-          <a href="/SignUpPage" className="btn w-100" style={{ borderColor: '#007bff', color: '#007bff' }}>Create an account</a>
+          <a href="/SignUp" className="btn w-100" style={{ borderColor: '#007bff', color: '#007bff' }}>Create an account</a>
         </div>
       </div>
     </div>

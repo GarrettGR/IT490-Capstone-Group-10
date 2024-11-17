@@ -6,7 +6,14 @@
 
 readonly TYPES=("frontend" "backend" "database" "communication")
 readonly MAX_NUMBER=3
-readonly SSH_USER="username"
+
+declare -a HOSTS
+for type in "${TYPES[@]}"; do
+    for i in $(seq 0 $MAX_NUMBER); do
+        HOSTS+=("${type}_${i}")
+    done
+done
+
 readonly SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
 
 readonly RED='\033[0;31m'
@@ -33,16 +40,6 @@ print_status() {
       echo -e "${YELLOW}ℹ${NC} $message"
     ;;
   esac
-}
-
-generate_hosts() {
-  local -a hosts
-  for type in "${TYPES[@]}"; do
-    for i in $(seq 0 $MAX_NUMBER); do
-      hosts+=("${type}_${i}")
-    done
-  done
-  echo "${hosts[@]}"
 }
 
 get_service_commands() {
@@ -149,24 +146,24 @@ main() {
     esac
   done
 
-  readarray -t HOSTS < <(generate_hosts)
-
   local success_count=0
   local failure_count=0
 
   for host in "${HOSTS[@]}"; do
-    [[ -n "$TYPE" && "$host" != "${TYPE}_"* ]] && continue
-
-    [[ -n "$NUMBER" && "$host" != *"_${NUMBER}" ]] && continue
+    if [[ -n "$TYPE" && "$host" != "${TYPE}_"* ]]; then
+      continue
+    fi
+    if [[ -n "$NUMBER" && "$host" != *"_${NUMBER}" ]]; then
+      continue
+    fi
 
     if ssh_execute "$host" "$SUMMARY_MODE"; then
       ((success_count++))
     else
       ((failure_count++))
     fi
-
     echo
-  done
+  done 
 
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     print_status "info" "Final Summary:"

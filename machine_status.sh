@@ -39,33 +39,30 @@ print_status() {
     "info")
       echo -e "${YELLOW}ℹ${NC} $message"
     ;;
+    "warning")
+      echo -e "${YELLOW}⚠${NC} $message"
+    ;;
   esac
 }
 
 get_service_commands() {
   local server_type=$1
-  local summary_mode=$2
-
-  if [[ "$summary_mode" == "true" ]]; then
-    echo "hostname; uptime"
-    return
-  fi
 
   case $server_type in
     "frontend")
-      echo "hostname; uptime; systemctl status -n0 node_server.service && systemctl status -n0 middleware.service"
+      echo "systemctl status -n0 node_server.service && systemctl status -n0 middleware.service"
     ;;
     "backend")
-      echo "hostname; uptime; systemctl status -n0 backend.service"
+      echo "systemctl status -n0 backend.service"
     ;;
     "database")
-      echo "hostname; uptime; systemctl status -n0 mariadb.service && systemctl status -n0 dbworker.service"
+      echo "systemctl status -n0 mariadb.service && systemctl status -n0 dbworker.service"
     ;;
     "communication")
-      echo "hostname; uptime; systemctl status -n0 rabbitmq-server"
+      echo "systemctl status -n0 rabbitmq-server"
     ;;
     *)
-      echo "hostname; uptime"
+      echo ""
     ;;
   esac
 }
@@ -95,6 +92,41 @@ ssh_execute() {
     print_status "failure" "Failed to connect to $host"
     return 1
   fi
+}
+
+ssh_execute() {
+  local host=$1
+  local summary_mode=$2
+  local server_type
+
+  server_type=$(echo "$host" | cut -d'_' -f1)
+
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  print_status "info" "Connecting to $host"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+  if ! timeout 10s ssh $SSH_OPTS "$host" "hostname; uptime" 2>/dev/null; then
+    print_status "failure" "Failed to connect to $host"
+    return 1
+  fi
+
+  if [[ "$summary_mode" == "true" ]]; then
+    print_status "success" "Connection to $host successful"
+    return 0
+  fi
+
+  local COMMANDS
+  COMMANDS=$(get_service_commands "$server_type")
+
+  if [[ -n "$COMMANDS" ]]; then
+    echo -e "\nService Status:"
+    if ! ssh $SSH_OPTS "$host" "$COMMANDS" 2>/dev/null; then
+      print_status "warning" "One or more services are not running correctly"
+    fi
+  fi
+
+  print_status "success" "Connection to $host successful"
+  return 0
 }
 
 list_hosts() {

@@ -98,6 +98,9 @@ ssh_execute() {
   local host=$1
   local summary_mode=$2
   local server_type
+  local -n success_hosts=$3
+  local -n warning_hosts=$4
+  local -n failed_hosts=$5
 
   server_type=$(echo "$host" | cut -d'_' -f1)
 
@@ -107,31 +110,52 @@ ssh_execute() {
 
   if ! timeout 10s ssh $SSH_OPTS "$host" "hostname; uptime" 2>/dev/null; then
     print_status "failure" "Failed to connect to $host"
+    failed_hosts+=("$host")
     return 1
   fi
 
   if [[ "$summary_mode" == "true" ]]; then
     print_status "success" "Connection to $host successful"
+    success_hosts+=("$host")
     return 0
   fi
 
   local COMMANDS
-  COMMANDS=$(get_service_commands "$server_type")
+  COMMANDS=$(get_service_commands "$server_type" "$summary_mode")
 
+  local has_warning=false
   if [[ -n "$COMMANDS" ]]; then
     echo -e "\nService Status:"
     if ! ssh $SSH_OPTS "$host" "$COMMANDS" 2>/dev/null; then
       print_status "warning" "One or more services are not running correctly"
+      has_warning=true
     fi
   fi
 
   print_status "success" "Connection to $host successful"
+  if [[ "$has_warning" == "true" ]]; then
+    warning_hosts+=("$host")
+  else
+    success_hosts+=("$host")
+  fi
   return 0
 }
 
 list_hosts() {
   print_status "info" "Available hosts:"
   printf '%s\n' "${HOSTS[@]}" | sort | sed 's/^/  /'
+}
+
+print_host_list() {
+  local status=$1
+  shift
+  local -a hosts=("$@")
+
+  if [ ${#hosts[@]} -eq 0 ]; then
+    echo "  None"
+  else
+    printf '  %s\n' "${hosts[@]}" | sort
+  fi
 }
 
 # =============================================================================
@@ -178,8 +202,9 @@ main() {
     esac
   done
 
-  local success_count=0
-  local failure_count=0
+  local -a success_hosts=()
+  local -a warning_hosts=()
+  local -a failed_hosts=()
 
   for host in "${HOSTS[@]}"; do
     if [[ -n "$TYPE" && "$host" != "${TYPE}_"* ]]; then
@@ -188,21 +213,26 @@ main() {
     if [[ -n "$NUMBER" && "$host" != *"_${NUMBER}" ]]; then
       continue
     fi
-
-    if ssh_execute "$host" "$SUMMARY_MODE"; then
-      ((success_count++))
-    else
-      ((failure_count++))
-    fi
+    ssh_execute "$host" "$SUMMARY_MODE" success_hosts warning_hosts failed_hosts
     echo
-  done 
+  done
 
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    print_status "info" "Final Summary:"
-    print_status "success" "Successful connections: $success_count"
-    print_status "failure" "Failed connections: $failure_count"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  }
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  print_status "info" "Final Summary:"
+  print_status "success" "Successful connections: ${#success_hosts[@]}"
+  print_status "warning" "Hosts with warnings: ${#warning_hosts[@]}"
+  print_status "failure" "Failed connections: ${#failed_hosts[@]}"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "Successful hosts:"
+  print_host_list "success" "${success_hosts[@]}"
+  echo
+  echo "Hosts with service warnings:"
+  print_host_list "warning" "${warning_hosts[@]}"
+  echo
+  echo "Failed hosts:"
+  print_host_list "failure" "${failed_hosts[@]}"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
 
 main "$@"
 exit 0

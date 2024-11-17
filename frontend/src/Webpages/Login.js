@@ -114,6 +114,12 @@ function Login() {
                 value={formData.email}
                 onChange={handleChange}
                 className="form-control"
+                style={{
+                  backgroundColor: "#f4f6f9", // Light gray background for inputs
+                  borderColor: "#5c6bc0", // Darker blue border
+                  padding: "10px",
+                  border: "solid",
+                }}
                 required
               />
               <small className="text-muted">Enter a valid email address</small>
@@ -129,6 +135,12 @@ function Login() {
                 value={formData.password}
                 onChange={handleChange}
                 className="form-control"
+                style={{
+                  backgroundColor: "#f4f6f9", // Light gray background for inputs
+                  borderColor: "#5c6bc0", // Darker blue border
+                  padding: "10px",
+                  border: "solid",
+                }}
                 required
               />
               <small className="text-muted">8+ characters with letters, numbers, and symbols</small>

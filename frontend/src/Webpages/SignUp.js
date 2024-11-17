@@ -58,6 +58,12 @@ function SignUp() {
               value={formData.name}
               onChange={handleChange}
               className="form-control"
+              style={{
+                backgroundColor: "#f4f6f9", // Light gray background for inputs
+                borderColor: "#5c6bc0", // Darker blue border
+                padding: "10px",
+                border: "solid",
+              }}
               required
             />
             <small className="text-muted">Enter your First and Last Name</small>
@@ -73,6 +79,12 @@ function SignUp() {
               value={formData.email}
               onChange={handleChange}
               className="form-control"
+              style={{
+                backgroundColor: "#f4f6f9", // Light gray background for inputs
+                borderColor: "#5c6bc0", // Darker blue border
+                padding: "10px",
+                border: "solid",
+              }}
               required
             />
             <small className="text-muted">Enter a valid email address</small>
@@ -88,6 +100,12 @@ function SignUp() {
               value={formData.password}
               onChange={handleChange}
               className="form-control"
+              style={{
+                backgroundColor: "#f4f6f9", // Light gray background for inputs
+                borderColor: "#5c6bc0", // Darker blue border
+                padding: "10px",
+                border: "solid",
+              }}
               required
             />
             <small className="text-muted">Use 8+ characters with a mix of letters, numbers, and symbols</small>
@@ -121,6 +139,12 @@ function SignUp() {
               value={formData.securityAnswer_1}
               onChange={handleChange}
               className="form-control"
+              style={{
+                backgroundColor: "#f4f6f9", // Light gray background for inputs
+                borderColor: "#5c6bc0", // Darker blue border
+                padding: "10px",
+                border: "solid",
+              }}
               required
             />
           </div>

@@ -10,7 +10,7 @@ function Header() {
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
       <Container>
-        <Navbar.Brand href="HomePage">
+        <Navbar.Brand href="Home">
           <img
             src="https://i.ibb.co/3RSppjG/android-chrome-192x192.png"
             alt="Applicare"
@@ -23,7 +23,7 @@ function Header() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="HomePage">Home</Nav.Link>
+            <Nav.Link href="Home">Home</Nav.Link>
             <Nav.Link href="About">About</Nav.Link>
             <Nav.Link href="OurServices">Our Services</Nav.Link>
           </Nav>
@@ -36,7 +36,7 @@ function Header() {
                 {user} (Logout)
               </Button>
             ) : (
-              <Nav.Link href="LoginPage">
+              <Nav.Link href="Login">
                 <Button variant="outline-primary" className="me-3">
                   <FaUserCircle size={20} className="me-2" />
                   Sign In

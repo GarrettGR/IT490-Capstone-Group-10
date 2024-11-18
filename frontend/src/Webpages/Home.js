@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Container, Row, Col, Carousel } from 'react-bootstrap'
 
-function HomePage() {
+function Home() {
   return (
     <div>
       <Container fluid className="home-page">
@@ -86,4 +86,4 @@ function HomePage() {
   )
 }
 
-export default HomePage
+export default Home;

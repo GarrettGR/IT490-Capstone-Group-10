@@ -22,7 +22,7 @@ async def send_message(destination, body, correlation_id):
   message = json.dumps(body)
   # connection = await aio_pika.connect(f"amq://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
   # async with connection:
-  connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
+  connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@{os.environ['rmq_ip']}/")
   async with connection:
     async with connection.channel() as channel:
       await channel.default_exchange.publish(
@@ -35,7 +35,7 @@ async def send_message(destination, body, correlation_id):
       )
 
 async def listen_for_messages():
-  connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@100.118.142.26/")
+  connection = await aio_pika.connect(f"amqp://admin:{os.environ['rmq_passwd']}@{os.environ['rmq_ip']}/")
   async with connection:
     async with connection.channel() as channel:
       await channel.set_qos(prefetch_count=1) # reduce pre-fetch count to 1

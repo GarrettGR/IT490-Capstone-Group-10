@@ -223,20 +223,23 @@ main() {
       -h|--help)
         echo "Usage: $0 [options]"
         echo "Options:"
-        echo "  -l, --list      List all possible hosts"
-        echo "  -t <TYPE>       Connect only to hosts of specified type"
-        echo "                  (frontend|backend|database|communication)"
-        echo "  -n <NUMBER>     Connect only to hosts with specified number (0-3)"
-        echo "  -s, --short     Short mode - don't show the status of each VMs' services"
-        echo "  -q, --quiet     Quiet mode - only show final summary"
-        echo "  -h, --help      Show this help message"
+        echo "  -l, --list <status>     List all possible hosts"
+        echo "                          (all|up|active)"
+        echo "  -H, --host <HOST>       Connect only to hosts of specified type"
+        echo "                          (frontend|backend|database|communication)"
+        echo "  -n, --number <NUMBER>   Connect only to hosts with specified number (0-3)"
+        echo "  -a, --action <ACTION>   Perform the following action on each host (default 'status')"
+        echo "                          (status, start, stop)"
+        echo "  -s, --short             Short mode - don't show the status of each VMs' services"
+        echo "  -q, --quiet             Quiet mode - only show final summary"
+        echo "  -h, --help              Show this help message"
         exit 0
       ;;
       -l|--list)
         list_hosts
         exit 0
       ;;
-      -t|--type)
+      -H|--host)
         TYPE="$2"
         shift 2
       ;;

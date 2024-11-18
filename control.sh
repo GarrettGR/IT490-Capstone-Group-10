@@ -217,27 +217,29 @@ main() {
   local NUMBER=""
   local QUIET_MODE="false"
   local SHORT_MODE="false"
+  local ACTION="status"  # Default action
+  local LIST_MODE=""
 
   while [[ $# -gt 0 ]]; do
     case $1 in
       -h|--help)
         echo "Usage: $0 [options]"
         echo "Options:"
-        echo "  -l, --list <status>     List all possible hosts"
+        echo "  -l, --list <TYPE>       List hosts by status type"
         echo "                          (all|up|active)"
         echo "  -H, --host <HOST>       Connect only to hosts of specified type"
         echo "                          (frontend|backend|database|communication)"
         echo "  -n, --number <NUMBER>   Connect only to hosts with specified number (0-3)"
         echo "  -a, --action <ACTION>   Perform the following action on each host (default 'status')"
-        echo "                          (status, start, stop)"
+        echo "                          (status|start|stop|restart)"
         echo "  -s, --short             Short mode - don't show the status of each VMs' services"
         echo "  -q, --quiet             Quiet mode - only show final summary"
         echo "  -h, --help              Show this help message"
         exit 0
       ;;
       -l|--list)
-        list_hosts
-        exit 0
+        LIST_MODE="$2"
+        shift 2
       ;;
       -H|--host)
         TYPE="$2"
@@ -245,6 +247,18 @@ main() {
       ;;
       -n|--number)
         NUMBER="$2"
+        shift 2
+      ;;
+      -a|--action)
+        case "$2" in
+          status|start|stop|restart)
+            ACTION="$2"
+          ;;
+          *)
+            print_status "failure" "Invalid action: $2. Must be one of: status, start, stop, restart" "false"
+            exit 1
+          ;;
+        esac
         shift 2
       ;;
       -s|--short)
@@ -262,9 +276,79 @@ main() {
     esac
   done
 
+  if [[ -n "$LIST_MODE" ]]; then
+    case "$LIST_MODE" in
+      all)
+        list_hosts
+      ;;
+      up)
+        local -a up_hosts=()
+        for host in "${HOSTS[@]}"; do
+          if timeout 10s ssh $SSH_OPTS "$host" "hostname" >/dev/null 2>&1; then
+            up_hosts+=("$host")
+          fi
+        done
+        print_status "info" "Reachable hosts:" "false"
+        print_host_list "success" "${up_hosts[@]}"
+      ;;
+      active)
+        local -a active_hosts=()
+        for host in "${HOSTS[@]}"; do
+          if ssh_execute "$host" "true" "true" >/dev/null 2>&1; then
+            active_hosts+=("$host")
+          fi
+        done
+        print_status "info" "Hosts with all services active:" "false"
+        print_host_list "success" "${active_hosts[@]}"
+      ;;
+      *)
+        print_status "failure" "Invalid list type: $LIST_MODE. Must be one of: all, up, active" "false"
+        exit 1
+      ;;
+    esac
+    exit 0
+  fi
+
   local -a success_hosts=()
   local -a warning_hosts=()
   local -a failed_hosts=()
+
+  handle_host_services() {
+    local host=$1
+    local server_type=$2
+
+    case "$ACTION" in
+      status)
+        ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
+        return $?
+      ;;
+      start|stop|restart)
+        if [[ "$SHORT_MODE" != "true" ]]; then
+          print_status "info" "Performing $ACTION on services for $host" "$QUIET_MODE"
+        fi
+
+        case $server_type in
+          "database")
+            control_services "$host" "mariadb.service" "$ACTION"
+            control_services "$host" "dbworker.service" "$ACTION"
+          ;;
+          "backend")
+            control_services "$host" "backend.service" "$ACTION"
+          ;;
+          "frontend")
+            control_services "$host" "node_server.service" "$ACTION"
+            control_services "$host" "middleware.service" "$ACTION"
+          ;;
+          "communication")
+            control_services "$host" "rabbitmq-server.service" "$ACTION"
+          ;;
+        esac
+
+        ssh_execute "$host" "$QUIET_MODE" "true"
+        return $?
+      ;;
+    esac
+  }
 
   for host in "${HOSTS[@]}"; do
     if [[ -n "$TYPE" && "$host" != "${TYPE}_"* ]]; then
@@ -274,17 +358,19 @@ main() {
       continue
     fi
 
-    ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
+    server_type=$(echo "$host" | cut -d'_' -f1)
+    handle_host_services "$host" "$server_type"
+
     case $? in
       0)
         success_hosts+=("$host")
-      ;;
+        ;;
       1)
         failed_hosts+=("$host")
-      ;;
+        ;;
       2)
         warning_hosts+=("$host")
-      ;;
+        ;;
     esac
 
     if [[ "$SHORT_MODE" != "true" ]]; then
@@ -301,8 +387,10 @@ main() {
   if [[ "$QUIET_MODE" != "true" ]]; then
     echo "Successful hosts:"
     print_host_list "success" "${success_hosts[@]}"
+    echo
     echo "Hosts with service warnings:"
     print_host_list "warning" "${warning_hosts[@]}"
+    echo
     echo "Failed hosts:"
     print_host_list "failure" "${failed_hosts[@]}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

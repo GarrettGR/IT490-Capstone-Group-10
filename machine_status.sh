@@ -62,30 +62,97 @@ print_status() {
 check_services() {
   local host=$1
   local server_type=$2
+  local quiet_mode=$3
+  local short_mode=$4
+  local all_services_ok=true
 
-  # database
-  # systemctl is-active mariadb.service
-  # systemctl is-active dbworker.service
+  check_single_service() {
+    local service=$1
+    local quiet_mode=$2
+    local short_mode=$3
+    local status
 
-  # backend
-  # systemctl is-active backend.service
+    status=$(ssh $SSH_OPTS "$host" "systemctl is-active $service 2>/dev/null")
+    if [[ "$status" != "active" ]]; then
+      if [[ "$short_mode" != "true" ]]; then
+        print_status "warning" "Service $service is not active (status: $status)" "$quiet_mode"
+      fi
+      all_services_ok=false
+    elif [[ "$short_mode" != "true" ]]; then
+      print_status "success" "Service $service is running" "$quiet_mode"
+    fi
+  }
 
-  # frontend
-  # systemctl is-active node_server.service
-  # systemctl is-active middleware.service
+  case $server_type in
+    "database")
+      check_single_service "mariadb.service" $quiet_mode $short_mode
+      check_single_service "dbworker.service" $quiet_mode $short_mode
+    ;;
+    "backend")
+      check_single_service "backend.service" $quiet_mode $short_mode
+    ;;
+    "frontend")
+      check_single_service "node_server.service" $quiet_mode $short_mode
+      check_single_service "middleware.service" $quiet_mode $short_mode
+    ;;
+    "communication")
+      check_single_service "rabbitmq-server.service" $quiet_mode $short_mode
+    ;;
+    *)
+      print_status "warning" "Unknown server type: $server_type" "false"
+      return 1
+    ;;
+  esac
 
-  # communication
-  # systemctl is-active rabbitmq-server.service
-
-  return 0
+  if $all_services_ok; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 control_services() {
   local host=$1
-  local server_type=$2
-  local value=$3
+  local service=$2
+  local action=$3
 
-  
+  if ! ssh $SSH_OPTS "$host" "systemctl $action $service" 2>/dev/null; then
+    print_status "failure" "Failed to $action $service on $host" "false"
+    get_service_logs "$host" "$service"
+    return 1
+  fi
+
+  local counter=0
+  local status
+
+  while [ $counter -lt 15 ]; do
+    status=$(ssh $SSH_OPTS "$host" "systemctl is-active $service 2>/dev/null")
+    if [[ "$status" == "active" ]]; then
+      print_status "success" "Successfully started $service on $host" "false"
+      return 0
+    fi
+    counter=$((counter + 1))
+    sleep 1
+  done
+
+  get_service_logs() {
+    local host=$1
+    local service=$2
+
+    echo "Last 15 lines of logs for $service on $host:"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    ssh $SSH_OPTS "$host" "journalctl -u $service -n 15 --no-pager" 2>/dev/null | \
+    while IFS= read -r line; do
+      echo -e "${RED}$line${RESET}"
+    done
+
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  }
+
+  print_status "failure" "Service $service failed to start within 15 seconds on $host" "false"
+  get_service_logs "$host" "$service"
+  return 1
 }
 
 ssh_execute() {
@@ -108,11 +175,10 @@ ssh_execute() {
     return 1
   fi
 
-  if ! check_services "$host" "$server_type"; then
-    if [[ "$short_mode" != "true" ]]; then
-      echo "Service Status:"
+  if ! check_services "$host" "$server_type" "$quiet_mode" "$short_mode" ; then
+    if [[ "$short_mode" == "true" ]]; then
+      print_status "warning" "One or more services are not running correctly on $host" "$quiet_mode"
     fi
-    print_status "warning" "One or more services are not running correctly on $host" "$quiet_mode"
     return 2
   fi
 
@@ -136,7 +202,13 @@ print_host_list() {
   if [ ${#hosts[@]} -eq 0 ]; then
     echo "  None"
   else
-    printf '  %s' "${hosts[@]}" | sort "false"
+    IFS=$'\n' sorted_hosts=($(sort <<<"${hosts[*]}"))
+    unset IFS
+
+    local host_list=$(printf "%s, " "${sorted_hosts[@]}")
+    host_list=${host_list%, }
+
+    print_status "$status" "$host_list" "false"
   fi
 }
 
@@ -226,10 +298,8 @@ main() {
   if [[ "$QUIET_MODE" != "true" ]]; then
     echo "Successful hosts:"
     print_host_list "success" "${success_hosts[@]}"
-    echo
     echo "Hosts with service warnings:"
     print_host_list "warning" "${warning_hosts[@]}"
-    echo
     echo "Failed hosts:"
     print_host_list "failure" "${failed_hosts[@]}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

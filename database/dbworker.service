@@ -6,6 +6,7 @@ BindsTo=mariadb.service
 
 [Service]
 Environment=db_passwd="student123"
+Environment=rmq_ip="100.98.59.118"
 Environment=rmq_passwd="student123"
 Environment=PYTHONUNBUFFERED=1
 User=root

@@ -26,7 +26,7 @@ readonly CYAN='\033[0;36m'
 readonly RESET='\033[0m'
 
 readonly BRIGHT='\033[1m' # bold
-readonly DIM='\033[2m' # 50/50 if this is supported...
+readonly DIM='\033[2m'    # 50/50 if this is supported...
 readonly UNDERLINE='\033[4m'
 readonly HIDDEN='\033[8m'
 readonly BLINK='\033[5m'
@@ -43,17 +43,17 @@ print_status() {
 
   if [[ "$quiet_mode" != "true" ]]; then
     case $status in
-      "success")
-        echo -e "${GREEN}✓${RESET} $message"
+    "success")
+      echo -e "${GREEN}✓${RESET} $message"
       ;;
-      "failure")
-        echo -e "${RED}✗${RESET} $message"
+    "failure")
+      echo -e "${RED}✗${RESET} $message"
       ;;
-      "info")
-        echo -e "${YELLOW}ℹ${RESET} $message"
+    "info")
+      echo -e "${YELLOW}ℹ${RESET} $message"
       ;;
-      "warning")
-        echo -e "${YELLOW}⚠${RESET} $message"
+    "warning")
+      echo -e "${YELLOW}⚠${RESET} $message"
       ;;
     esac
   fi
@@ -84,23 +84,23 @@ check_services() {
   }
 
   case $server_type in
-    "database")
-      check_single_service "mariadb.service" $quiet_mode $short_mode
-      check_single_service "dbworker.service" $quiet_mode $short_mode
+  "database")
+    check_single_service "mariadb.service" $quiet_mode $short_mode
+    check_single_service "dbworker.service" $quiet_mode $short_mode
     ;;
-    "backend")
-      check_single_service "backend.service" $quiet_mode $short_mode
+  "backend")
+    check_single_service "backend.service" $quiet_mode $short_mode
     ;;
-    "frontend")
-      check_single_service "node_server.service" $quiet_mode $short_mode
-      check_single_service "middleware.service" $quiet_mode $short_mode
+  "frontend")
+    check_single_service "node_server.service" $quiet_mode $short_mode
+    check_single_service "middleware.service" $quiet_mode $short_mode
     ;;
-    "communication")
-      check_single_service "rabbitmq-server.service" $quiet_mode $short_mode
+  "communication")
+    check_single_service "rabbitmq-server.service" $quiet_mode $short_mode
     ;;
-    *)
-      print_status "warning" "Unknown server type: $server_type" "false"
-      return 1
+  *)
+    print_status "warning" "Unknown server type: $server_type" "false"
+    return 1
     ;;
   esac
 
@@ -109,6 +109,21 @@ check_services() {
   else
     return 1
   fi
+}
+
+get_service_logs() {
+  local host=$1
+  local service=$2
+
+  echo "Last 15 lines of logs for $service on $host:"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+  ssh $SSH_OPTS "$host" "journalctl -u $service -n 15 --no-pager" 2>/dev/null |
+    while IFS= read -r line; do
+      echo -e "${RED}$line${RESET}"
+    done
+
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
 control_services() {
@@ -135,21 +150,6 @@ control_services() {
     sleep 1
   done
 
-  get_service_logs() {
-    local host=$1
-    local service=$2
-
-    echo "Last 15 lines of logs for $service on $host:"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-    ssh $SSH_OPTS "$host" "journalctl -u $service -n 15 --no-pager" 2>/dev/null | \
-    while IFS= read -r line; do
-      echo -e "${RED}$line${RESET}"
-    done
-
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  }
-
   print_status "failure" "Service $service failed to start within 15 seconds on $host" "false"
   get_service_logs "$host" "$service"
   return 1
@@ -175,7 +175,7 @@ ssh_execute() {
     return 1
   fi
 
-  if ! check_services "$host" "$server_type" "$quiet_mode" "$short_mode" ; then
+  if ! check_services "$host" "$server_type" "$quiet_mode" "$short_mode"; then
     if [[ "$short_mode" == "true" ]]; then
       print_status "warning" "One or more services are not running correctly on $host" "$quiet_mode"
     fi
@@ -217,93 +217,93 @@ main() {
   local NUMBER=""
   local QUIET_MODE="false"
   local SHORT_MODE="false"
-  local ACTION="status"  # Default action
+  local ACTION="status" # Default action
   local LIST_MODE=""
 
   while [[ $# -gt 0 ]]; do
     case $1 in
-      -h|--help)
-        echo "Usage: $0 [options]"
-        echo "Options:"
-        echo "  -l, --list <TYPE>       List hosts by status type"
-        echo "                          (all|up|active)"
-        echo "  -H, --host <HOST>       Connect only to hosts of specified type"
-        echo "                          (frontend|backend|database|communication)"
-        echo "  -n, --number <NUMBER>   Connect only to hosts with specified number (0-3)"
-        echo "  -a, --action <ACTION>   Perform the following action on each host (default 'status')"
-        echo "                          (status|start|stop|restart)"
-        echo "  -s, --short             Short mode - don't show the status of each VMs' services"
-        echo "  -q, --quiet             Quiet mode - only show final summary"
-        echo "  -h, --help              Show this help message"
-        exit 0
+    -h | --help)
+      echo "Usage: $0 [options]"
+      echo "Options:"
+      echo "  -l, --list <TYPE>       List hosts by status type"
+      echo "                          (all|up|active)"
+      echo "  -H, --host <HOST>       Connect only to hosts of specified type"
+      echo "                          (frontend|backend|database|communication)"
+      echo "  -n, --number <NUMBER>   Connect only to hosts with specified number (0-3)"
+      echo "  -a, --action <ACTION>   Perform the following action on each host (default 'status')"
+      echo "                          (status|start|stop|restart)"
+      echo "  -s, --short             Short mode - don't show the status of each VMs' services"
+      echo "  -q, --quiet             Quiet mode - only show final summary"
+      echo "  -h, --help              Show this help message"
+      exit 0
       ;;
-      -l|--list)
-        LIST_MODE="$2"
-        shift 2
+    -l | --list)
+      LIST_MODE="$2"
+      shift 2
       ;;
-      -H|--host)
-        TYPE="$2"
-        shift 2
+    -H | --host)
+      TYPE="$2"
+      shift 2
       ;;
-      -n|--number)
-        NUMBER="$2"
-        shift 2
+    -n | --number)
+      NUMBER="$2"
+      shift 2
       ;;
-      -a|--action)
-        case "$2" in
-          status|start|stop|restart)
-            ACTION="$2"
-          ;;
-          *)
-            print_status "failure" "Invalid action: $2. Must be one of: status, start, stop, restart" "false"
-            exit 1
-          ;;
-        esac
-        shift 2
-      ;;
-      -s|--short)
-        SHORT_MODE="true"
-        shift
-      ;;
-      -q|--quiet)
-        QUIET_MODE="true"
-        SHORT_MODE="true"
-        shift
-      ;;
+    -a | --action)
+      case "$2" in
+      status | start | stop | restart)
+        ACTION="$2"
+        ;;
       *)
-        shift
+        print_status "failure" "Invalid action: $2. Must be one of: status, start, stop, restart" "false"
+        exit 1
+        ;;
+      esac
+      shift 2
+      ;;
+    -s | --short)
+      SHORT_MODE="true"
+      shift
+      ;;
+    -q | --quiet)
+      QUIET_MODE="true"
+      SHORT_MODE="true"
+      shift
+      ;;
+    *)
+      shift
       ;;
     esac
   done
 
   if [[ -n "$LIST_MODE" ]]; then
     case "$LIST_MODE" in
-      all)
-        list_hosts
+    all)
+      list_hosts
       ;;
-      up)
-        local -a up_hosts=()
-        for host in "${HOSTS[@]}"; do
-          if timeout 10s ssh $SSH_OPTS "$host" "hostname" >/dev/null 2>&1; then
-            up_hosts+=("$host")
-          fi
-        done
-        print_status "info" "Reachable hosts:" "false"
-        print_host_list "success" "${up_hosts[@]}"
+    up)
+      local -a up_hosts=()
+      for host in "${HOSTS[@]}"; do
+        if timeout 10s ssh $SSH_OPTS "$host" "hostname" >/dev/null 2>&1; then
+          up_hosts+=("$host")
+        fi
+      done
+      print_status "info" "Reachable hosts:" "false"
+      print_host_list "success" "${up_hosts[@]}"
       ;;
-      active)
-        local -a active_hosts=()
-        for host in "${HOSTS[@]}"; do
-          if ssh_execute "$host" "true" "true" >/dev/null 2>&1; then
-            active_hosts+=("$host")
-          fi
-        done
-        print_status "info" "Hosts with all services active:" "false"
-        print_host_list "success" "${active_hosts[@]}"
+    active)
+      local -a active_hosts=()
+      for host in "${HOSTS[@]}"; do
+        if ssh_execute "$host" "true" "true" >/dev/null 2>&1; then
+          active_hosts+=("$host")
+        fi
+      done
+      print_status "info" "Hosts with all services active:" "false"
+      print_host_list "success" "${active_hosts[@]}"
       ;;
-      *)
-        print_status "failure" "Invalid list type: $LIST_MODE. Must be one of: all, up, active" "false"
-        exit 1
+    *)
+      print_status "failure" "Invalid list type: $LIST_MODE. Must be one of: all, up, active" "false"
+      exit 1
       ;;
     esac
     exit 0
@@ -318,34 +318,34 @@ main() {
     local server_type=$2
 
     case "$ACTION" in
-      status)
-        ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
-        return $?
+    status)
+      ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
+      return $?
       ;;
-      start|stop|restart)
-        if [[ "$SHORT_MODE" != "true" ]]; then
-          print_status "info" "Performing $ACTION on services for $host" "$QUIET_MODE"
-        fi
+    start | stop | restart)
+      if [[ "$SHORT_MODE" != "true" ]]; then
+        print_status "info" "Performing $ACTION on services for $host" "$QUIET_MODE"
+      fi
 
-        case $server_type in
-          "database")
-            control_services "$host" "mariadb.service" "$ACTION"
-            control_services "$host" "dbworker.service" "$ACTION"
-          ;;
-          "backend")
-            control_services "$host" "backend.service" "$ACTION"
-          ;;
-          "frontend")
-            control_services "$host" "node_server.service" "$ACTION"
-            control_services "$host" "middleware.service" "$ACTION"
-          ;;
-          "communication")
-            control_services "$host" "rabbitmq-server.service" "$ACTION"
-          ;;
-        esac
+      case $server_type in
+      "database")
+        control_services "$host" "mariadb.service" "$ACTION"
+        control_services "$host" "dbworker.service" "$ACTION"
+        ;;
+      "backend")
+        control_services "$host" "backend.service" "$ACTION"
+        ;;
+      "frontend")
+        control_services "$host" "node_server.service" "$ACTION"
+        control_services "$host" "middleware.service" "$ACTION"
+        ;;
+      "communication")
+        control_services "$host" "rabbitmq-server.service" "$ACTION"
+        ;;
+      esac
 
-        ssh_execute "$host" "$QUIET_MODE" "true"
-        return $?
+      ssh_execute "$host" "$QUIET_MODE" "true"
+      return $?
       ;;
     esac
   }
@@ -362,15 +362,15 @@ main() {
     handle_host_services "$host" "$server_type"
 
     case $? in
-      0)
-        success_hosts+=("$host")
-        ;;
-      1)
-        failed_hosts+=("$host")
-        ;;
-      2)
-        warning_hosts+=("$host")
-        ;;
+    0)
+      success_hosts+=("$host")
+      ;;
+    1)
+      failed_hosts+=("$host")
+      ;;
+    2)
+      warning_hosts+=("$host")
+      ;;
     esac
 
     if [[ "$SHORT_MODE" != "true" ]]; then

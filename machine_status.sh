@@ -9,9 +9,9 @@ readonly MAX_NUMBER=3
 
 declare -a HOSTS
 for type in "${TYPES[@]}"; do
-    for i in $(seq 0 $MAX_NUMBER); do
-        HOSTS+=("${type}_${i}")
-    done
+  for i in $(seq 0 $MAX_NUMBER); do
+    HOSTS+=("${type}_${i}")
+  done
 done
 
 readonly SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
@@ -39,92 +39,92 @@ readonly INVERT='\033[7m'
 print_status() {
   local status=$1
   local message=$2
+  local quiet_mode=$3
 
-  case $status in
-    "success")
-      echo -e "${GREEN}✓${RESET} $message"
-    ;;
-    "failure")
-      echo -e "${RED}✗${RESET} $message"
-    ;;
-    "info")
-      echo -e "${YELLOW}ℹ${RESET} $message"
-    ;;
-    "warning")
-      echo -e "${YELLOW}⚠${RESET} $message"
-    ;;
-  esac
+  if [[ "$quiet_mode" != "true" ]]; then
+    case $status in
+      "success")
+        echo -e "${GREEN}✓${RESET} $message"
+      ;;
+      "failure")
+        echo -e "${RED}✗${RESET} $message"
+      ;;
+      "info")
+        echo -e "${YELLOW}ℹ${RESET} $message"
+      ;;
+      "warning")
+        echo -e "${YELLOW}⚠${RESET} $message"
+      ;;
+    esac
+  fi
 }
 
-get_service_commands() {
-  local server_type=$1
+check_services() {
+  local host=$1
+  local server_type=$2
 
-  case $server_type in
-    "frontend")
-      echo "systemctl status -n0 node_server.service && systemctl status -n0 middleware.service"
-    ;;
-    "backend")
-      echo "systemctl status -n0 backend.service"
-    ;;
-    "database")
-      echo "systemctl status -n0 mariadb.service && systemctl status -n0 dbworker.service"
-    ;;
-    "communication")
-      echo "systemctl status -n0 rabbitmq-server"
-    ;;
-    *)
-      echo ""
-    ;;
-  esac
+  # database
+  # systemctl is-active mariadb.service
+  # systemctl is-active dbworker.service
+
+  # backend
+  # systemctl is-active backend.service
+
+  # frontend
+  # systemctl is-active node_server.service
+  # systemctl is-active middleware.service
+
+  # communication
+  # systemctl is-active rabbitmq-server.service
+
+  return 0
 }
 
-# =============================================================================
-# Core Functions
-# =============================================================================
+control_services() {
+  local host=$1
+  local server_type=$2
+  local value=$3
+
+  
+}
 
 ssh_execute() {
   local host=$1
-  local summary_mode=$2
+  local quiet_mode=$2
+  local short_mode=$3
   local return_status="success"
 
   local server_type
   server_type=$(echo "$host" | cut -d'_' -f1)
 
-  if [[ "$summary_mode" != "true" ]]; then
+  if [[ "$short_mode" != "true" ]]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    print_status "info" "Connecting to $host"
+    print_status "info" "Connecting to $host" "$quiet_mode"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   fi
 
-  if ! timeout 10s ssh $SSH_OPTS "$host" "hostname; uptime" 2>/dev/null; then
-    if [[ "$summary_mode" != "true" ]]; then
-      print_status "failure" "Failed to connect to $host"
-    fi
+  if ! timeout 10s ssh $SSH_OPTS "$host" "hostname; uptime" >/dev/null 2>&1; then
+    print_status "failure" "Failed to connect to $host" "$quiet_mode"
     return 1
   fi
 
-  if [[ "$summary_mode" == "true" ]]; then
-    print_status "success" "Connection to $host successful"
-    return 0
-  fi
-
-  local COMMANDS
-  COMMANDS=$(get_service_commands "$server_type")
-
-  if [[ -n "$COMMANDS" ]]; then
-    echo -e "\nService Status:"
-    if ! ssh $SSH_OPTS "$host" "$COMMANDS" 2>/dev/null; then
-      print_status "warning" "One or more services are not running correctly"
-      return 2
+  if ! check_services "$host" "$server_type"; then
+    if [[ "$short_mode" != "true" ]]; then
+      echo "Service Status:"
     fi
+    print_status "warning" "One or more services are not running correctly on $host" "$quiet_mode"
+    return 2
   fi
 
-  print_status "success" "Connection to $host successful"
+  if [[ "$short_mode" != "true" ]]; then
+    print_status "success" "Connection to $host successful" "$quiet_mode"
+  fi
+
   return 0
 }
 
 list_hosts() {
-  print_status "info" "Available hosts:"
+  print_status "info" "Available hosts:" "false"
   printf '%s\n' "${HOSTS[@]}" | sort | sed 's/^/  /'
 }
 
@@ -136,29 +136,27 @@ print_host_list() {
   if [ ${#hosts[@]} -eq 0 ]; then
     echo "  None"
   else
-    printf '  %s\n' "${hosts[@]}" | sort
+    printf '  %s' "${hosts[@]}" | sort "false"
   fi
 }
-
-# =============================================================================
-# Main Script
-# =============================================================================
 
 main() {
   local TYPE=""
   local NUMBER=""
-  local SUMMARY_MODE="false"
+  local QUIET_MODE="false"
+  local SHORT_MODE="false"
 
   while [[ $# -gt 0 ]]; do
     case $1 in
       -h|--help)
         echo "Usage: $0 [options]"
         echo "Options:"
-        echo "  -l, --list      List all available hosts"
+        echo "  -l, --list      List all possible hosts"
         echo "  -t <TYPE>       Connect only to hosts of specified type"
         echo "                  (frontend|backend|database|communication)"
         echo "  -n <NUMBER>     Connect only to hosts with specified number (0-3)"
-        echo "  -s, --summary   Show only connection status without service details"
+        echo "  -s, --short     Short mode - don't show the status of each VMs' services"
+        echo "  -q, --quiet     Quiet mode - only show final summary"
         echo "  -h, --help      Show this help message"
         exit 0
       ;;
@@ -166,16 +164,21 @@ main() {
         list_hosts
         exit 0
       ;;
-      -t)
+      -t|--type)
         TYPE="$2"
         shift 2
       ;;
-      -n)
+      -n|--number)
         NUMBER="$2"
         shift 2
       ;;
-      -s|--summary)
-        SUMMARY_MODE="true"
+      -s|--short)
+        SHORT_MODE="true"
+        shift
+      ;;
+      -q|--quiet)
+        QUIET_MODE="true"
+        SHORT_MODE="true"
         shift
       ;;
       *)
@@ -196,7 +199,7 @@ main() {
       continue
     fi
 
-    ssh_execute "$host" "$SUMMARY_MODE"
+    ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
     case $? in
       0)
         success_hosts+=("$host")
@@ -208,24 +211,29 @@ main() {
         warning_hosts+=("$host")
       ;;
     esac
-    echo
+
+    if [[ "$SHORT_MODE" != "true" ]]; then
+      echo
+    fi
   done
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  print_status "info" "Final Summary:"
-  print_status "success" "Successful connections: ${#success_hosts[@]}"
-  print_status "warning" "Hosts with warnings: ${#warning_hosts[@]}"
-  print_status "failure" "Failed connections: ${#failed_hosts[@]}"
+  echo "Final Summary:"
+  print_status "success" "Successful connections: ${#success_hosts[@]}" "false"
+  print_status "warning" "Hosts with warnings: ${#warning_hosts[@]}" "false"
+  print_status "failure" "Failed connections: ${#failed_hosts[@]}" "false"
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "Successful hosts:"
-  print_host_list "success" "${success_hosts[@]}"
-  echo
-  echo "Hosts with service warnings:"
-  print_host_list "warning" "${warning_hosts[@]}"
-  echo
-  echo "Failed hosts:"
-  print_host_list "failure" "${failed_hosts[@]}"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  if [[ "$QUIET_MODE" != "true" ]]; then
+    echo "Successful hosts:"
+    print_host_list "success" "${success_hosts[@]}"
+    echo
+    echo "Hosts with service warnings:"
+    print_host_list "warning" "${warning_hosts[@]}"
+    echo
+    echo "Failed hosts:"
+    print_host_list "failure" "${failed_hosts[@]}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  fi
 }
 
 main "$@"

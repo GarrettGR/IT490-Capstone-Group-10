@@ -114,7 +114,7 @@ check_services() {
       local status
       status=$(ssh $SSH_OPTS "$host" "systemctl is-active $service 2>/dev/null")
       if [[ "$status" != "active" ]]; then
-        print_status "warning" "Service $service is not active (status: $status)" "$quiet_mode"
+        print_status "warning" "Service $service is not active (status: $status) on $hsot" "$quiet_mode"
         all_services_ok=false
       else
         print_status "success" "Service $service is running on $host" "$quiet_mode"
@@ -286,55 +286,73 @@ handle_host_services() {
 
   case "$ACTION" in
     status)
-      if [[ -n "$SERVICES" ]]; then
-        local has_services=false
-        local service_ok=true
-        IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
-        for service in "${SERVICE_LIST[@]}"; do
-          case $service in
-            "database")
-              if ssh $SSH_OPTS "$host" "systemctl list-unit-files mariadb.service dbworker.service 2>/dev/null | grep -q '\.service'"; then
-                has_services=true
-                check_services "$host" "mariadb.service dbworker.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
-              fi
-            ;;
-            "backend")
-              if ssh $SSH_OPTS "$host" "systemctl list-unit-files backend.service 2>/dev/null | grep -q '\.service'"; then
-                has_services=true
-                check_services "$host" "backend.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
-              fi
-            ;;
-            "frontend")
-              if ssh $SSH_OPTS "$host" "systemctl list-unit-files node_server.service middleware.service 2>/dev/null | grep -q '\.service'"; then
-                has_services=true
-                check_services "$host" "node_server.service middleware.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
-              fi
-            ;;
-            "communication")
-              if ssh $SSH_OPTS "$host" "systemctl list-unit-files rabbitmq-server.service 2>/dev/null | grep -q '\.service'"; then
-                has_services=true
-                check_services "$host" "rabbitmq-server.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
-              fi
-            ;;
-          esac
-        done
-
-        if ! $has_services; then
-          if [[ "$SHORT_MODE" != "true" ]]; then
-            print_status "info" "No monitored services installed on $host" "$QUIET_MODE"
-          fi
-          return 255
-        fi
-
-        if $service_ok; then
-          return 0
-        else
-          return 2
-        fi
-      else
-        ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
-        return $?
+      if [[ -z "$SERVICES" ]]; then
+        SERVICES="all"
       fi
+      local has_services=false
+      local service_ok=true
+      IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
+      for service in "${SERVICE_LIST[@]}"; do
+        case $service in
+          "all")
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files mariadb.service dbworker.service 2>/dev/null | grep -q '\.service'"; then
+              has_services=true
+              check_services "$host" "mariadb.service dbworker.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
+            fi
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files backend.service 2>/dev/null | grep -q '\.service'"; then
+              has_services=true
+              check_services "$host" "backend.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
+            fi
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files node_server.service middleware.service 2>/dev/null | grep -q '\.service'"; then
+              has_services=true
+              check_services "$host" "node_server.service middleware.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
+            fi
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files rabbitmq-server.service 2>/dev/null | grep -q '\.service'"; then
+              has_services=true
+              check_services "$host" "rabbitmq-server.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
+            fi
+          ;;
+          "database")
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files mariadb.service dbworker.service 2>/dev/null | grep -q '\.service'"; then
+              has_services=true
+              check_services "$host" "mariadb.service dbworker.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
+            fi
+          ;;
+          "backend")
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files backend.service 2>/dev/null | grep -q '\.service'"; then
+              has_services=true
+              check_services "$host" "backend.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
+            fi
+          ;;
+          "frontend")
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files node_server.service middleware.service 2>/dev/null | grep -q '\.service'"; then
+              has_services=true
+              check_services "$host" "node_server.service middleware.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
+            fi
+           ;;
+          "communication")
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files rabbitmq-server.service 2>/dev/null | grep -q '\.service'"; then
+              has_services=true
+              check_services "$host" "rabbitmq-server.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
+            fi
+          ;;
+        esac
+      done
+
+      if ! $has_services; then
+        if [[ "$SHORT_MODE" != "true" ]]; then
+          print_status "info" "No monitored services installed on $host" "$QUIET_MODE"
+        fi
+        return 255
+      fi
+      if $service_ok; then
+        return 0
+      else
+        return 2
+      fi
+      
+      ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
+      return $?
     ;;
     start|stop|restart)
       if [[ "$SHORT_MODE" != "true" ]]; then
@@ -342,28 +360,28 @@ handle_host_services() {
       fi
 
       local service_status=0
-      if [[ -n "$SERVICES" ]]; then
-        IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
-        for service in "${SERVICE_LIST[@]}"; do
-          case $service in
-            "database")
+      if [[ -z "$SERVICES" ]]; then
+        SERVICES="all"
+      fi
+      IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
+      for service in "${SERVICE_LIST[@]}"; do
+        case $service in
+          "all")
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files dbwoeker.service 2>/dev/null | grep -q '\.service'"; then
               control_services "$host" "mariadb.service" "$ACTION" "$QUIET_MODE" || service_status=1
               control_services "$host" "dbworker.service" "$ACTION" "$QUIET_MODE" || service_status=1
-            ;;
-            "backend")
+            fi
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files backend.service 2>/dev/null | grep -q '\.service'"; then
               control_services "$host" "backend.service" "$ACTION" "$QUIET_MODE" || service_status=1
-            ;;
-            "frontend")
+            fi
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files node_server.service 2>/dev/null | grep -q '\.service'"; then
               control_services "$host" "node_server.service" "$ACTION" "$QUIET_MODE" || service_status=1
               control_services "$host" "middleware.service" "$ACTION" "$QUIET_MODE" || service_status=1
-            ;;
-            "communication")
+            fi
+            if ssh $SSH_OPTS "$host" "systemctl list-unit-files rabbitmq-server.service 2>/dev/null | grep -q '\.service'"; then
               control_services "$host" "rabbitmq-server.service" "$ACTION" "$QUIET_MODE" || service_status=1
-            ;;
-          esac
-        done
-      else
-        case $server_type in
+            fi
+          ;;
           "database")
             control_services "$host" "mariadb.service" "$ACTION" "$QUIET_MODE" || service_status=1
             control_services "$host" "dbworker.service" "$ACTION" "$QUIET_MODE" || service_status=1
@@ -379,44 +397,24 @@ handle_host_services() {
             control_services "$host" "rabbitmq-server.service" "$ACTION" "$QUIET_MODE" || service_status=1
           ;;
         esac
-      fi
-
-      if [ $service_status -eq 0 ]; then
-        ssh_execute "$host" "$QUIET_MODE" "true"
-        return $?
-      else
-        return 1
-      fi
+      done
     ;;
     setup)
-      if [[ -n "$SERVICES" ]]; then
-        IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
-        local setup_status=0
-        for service in "${SERVICE_LIST[@]}"; do
-          case $service in
-            "frontend") setup_frontend_service "$host" "$QUIET_MODE" || setup_status=1 ;;
-            "backend") setup_backend_service "$host" "$QUIET_MODE" || setup_status=1 ;;
-            "database") setup_database_service "$host" "$QUIET_MODE" || setup_status=1 ;;
-            "communication") setup_communication_service "$host" "$QUIET_MODE" || setup_status=1 ;;
-          esac
-        done
-        return $setup_status
-      else
-        case $server_type in
-          "database")
-            setup_database_service "$host" "$QUIET_MODE" || return 1
-          ;;
-          "backend")
-            setup_backend_service "$host" "$QUIET_MODE" || return 1
-          ;;
-          "frontend")
-            setup_frontend_service "$host" "$QUIET_MODE" || return 1
-          ;;
-          "communication")
-            setup_communication_service "$host" "$QUIET_MODE" || return 1
-          ;;
-        esac
+      if [[ -z "$SERVICES" ]]; then
+        SERVICES="all"
       fi
+      IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
+      local setup_status=0
+      for service in "${SERVICE_LIST[@]}"; do
+        case $service in
+          "all") setup_services "$host" "frontend backend database communication" "$QUIET_MODE" || setup_status=1 ;;
+          "frontend") setup_frontend_service "$host" "$QUIET_MODE" || setup_status=1 ;;
+          "backend") setup_backend_service "$host" "$QUIET_MODE" || setup_status=1 ;;
+          "database") setup_database_service "$host" "$QUIET_MODE" || setup_status=1 ;;
+          "communication") setup_communication_service "$host" "$QUIET_MODE" || setup_status=1 ;;
+        esac
+      done
+      return $setup_status
     ;;
   esac
 }
@@ -855,7 +853,7 @@ main() {
   local SHORT_MODE="false"
   local ACTION="status"
   local LIST_MODE=""
-  local SERVICES=""
+  local SERVICES="all"  # Set default value to "all"
   
   while [[ $# -gt 0 ]]; do
     case $1 in
@@ -872,7 +870,7 @@ main() {
       echo "  -s, --short             Short mode - don't show the status of each VMs' services"
       echo "  -q, --quiet             Quiet mode - only show final summary"
       echo "  --services <SERVICES>   Specify services to interact with as a comma-separated list (i.e. \"frontend,backend\")"
-      echo "                          (frontend|backend|database|communication)"
+      echo "                          (frontend|backend|database|communication|all) -- default is 'all'"
       echo "  -h, --help              Show this help message"
       exit 0
     ;;
@@ -987,7 +985,7 @@ main() {
   done
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "Final Summary:"
+  echo "Summary:"
   print_status "success" "Successful connections: ${#success_hosts[@]}" "false"
   print_status "warning" "Hosts with warnings: ${#warning_hosts[@]}" "false"
   print_status "failure" "Failed connections: ${#failed_hosts[@]}" "false"
@@ -1005,4 +1003,8 @@ main() {
 }
 
 main "$@"
-exit 0``
+exit 0
+
+#TODO: Add monitoring for the cluster status
+#RODO: Add a 'praseable' mode for the script to output in JSON
+#TODO: Add a 'Heartbeat' option to check the status of the services every (1) minute

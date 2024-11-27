@@ -11,7 +11,8 @@ db_config = {
     'user': 'admin',
     'password': os.environ['db_passwd'],
     'host': 'localhost',
-    'database': 'applicare'
+    'database': 'Applicare',
+    'ssl_disabled': True
 }
 
 try:

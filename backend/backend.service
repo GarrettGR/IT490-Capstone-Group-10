@@ -3,8 +3,8 @@ Description=The Python backend for Applicare
 After=network.target
 
 [Service]
-Environment=rmq_ip="100.98.59.118"
-Environment=rmq_passwd="student123"
+Environment=rmq_ip="100.118.142.26"
+Environment=rmq_passwd="RBMQ"
 Environment=PYTHONUNBUFFERED=1
 Type=simple
 User=root

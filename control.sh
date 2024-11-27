@@ -288,54 +288,49 @@ handle_host_services() {
     status)
       if [[ -n "$SERVICES" ]]; then
         local has_services=false
+        local service_ok=true
         IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
         for service in "${SERVICE_LIST[@]}"; do
-          local service_exists=false
-          local service_ok=true
           case $service in
             "database")
               if ssh $SSH_OPTS "$host" "systemctl list-unit-files mariadb.service dbworker.service 2>/dev/null | grep -q '\.service'"; then
-                service_exists=true
+                has_services=true
                 check_services "$host" "mariadb.service dbworker.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
               fi
             ;;
             "backend")
               if ssh $SSH_OPTS "$host" "systemctl list-unit-files backend.service 2>/dev/null | grep -q '\.service'"; then
-                service_exists=true
+                has_services=true
                 check_services "$host" "backend.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
               fi
             ;;
             "frontend")
               if ssh $SSH_OPTS "$host" "systemctl list-unit-files node_server.service middleware.service 2>/dev/null | grep -q '\.service'"; then
-                service_exists=true
+                has_services=true
                 check_services "$host" "node_server.service middleware.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
               fi
             ;;
             "communication")
               if ssh $SSH_OPTS "$host" "systemctl list-unit-files rabbitmq-server.service 2>/dev/null | grep -q '\.service'"; then
-                service_exists=true
+                has_services=true
                 check_services "$host" "rabbitmq-server.service" "$QUIET_MODE" "$SHORT_MODE" || service_ok=false
               fi
             ;;
           esac
-          
-          if $service_exists; then
-            has_services=true
-            if $service_ok; then
-              success_hosts_by_service["$service"]+="$host "
-            else
-              warning_hosts_by_service["$service"]+="$host "
-            fi
-          fi
         done
-        
+
         if ! $has_services; then
           if [[ "$SHORT_MODE" != "true" ]]; then
             print_status "info" "No monitored services installed on $host" "$QUIET_MODE"
           fi
-          return 255 # no (relevent) services to check
+          return 255
         fi
-        return 0
+
+        if $service_ok; then
+          return 0
+        else
+          return 2
+        fi
       else
         ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
         return $?
@@ -961,14 +956,6 @@ main() {
   local -a warning_hosts=()
   local -a failed_hosts=()
 
-  local -a service_types=("frontend" "backend" "database" "communication")
-  declare -A success_hosts_by_service
-  declare -A warning_hosts_by_service
-  for service in "${service_types[@]}"; do
-    success_hosts_by_service["$service"]=""
-    warning_hosts_by_service["$service"]=""
-  done
-
   for host in "${HOSTS[@]}"; do
     if [[ -n "$TYPE" && "$host" != "${TYPE}_"* ]]; then
       continue
@@ -1014,24 +1001,8 @@ main() {
     echo
     echo "Failed hosts:"
     print_host_list "failure" "$QUIET_MODE" "${failed_hosts[@]}"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  fi
-  if [[ -n "$SERVICES" && "$ACTION" == "status" ]]; then
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "Service-Specific Summary:"
-    IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
-    for service in "${SERVICE_LIST[@]}"; do
-      echo "Service: $service"
-      if [[ -n "${success_hosts_by_service[$service]}" ]]; then
-        print_status "success" "Running on: ${success_hosts_by_service[$service]}" "false"
-      fi
-      if [[ -n "${warning_hosts_by_service[$service]}" ]]; then
-        print_status "warning" "Issues on: ${warning_hosts_by_service[$service]}" "false"
-      fi
-      echo
-    done
   fi
 }
 
 main "$@"
-exit 0
+exit 0``

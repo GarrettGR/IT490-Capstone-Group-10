@@ -14,6 +14,13 @@ db_config = {
     'database': 'applicare'
 }
 
+try:
+  conn = mysql.connector.connect(**db_config)
+  print("Successfully connected to database")
+  conn.close()
+except mysql.connector.Error as err:
+  print(f"Error: {err}")
+
 pool = pooling.MySQLConnectionPool(pool_name="db_pool", pool_size=5, **db_config)
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(os.environ['rmq_ip'], credentials=pika.PlainCredentials('admin', os.environ['rmq_passwd'])))

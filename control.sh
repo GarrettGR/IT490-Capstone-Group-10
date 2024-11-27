@@ -153,22 +153,26 @@ check_services() {
 get_service_logs() {
   local host=$1
   local service=$2
+  local quiet_mode=$3
 
-  echo "Last 15 lines of logs for $service on $host:"
-  echo "━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  if [[ "$quiet_mode" != "true" ]]; then
+    echo "Last 15 lines of logs for $service on $host:"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-  ssh $SSH_OPTS "$host" "journalctl -u $service -n 15 --no-pager" 2>/dev/null |
-    while IFS= read -r line; do
-      echo -e "${RED}$line${RESET}"
-    done
+    ssh $SSH_OPTS "$host" "journalctl -u $service -n 15 --no-pager" 2>/dev/null |
+      while IFS= read -r line; do
+        echo -e "${RED}$line${RESET}"
+      done
 
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  fi
 }
 
 control_services() {
   local host=$1
   local service=$2
   local action=$3
+  local quiet_mode=$4
 
   local current_state
   current_state=$(ssh $SSH_OPTS "$host" "systemctl is-active $service 2>/dev/null")
@@ -176,13 +180,13 @@ control_services() {
   case "$action" in
     start)
       if [[ "$current_state" == "active" ]]; then
-        print_status "info" "Service $service on $host is already active" "false"
+        print_status "info" "Service $service on $host is already active" "$quiet_mode"
         return 0
       fi
     ;;
     stop)
       if [[ "$current_state" != "active" ]]; then
-        print_status "info" "Service $service on $host is already stopped (status: $current_state)" "false"
+        print_status "info" "Service $service on $host is already stopped (status: $current_state)" "$quiet_mode"
         return 0
       fi
     ;;
@@ -191,18 +195,18 @@ control_services() {
   esac
 
   if ! ssh $SSH_OPTS "$host" "systemctl $action $service" 2>/dev/null; then
-    print_status "failure" "Failed to $action $service on $host" "false"
-    get_service_logs "$host" "$service"
+    print_status "failure" "Failed to $action $service on $host" "$quiet_mode"
+    get_service_logs "$host" "$service" "$quiet_mode"
     return 1
   fi
 
   if [[ "$action" == "stop" ]]; then
     if [[ $(ssh $SSH_OPTS "$host" "systemctl is-active $service 2>/dev/null") != "active" ]]; then
-      print_status "success" "Successfully stopped $service on $host" "false"
+      print_status "success" "Successfully stopped $service on $host" "$quiet_mode"
       return 0
     else
-      print_status "failure" "Failed to stop $service on $host" "false"
-      get_service_logs "$host" "$service"
+      print_status "failure" "Failed to stop $service on $host" "$quiet_mode"
+      get_service_logs "$host" "$service" "$quiet_mode"
       return 1
     fi
   fi
@@ -213,15 +217,15 @@ control_services() {
   while [ $counter -lt 15 ]; do
     status=$(ssh $SSH_OPTS "$host" "systemctl is-active $service 2>/dev/null")
     if [[ "$status" == "active" ]]; then
-      print_status "success" "Successfully $action""ed $service on $host" "false"
+      print_status "success" "Successfully $action""ed $service on $host" "$quiet_mode"
       return 0
     fi
     counter=$((counter + 1))
     sleep 1
   done
 
-  print_status "failure" "Service $service failed to start within 15 seconds on $host" "false"
-  get_service_logs "$host" "$service"
+  print_status "failure" "Service $service failed to start within 15 seconds on $host" "$quiet_mode"
+  get_service_logs "$host" "$service" "$quiet_mode"
   return 1
 }
 
@@ -260,25 +264,31 @@ ssh_execute() {
 }
 
 list_hosts() {
-  print_status "info" "Available hosts:" "false"
-  printf '%s\n' "${HOSTS[@]}" | sort | sed 's/^/  /'
+  local quiet_mode=$1
+  if [[ "$quiet_mode" != "true" ]]; then
+    print_status "info" "Available hosts:" "false"
+    printf '%s\n' "${HOSTS[@]}" | sort | sed 's/^/  /'
+  fi
 }
 
 print_host_list() {
   local status=$1
-  shift
+  local quiet_mode=$2
+  shift 2
   local -a hosts=("$@")
 
-  if [ ${#hosts[@]} -eq 0 ]; then
-    echo "  None"
-  else
-    IFS=$'\n' sorted_hosts=($(sort <<<"${hosts[*]}"))
-    unset IFS
+  if [[ "$quiet_mode" != "true" ]]; then
+    if [ ${#hosts[@]} -eq 0 ]; then
+      echo "  None"
+    else
+      IFS=$'\n' sorted_hosts=($(sort <<<"${hosts[*]}"))
+      unset IFS
 
-    local host_list=$(printf "%s, " "${sorted_hosts[@]}")
-    host_list=${host_list%, }
+      local host_list=$(printf "%s, " "${sorted_hosts[@]}")
+      host_list=${host_list%, }
 
-    print_status "$status" "$host_list" "false"
+      print_status "$status" "$host_list" "false"
+    fi
   fi
 }
 
@@ -288,8 +298,9 @@ print_host_list() {
 
 setup_repository() {
   local host=$1
+  local quiet_mode=$2
   
-  print_status "info" "Setting up repository on $host..." "false"
+  print_status "info" "Setting up repository on $host..." "$quiet_mode"
   
   if ! ssh $SSH_OPTS "$host" "
     if [ ! -d $REPO_PATH ]; then
@@ -300,36 +311,38 @@ setup_repository() {
       git reset --hard origin/$REPO_BRANCH
     fi
   "; then
-    print_status "failure" "Failed to setup repository on $host" "false"
+    print_status "failure" "Failed to setup repository on $host" "$quiet_mode"
     return 1
   fi
 
-  print_status "success" "Repository setup completed on $host" "false"
+  print_status "success" "Repository setup completed on $host" "$quiet_mode"
   return 0
 }
 
 install_packages() {
+  local quiet_mode=$1
+  shift
   local packages=("$@")
 
-  print_status "info" "Updating package lists..." "false"
+  print_status "info" "Updating package lists..." "$quiet_mode"
   if ! apt-get update -y; then
-    print_status "failure" "Failed to update package lists" "false"
+    print_status "failure" "Failed to update package lists" "$quiet_mode"
     return 1
   fi
 
-  print_status "info" "Upgrading packages..." "false"
+  print_status "info" "Upgrading packages..." "$quiet_mode"
   if ! apt-get upgrade -y; then
-    print_status "failure" "Failed to upgrade packages" "false"
+    print_status "failure" "Failed to upgrade packages" "$quiet_mode"
     return 1
   fi
 
-  print_status "info" "Installing packages: ${packages[*]}" "false"
+  print_status "info" "Installing packages: ${packages[*]}" "$quiet_mode"
   if ! apt-get install -y --fix-missing "${packages[@]}"; then
-    print_status "failure" "Failed to install packages" "false"
+    print_status "failure" "Failed to install packages" "$quiet_mode"
     return 1
   fi
 
-  print_status "success" "Successfully installed all packages" "false"
+  print_status "success" "Successfully installed all packages" "$quiet_mode"
   return 0
 }
 
@@ -339,12 +352,13 @@ install_packages() {
 
 setup_frontend() { # NOTE: This doesn't reflect the load balancing / reverse proxy setup that Shak is doing
   local host=$1
+  local quiet_mode=$2
   
-  if ! setup_repository "$host"; then
+  if ! setup_repository "$host" "$quiet_mode"; then
     return 1
   fi
 
-  print_status "info" "Setting up frontend services on $host..." "false"
+  print_status "info" "Setting up frontend services on $host..." "$quiet_mode"
 
   if ! ssh $SSH_OPTS "$host" "
     cd $REPO_PATH/frontend
@@ -367,22 +381,23 @@ setup_frontend() { # NOTE: This doesn't reflect the load balancing / reverse pro
     systemctl daemon-reload
     systemctl enable --now node_server.service middleware.service
   "; then
-    print_status "failure" "Failed to setup frontend services on $host" "false"
+    print_status "failure" "Failed to setup frontend services on $host" "$quiet_mode"
     return 1
   fi
 
-  print_status "success" "Frontend setup completed on $host" "false"
+  print_status "success" "Frontend setup completed on $host" "$quiet_mode"
   return 0
 }
 
 setup_backend() {
   local host=$1
+  local quiet_mode=$2
 
-  if ! setup_repository "$host"; then
+  if ! setup_repository "$host" "$quiet_mode"; then
     return 1
   fi
 
-  print_status "info" "Setting up backend services on $host..." "false"
+  print_status "info" "Setting up backend services on $host..." "$quiet_mode"
 
   if ! ssh $SSH_OPTS "$host" "
     cd $REPO_PATH/backend
@@ -398,23 +413,24 @@ setup_backend() {
     systemctl daemon-reload
     systemctl enable --now backend.service
   "; then
-    print_status "failure" "Failed to setup backend services on $host" "false" 
+    print_status "failure" "Failed to setup backend services on $host" "$quiet_mode" 
     return 1
   fi
 
-  print_status "success" "Backend setup completed on $host" "false"
+  print_status "success" "Backend setup completed on $host" "$quiet_mode"
   return 0
 }
 
 setup_database() {
   local host=$1
+  local quiet_mode=$2
   local primary_node
 
-  if ! setup_repository "$host"; then
+  if ! setup_repository "$host" "$quiet_mode"; then
     return 1
   fi
 
-  print_status "info" "Setting up database services on $host..." "false"
+  print_status "info" "Setting up database services on $host..." "$quiet_mode"
 
   find_primary_node() {
     for h in "${HOSTS[@]}"; do
@@ -474,7 +490,7 @@ setup_database() {
 
   primary_node=$(find_primary_node)
   if [[ -z "$primary_node" ]]; then
-    print_status "info" "Setting up first database node on $host..." "false"
+    print_status "info" "Setting up first database node on $host..." "$quiet_mode"
     
     if ! ssh $SSH_OPTS "$host" "
       cd $REPO_PATH/database
@@ -492,12 +508,12 @@ setup_database() {
       rm -rf /var/lib/mysql/*
       cp my.cnf /etc/mysql/my.cnf
     "; then
-      print_status "failure" "Failed initial database setup on $host" "false"
+      print_status "failure" "Failed initial database setup on $host" "$quiet_mode"
       return 1
     fi
 
     if ! galera_config "$host" "true" ""; then
-      print_status "failure" "Failed to generate Galera config on $host" "false"
+      print_status "failure" "Failed to generate Galera config on $host" "$quiet_mode"
       return 1
     fi
 
@@ -507,11 +523,11 @@ setup_database() {
         mariadb -u root < $REPO_PATH/database/applicare.sql
       fi
     "; then
-      print_status "failure" "Failed to bootstrap Galera cluster on $host" "false"
+      print_status "failure" "Failed to bootstrap Galera cluster on $host" "$quiet_mode"
       return 1
     fi
   else
-    print_status "info" "Joining existing Galera cluster via $primary_node..." "false"
+    print_status "info" "Joining existing Galera cluster via $primary_node..." "$quiet_mode"
     
     if ! ssh $SSH_OPTS "$host" "
       cd $REPO_PATH/database
@@ -524,17 +540,17 @@ setup_database() {
       rm -rf /var/lib/mysql/*
       cp my.cnf /etc/mysql/my.cnf
     "; then
-      print_status "failure" "Failed initial database setup on $host" "false"
+      print_status "failure" "Failed initial database setup on $host" "$quiet_mode"
       return 1
     fi
 
     if ! galera_config "$host" "false" "$primary_node"; then
-      print_status "failure" "Failed to generate Galera config on $host" "false"
+      print_status "failure" "Failed to generate Galera config on $host" "$quiet_mode"
       return 1
     fi
 
     if ! ssh $SSH_OPTS "$host" "systemctl start mariadb"; then
-      print_status "failure" "Failed to join Galera cluster on $host" "false"
+      print_status "failure" "Failed to join Galera cluster on $host" "$quiet_mode"
       return 1
     fi
   fi
@@ -544,18 +560,19 @@ setup_database() {
     systemctl daemon-reload
     systemctl enable --now mariadb dbworker.service
   "; then
-    print_status "failure" "Failed to setup database services on $host" "false"
+    print_status "failure" "Failed to setup database services on $host" "$quiet_mode"
     return 1
   fi
 
-  print_status "success" "Database setup completed on $host" "false"
+  print_status "success" "Database setup completed on $host" "$quiet_mode"
   return 0
 }
 
 setup_communication() { # NOTE: This doesn't reflect the actual RMQ clustering setup that Yashi is doing
   local host=$1
+  local quiet_mode=$2
 
-  print_status "info" "Setting up communication services on $host..." "false"
+  print_status "info" "Setting up communication services on $host..." "$quiet_mode"
 
   setup_base_node() {
     local target=$1
@@ -650,7 +667,7 @@ setup_communication() { # NOTE: This doesn't reflect the actual RMQ clustering s
   }
 
   if ! ssh $SSH_OPTS "$host" "$(typeset -f install_packages); install_packages ${COMMUNICATION_PACKAGES[*]}"; then
-    print_status "failure" "Failed to install communication packages on $host" "false"
+    print_status "failure" "Failed to install communication packages on $host" "$quiet_mode"
     return 1
   fi
 
@@ -658,20 +675,20 @@ setup_communication() { # NOTE: This doesn't reflect the actual RMQ clustering s
   primary_node=$(find_primary_node)
 
   if [[ -z "$primary_node" ]]; then
-    print_status "info" "Setting up first RabbitMQ node on $host..." "false"
+    print_status "info" "Setting up first RabbitMQ node on $host..." "$quiet_mode"
     if ! setup_primary_node "$host"; then
-      print_status "failure" "Failed to setup first RabbitMQ node on $host" "false"
+      print_status "failure" "Failed to setup first RabbitMQ node on $host" "$quiet_mode"
       return 1
     fi
   else
-    print_status "info" "Joining existing RabbitMQ cluster with primary node $primary_node..." "false"
+    print_status "info" "Joining existing RabbitMQ cluster with primary node $primary_node..." "$quiet_mode"
     if ! join_cluster "$host" "$primary_node"; then
-      print_status "failure" "Failed to join RabbitMQ cluster on $host" "false"
+      print_status "failure" "Failed to join RabbitMQ cluster on $host" "$quiet_mode"
       return 1
     fi
   fi
 
-  print_status "success" "Communication setup completed on $host" "false"
+  print_status "success" "Communication setup completed on $host" "$quiet_mode"
   return 0
 }
 
@@ -746,7 +763,7 @@ main() {
   if [[ -n "$LIST_MODE" ]]; then
     case "$LIST_MODE" in
     all)
-      list_hosts
+      list_hosts "$QUIET_MODE"
     ;;
     up)
       local -a up_hosts=()
@@ -755,8 +772,8 @@ main() {
           up_hosts+=("$host")
         fi
       done
-      print_status "info" "Reachable hosts:" "false"
-      print_host_list "success" "${up_hosts[@]}"
+      print_status "info" "Reachable hosts:" "$QUIET_MODE"
+      print_host_list "success" "$QUIET_MODE" "${up_hosts[@]}"
     ;;
     active)
       local -a active_hosts=()
@@ -765,8 +782,8 @@ main() {
           active_hosts+=("$host")
         fi
       done
-      print_status "info" "Hosts with all services active:" "false"
-      print_host_list "success" "${active_hosts[@]}"
+      print_status "info" "Hosts with all services active:" "$QUIET_MODE"
+      print_host_list "success" "$QUIET_MODE" "${active_hosts[@]}"
     ;;
     *)
       print_status "failure" "Invalid list type: $LIST_MODE. Must be one of: all, up, active" "false"
@@ -802,18 +819,18 @@ main() {
         local service_status=0
         case $server_type in
           "database")
-            control_services "$host" "mariadb.service" "$ACTION" || service_status=1
-            control_services "$host" "dbworker.service" "$ACTION" || service_status=1
+            control_services "$host" "mariadb.service" "$ACTION" "$QUIET_MODE" || service_status=1
+            control_services "$host" "dbworker.service" "$ACTION" "$QUIET_MODE" || service_status=1
           ;;
           "backend")
-            control_services "$host" "backend.service" "$ACTION" || service_status=1
+            control_services "$host" "backend.service" "$ACTION" "$QUIET_MODE" || service_status=1
           ;;
           "frontend")
-            control_services "$host" "node_server.service" "$ACTION" || service_status=1
-            control_services "$host" "middleware.service" "$ACTION" || service_status=1
+            control_services "$host" "node_server.service" "$ACTION" "$QUIET_MODE" || service_status=1
+            control_services "$host" "middleware.service" "$ACTION" "$QUIET_MODE" || service_status=1
             ;;
           "communication")
-            control_services "$host" "rabbitmq-server.service" "$ACTION" || service_status=1
+            control_services "$host" "rabbitmq-server.service" "$ACTION" "$QUIET_MODE" || service_status=1
           ;;
         esac
 
@@ -827,16 +844,16 @@ main() {
       setup)
         case $server_type in
           "database")
-            setup_database "$host" || return 1
+            setup_database "$host" "$QUIET_MODE" || return 1
           ;;
           "backend")
-            setup_backend "$host" || return 1
+            setup_backend "$host" "$QUIET_MODE" || return 1
           ;;
           "frontend")
-            setup_frontend "$host" || return 1
+            setup_frontend "$host" "$QUIET_MODE" || return 1
           ;;
           "communication")
-            setup_communication "$host" || return 1
+            setup_communication "$host" "$QUIET_MODE" || return 1
           ;;
         esac
       ;;
@@ -879,13 +896,13 @@ main() {
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   if [[ "$QUIET_MODE" != "true" ]]; then
     echo "Successful hosts:"
-    print_host_list "success" "${success_hosts[@]}"
+    print_host_list "success" "$QUIET_MODE" "${success_hosts[@]}"
     echo
     echo "Hosts with service warnings:"
-    print_host_list "warning" "${warning_hosts[@]}"
+    print_host_list "warning" "$QUIET_MODE" "${warning_hosts[@]}"
     echo
     echo "Failed hosts:"
-    print_host_list "failure" "${failed_hosts[@]}"
+    print_host_list "failure" "$QUIET_MODE" "${failed_hosts[@]}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   fi
 }

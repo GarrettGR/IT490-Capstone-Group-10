@@ -98,53 +98,38 @@ print_status() {
 
 check_services() {
   local host=$1
-  local server_type=$2
+  local service_list=$2
   local quiet_mode=$3
   local short_mode=$4
   local all_services_ok=true
 
-  check_single_service() {
-    local service=$1
-    local quiet_mode=$2
-    local short_mode=$3
-    local status
+  read -ra requested_services <<< "$service_list"
+  
+  if [[ "$short_mode" != "true" ]]; then
+    print_status "info" "Checking services on $host..." "$quiet_mode"
+  fi
 
-    status=$(ssh $SSH_OPTS "$host" "systemctl is-active $service 2>/dev/null")
-    if [[ "$status" != "active" ]]; then
-      if [[ "$short_mode" != "true" ]]; then
+  for service in "${requested_services[@]}"; do
+    if ssh $SSH_OPTS "$host" "systemctl list-unit-files $service 2>/dev/null | grep -q $service"; then
+      local status
+      status=$(ssh $SSH_OPTS "$host" "systemctl is-active $service 2>/dev/null")
+      if [[ "$status" != "active" ]]; then
         print_status "warning" "Service $service is not active (status: $status)" "$quiet_mode"
+        all_services_ok=false
+      else
+        print_status "success" "Service $service is running on $host" "$quiet_mode"
       fi
-      all_services_ok=false
-    elif [[ "$short_mode" != "true" ]]; then
-      print_status "success" "Service $service is running" "$quiet_mode"
+    else
+      if [[ "$short_mode" != "true" ]]; then
+        print_status "info" "Service $service is not installed on $host" "$quiet_mode"
+      fi
     fi
-  }
-
-  case $server_type in
-  "database")
-    check_single_service "mariadb.service" $quiet_mode $short_mode
-    check_single_service "dbworker.service" $quiet_mode $short_mode
-  ;;
-  "backend")
-    check_single_service "backend.service" $quiet_mode $short_mode
-  ;;
-  "frontend")
-    check_single_service "node_server.service" $quiet_mode $short_mode
-    check_single_service "middleware.service" $quiet_mode $short_mode
-  ;;
-  "communication")
-    check_single_service "rabbitmq-server.service" $quiet_mode $short_mode
-  ;;
-  *)
-    print_status "warning" "Unknown server type: $server_type" "false"
-    return 1
-  ;;
-  esac
+  done
 
   if $all_services_ok; then
     return 0
   else
-    return 1
+    return 2
   fi
 }
 
@@ -247,7 +232,7 @@ ssh_execute() {
     return 1
   fi
 
-  if ! check_services "$host" "$server_type" "$quiet_mode" "$short_mode"; then
+  if ! check_services "$host" "$quiet_mode" "$short_mode"; then
     if [[ "$short_mode" == "true" ]]; then
       print_status "warning" "One or more services are not running correctly on $host" "$quiet_mode"
     fi
@@ -348,7 +333,7 @@ install_packages() {
 # Setup Functions
 # =============================================================================
 
-setup_frontend() { # NOTE: This doesn't reflect the load balancing / reverse proxy setup that Shak is doing
+setup_frontend_service() { # NOTE: This doesn't reflect the load balancing / reverse proxy setup that Shak is doing
   local host=$1
   local quiet_mode=$2
   
@@ -387,7 +372,7 @@ setup_frontend() { # NOTE: This doesn't reflect the load balancing / reverse pro
   return 0
 }
 
-setup_backend() {
+setup_backend_service() {
   local host=$1
   local quiet_mode=$2
 
@@ -419,7 +404,7 @@ setup_backend() {
   return 0
 }
 
-setup_database() {
+setup_database_service() {
   local host=$1
   local quiet_mode=$2
   local primary_node
@@ -566,7 +551,7 @@ setup_database() {
   return 0
 }
 
-setup_communication() { # NOTE: This doesn't reflect the actual RMQ clustering setup that Yashi is doing
+setup_communication_service() { # NOTE: This doesn't reflect the actual RMQ clustering setup that Yashi is doing
   local host=$1
   local quiet_mode=$2
 
@@ -690,6 +675,33 @@ setup_communication() { # NOTE: This doesn't reflect the actual RMQ clustering s
   return 0
 }
 
+setup_services() {
+  local host=$1
+  local services=$2
+  local quiet_mode=$3
+
+  if ! setup_repository "$host" "$quiet_mode"; then
+    return 1
+  fi
+
+  for service in $services; do
+    case $service in
+      "frontend")
+        setup_frontend_service "$host" "$quiet_mode"
+      ;;
+      "backend")
+        setup_backend_service "$host" "$quiet_mode"
+      ;;
+      "database")
+        setup_database_service "$host" "$quiet_mode"
+      ;;
+      "communication")
+        setup_communication_service "$host" "$quiet_mode"
+      ;;
+    esac
+  done
+}
+
 # =============================================================================
 # Main Function
 # =============================================================================
@@ -701,7 +713,8 @@ main() {
   local SHORT_MODE="false"
   local ACTION="status"
   local LIST_MODE=""
-
+  local SERVICES=""
+  
   while [[ $# -gt 0 ]]; do
     case $1 in
     -h | --help)
@@ -709,13 +722,15 @@ main() {
       echo "Options:"
       echo "  -l, --list <TYPE>       List hosts by status type"
       echo "                          (all|up|active)"
-      echo "  -t, --type <HOST>       Connect only to hosts of specified type"
+      echo "  -N, --name <NAME>       Connect only to hosts of specified name-type"
       echo "                          (frontend|backend|database|communication)"
       echo "  -n, --number <NUMBER>   Connect only to hosts with specified number (0-3)"
       echo "  -a, --action <ACTION>   Perform the following action on each host (default 'status')"
       echo "                          (status|start|stop|restart)"
       echo "  -s, --short             Short mode - don't show the status of each VMs' services"
       echo "  -q, --quiet             Quiet mode - only show final summary"
+      echo "  --services <SERVICES>   Specify services to interact with as a comma-separated list (i.e. \"frontend,backend\")"
+      echo "                          (frontend|backend|database|communication)"
       echo "  -h, --help              Show this help message"
       exit 0
     ;;
@@ -723,7 +738,7 @@ main() {
       LIST_MODE="$2"
       shift 2
     ;;
-    -t | --type)
+    -N | --name)
       TYPE="$2"
       shift 2
     ;;
@@ -751,6 +766,10 @@ main() {
       QUIET_MODE="true"
       SHORT_MODE="true"
       shift
+    ;;
+    --services)
+      SERVICES="$2"
+      shift 2
     ;;
     *)
       shift
@@ -806,8 +825,30 @@ main() {
 
     case "$ACTION" in
       status)
-        ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
-        return $?
+        if [[ -n "$SERVICES" ]]; then
+          local all_ok=true
+          IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
+          for service in "${SERVICE_LIST[@]}"; do
+            case $service in
+              "database")
+                check_services "$host" "mariadb.service dbworker.service" "$QUIET_MODE" "$SHORT_MODE" || all_ok=false
+              ;;
+              "backend")
+                check_services "$host" "backend.service" "$QUIET_MODE" "$SHORT_MODE" || all_ok=false
+              ;;
+              "frontend")
+                check_services "$host" "node_server.service middleware.service" "$QUIET_MODE" "$SHORT_MODE" || all_ok=false
+              ;;
+              "communication")
+                check_services "$host" "rabbitmq-server.service" "$QUIET_MODE" "$SHORT_MODE" || all_ok=false
+              ;;
+            esac
+          done
+          $all_ok && return 0 || return 2
+        else
+          ssh_execute "$host" "$QUIET_MODE" "$SHORT_MODE"
+          return $?
+        fi
       ;;
       start|stop|restart)
         if [[ "$SHORT_MODE" != "true" ]]; then
@@ -815,22 +856,44 @@ main() {
         fi
 
         local service_status=0
-        case $server_type in
-          "database")
-            control_services "$host" "mariadb.service" "$ACTION" "$QUIET_MODE" || service_status=1
-            control_services "$host" "dbworker.service" "$ACTION" "$QUIET_MODE" || service_status=1
-          ;;
-          "backend")
-            control_services "$host" "backend.service" "$ACTION" "$QUIET_MODE" || service_status=1
-          ;;
-          "frontend")
-            control_services "$host" "node_server.service" "$ACTION" "$QUIET_MODE" || service_status=1
-            control_services "$host" "middleware.service" "$ACTION" "$QUIET_MODE" || service_status=1
+        if [[ -n "$SERVICES" ]]; then
+          IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
+          for service in "${SERVICE_LIST[@]}"; do
+            case $service in
+              "database")
+                control_services "$host" "mariadb.service" "$ACTION" "$QUIET_MODE" || service_status=1
+                control_services "$host" "dbworker.service" "$ACTION" "$QUIET_MODE" || service_status=1
+              ;;
+              "backend")
+                control_services "$host" "backend.service" "$ACTION" "$QUIET_MODE" || service_status=1
+              ;;
+              "frontend")
+                control_services "$host" "node_server.service" "$ACTION" "$QUIET_MODE" || service_status=1
+                control_services "$host" "middleware.service" "$ACTION" "$QUIET_MODE" || service_status=1
+              ;;
+              "communication")
+                control_services "$host" "rabbitmq-server.service" "$ACTION" "$QUIET_MODE" || service_status=1
+              ;;
+            esac
+          done
+        else
+          case $server_type in
+            "database")
+              control_services "$host" "mariadb.service" "$ACTION" "$QUIET_MODE" || service_status=1
+              control_services "$host" "dbworker.service" "$ACTION" "$QUIET_MODE" || service_status=1
             ;;
-          "communication")
-            control_services "$host" "rabbitmq-server.service" "$ACTION" "$QUIET_MODE" || service_status=1
-          ;;
-        esac
+            "backend")
+              control_services "$host" "backend.service" "$ACTION" "$QUIET_MODE" || service_status=1
+            ;;
+            "frontend")
+              control_services "$host" "node_server.service" "$ACTION" "$QUIET_MODE" || service_status=1
+              control_services "$host" "middleware.service" "$ACTION" "$QUIET_MODE" || service_status=1
+            ;;
+            "communication")
+              control_services "$host" "rabbitmq-server.service" "$ACTION" "$QUIET_MODE" || service_status=1
+            ;;
+          esac
+        fi
 
         if [ $service_status -eq 0 ]; then
           ssh_execute "$host" "$QUIET_MODE" "true"
@@ -840,20 +903,34 @@ main() {
         fi
       ;;
       setup)
-        case $server_type in
-          "database")
-            setup_database "$host" "$QUIET_MODE" || return 1
-          ;;
-          "backend")
-            setup_backend "$host" "$QUIET_MODE" || return 1
-          ;;
-          "frontend")
-            setup_frontend "$host" "$QUIET_MODE" || return 1
-          ;;
-          "communication")
-            setup_communication "$host" "$QUIET_MODE" || return 1
-          ;;
-        esac
+        if [[ -n "$SERVICES" ]]; then
+          IFS=',' read -ra SERVICE_LIST <<< "$SERVICES"
+          local setup_status=0
+          for service in "${SERVICE_LIST[@]}"; do
+            case $service in
+              "frontend") setup_frontend_service "$host" "$QUIET_MODE" || setup_status=1 ;;
+              "backend") setup_backend_service "$host" "$QUIET_MODE" || setup_status=1 ;;
+              "database") setup_database_service "$host" "$QUIET_MODE" || setup_status=1 ;;
+              "communication") setup_communication_service "$host" "$QUIET_MODE" || setup_status=1 ;;
+            esac
+          done
+          return $setup_status
+        else
+          case $server_type in
+            "database")
+              setup_database_service "$host" "$QUIET_MODE" || return 1
+            ;;
+            "backend")
+              setup_backend_service "$host" "$QUIET_MODE" || return 1
+            ;;
+            "frontend")
+              setup_frontend_service "$host" "$QUIET_MODE" || return 1
+            ;;
+            "communication")
+              setup_communication_service "$host" "$QUIET_MODE" || return 1
+            ;;
+          esac
+        fi
       ;;
     esac
   }

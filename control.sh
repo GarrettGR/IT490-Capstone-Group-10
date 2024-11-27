@@ -4,15 +4,12 @@
 # Configuration
 # =============================================================================
 
-readonly TYPES=("frontend" "backend" "database" "communication")
-readonly MAX_NUMBER=3
-
 declare -a HOSTS
-for type in "${TYPES[@]}"; do
-  for i in $(seq 0 $MAX_NUMBER); do
-    HOSTS+=("${type}_${i}")
-  done
-done
+mapfile -t HOSTS < <(tailscale status | awk '
+  /^100\.[0-9]+\.[0-9]+\.[0-9]+[[:space:]]+((frontend|backend|database|communication)-[0-9]+)$/ {
+    print $2
+  }
+' | sort)
 
 readonly SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
 

@@ -32,6 +32,45 @@ readonly HIDDEN='\033[8m'
 readonly BLINK='\033[5m'
 readonly INVERT='\033[7m'
 
+readonly REPO_URL="git@github.com:IT490-101FA24/Capstone-Group-09.git"
+readonly REPO_BRANCH="main"
+readonly REPO_PATH="/home/Capstone-Group-09" 
+# ^^ Should be /opt/applicare/ rather than in /home/Capstone-Group-09 -- but I don't want to have to explain how to change the path
+
+readonly FRONTEND_PACKAGES=(
+  nodejs
+  npm
+  # haproxy 
+  # ^^ I have no idea how Shak is handling reverse proxy / load balancing, but this is what I would use
+)
+
+readonly BACKEND_PACKAGES=(
+  python3-full
+  python3-aiopika
+  python3-pika
+)
+
+readonly DATABASE_PACKAGES=(
+  python3-full
+  python3-mysql.connector
+  python3-pika
+  mariadb-server
+  mariadb-client
+  galera-4
+  rsync
+  mariadb-plugin-provider-bzip2
+  mariadb-plugin-provider-lz4
+  mariadb-plugin-provider-lzma
+  mariadb-plugin-provider-lzo
+  mariadb-plugin-provider-snappy
+)
+
+readonly COMMUNICATION_PACKAGES=(
+  gnupg 
+  erlang
+  rabbitmq-server
+)
+
 # =============================================================================
 # Helper Functions
 # =============================================================================
@@ -116,7 +155,7 @@ get_service_logs() {
   local service=$2
 
   echo "Last 15 lines of logs for $service on $host:"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "━━━���━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   ssh $SSH_OPTS "$host" "journalctl -u $service -n 15 --no-pager" 2>/dev/null |
     while IFS= read -r line; do
@@ -243,6 +282,403 @@ print_host_list() {
   fi
 }
 
+# =============================================================================
+# Repository Management
+# =============================================================================
+
+setup_repository() {
+  local host=$1
+  
+  print_status "info" "Setting up repository on $host..." "false"
+  
+  if ! ssh $SSH_OPTS "$host" "
+    if [ ! -d $REPO_PATH ]; then
+      git clone --branch $REPO_BRANCH $REPO_URL $REPO_PATH
+    else 
+      cd $REPO_PATH
+      git fetch
+      git reset --hard origin/$REPO_BRANCH
+    fi
+  "; then
+    print_status "failure" "Failed to setup repository on $host" "false"
+    return 1
+  fi
+
+  print_status "success" "Repository setup completed on $host" "false"
+  return 0
+}
+
+install_packages() {
+  local packages=("$@")
+
+  print_status "info" "Updating package lists..." "false"
+  if ! apt-get update -y; then
+    print_status "failure" "Failed to update package lists" "false"
+    return 1
+  fi
+
+  print_status "info" "Upgrading packages..." "false"
+  if ! apt-get upgrade -y; then
+    print_status "failure" "Failed to upgrade packages" "false"
+    return 1
+  fi
+
+  print_status "info" "Installing packages: ${packages[*]}" "false"
+  if ! apt-get install -y --fix-missing "${packages[@]}"; then
+    print_status "failure" "Failed to install packages" "false"
+    return 1
+  fi
+
+  print_status "success" "Successfully installed all packages" "false"
+  return 0
+}
+
+# =============================================================================
+# Setup Functions
+# =============================================================================
+
+setup_frontend() { # NOTE: This doesn't reflect the load balancing / reverse proxy setup that Shak is doing
+  local host=$1
+  
+  if ! setup_repository "$host"; then
+    return 1
+  fi
+
+  print_status "info" "Setting up frontend services on $host..." "false"
+
+  if ! ssh $SSH_OPTS "$host" "
+    cd $REPO_PATH/frontend
+    npm install
+    npm run build
+
+    if [ -f /etc/systemd/system/node_server.service ]; then
+      systemctl stop node_server.service
+      rm /etc/systemd/system/node_server.service
+      systemctl daemon-reload
+    fi
+    if [ -f /etc/systemd/system/middleware.service ]; then
+      systemctl stop middleware.service
+      rm /etc/systemd/system/middleware.service
+      systemctl daemon-reload
+    fi
+
+    systemctl link $REPO_PATH/frontend/node_server.service
+    systemctl link $REPO_PATH/frontend/middleware.service
+    systemctl daemon-reload
+    systemctl enable --now node_server.service middleware.service
+  "; then
+    print_status "failure" "Failed to setup frontend services on $host" "false"
+    return 1
+  fi
+
+  print_status "success" "Frontend setup completed on $host" "false"
+  return 0
+}
+
+setup_backend() {
+  local host=$1
+
+  if ! setup_repository "$host"; then
+    return 1
+  fi
+
+  print_status "info" "Setting up backend services on $host..." "false"
+
+  if ! ssh $SSH_OPTS "$host" "
+    cd $REPO_PATH/backend
+    pip3 install pika aio-pika
+
+    if [ -f /etc/systemd/system/backend.service ]; then
+      systemctl stop backend.service
+      rm /etc/systemd/system/backend.service
+      systemctl daemon-reload
+    fi
+
+    systemctl link $REPO_PATH/backend/backend.service
+    systemctl daemon-reload
+    systemctl enable --now backend.service
+  "; then
+    print_status "failure" "Failed to setup backend services on $host" "false" 
+    return 1
+  fi
+
+  print_status "success" "Backend setup completed on $host" "false"
+  return 0
+}
+
+setup_database() {
+  local host=$1
+  local primary_node
+
+  if ! setup_repository "$host"; then
+    return 1
+  fi
+
+  print_status "info" "Setting up database services on $host..." "false"
+
+  find_primary_node() {
+    for h in "${HOSTS[@]}"; do
+      [[ "$h" != database_* ]] && continue
+      if timeout 5 ssh $SSH_OPTS "$h" "
+        systemctl is-active mariadb > /dev/null 2>&1 &&
+        mariadb -N -e 'show status like \"wsrep_cluster_size\"' | grep -q '[2-9]'
+      " 2>/dev/null; then
+        echo "$h"
+        return 0
+      fi
+    done
+    echo ""
+    return 1
+  }
+
+  galera_config() {
+    local target=$1
+    local is_first=$2
+    local primary=$3
+
+    ssh $SSH_OPTS "$target" "
+      cd $REPO_PATH/database
+      
+      CLUSTER_MEMBERS=\$(for i in {0..3}; do tailscale ip database-\$i 2>/dev/null | head -n1 done | grep . | paste -sd,)
+
+      cat > galera.cnf.tmp <<EOF
+      [galera]
+      wsrep_on                 = ON
+      wsrep_cluster_name       = \"AppliCare Galera Cluster\"
+      wsrep_node_name          = \"\$(hostname)\"
+      wsrep_node_address       = \"\$(tailscale ip | head -n1)\"
+      binlog_format            = row
+      default_storage_engine   = InnoDB
+      innodb_autoinc_lock_mode = 2
+
+      bind-address = 0.0.0.0
+      wsrep_slave_threads      = 1
+      wsrep_sst_method         = rsync
+
+      $(if [[ "$is_first" == "true" ]]; then
+        echo "wsrep_cluster_address    = gcomm://"
+        echo "wsrep_new_cluster       = true"
+      else
+        echo "wsrep_cluster_address    = gcomm://\$CLUSTER_MEMBERS"
+      fi)
+
+      wsrep_provider_options   = \"gmcast.listen_addr=tcp://0.0.0.0:4567;ist.recv_addr=\$(tailscale ip | head -n1)\"
+      wsrep_retry_autocommit   = 3
+      EOF
+
+      mkdir -p /etc/mysql/mariadb.conf.d/
+      mv galera.cnf.tmp /etc/mysql/mariadb.conf.d/galera.cnf
+    "
+    return $?
+  }
+
+  primary_node=$(find_primary_node)
+  if [[ -z "$primary_node" ]]; then
+    print_status "info" "Setting up first database node on $host..." "false"
+    
+    if ! ssh $SSH_OPTS "$host" "
+      cd $REPO_PATH/database
+      
+      ufw allow 3306,4567,4568,4444/tcp
+      ufw allow 4567/udp
+      ufw enable && ufw reload
+
+      systemctl stop mariadb
+      if [ -f /etc/systemd/system/dbworker.service ]; then
+        systemctl stop dbworker.service
+        rm /etc/systemd/system/dbworker.service
+      fi
+
+      rm -rf /var/lib/mysql/*
+      cp my.cnf /etc/mysql/my.cnf
+    "; then
+      print_status "failure" "Failed initial database setup on $host" "false"
+      return 1
+    fi
+
+    if ! galera_config "$host" "true" ""; then
+      print_status "failure" "Failed to generate Galera config on $host" "false"
+      return 1
+    fi
+
+    if ! ssh $SSH_OPTS "$host" "
+      galera_new_cluster
+      if [ -f $REPO_PATH/database/applicare.sql ]; then
+        mariadb -u root < $REPO_PATH/database/applicare.sql
+      fi
+    "; then
+      print_status "failure" "Failed to bootstrap Galera cluster on $host" "false"
+      return 1
+    fi
+  else
+    print_status "info" "Joining existing Galera cluster via $primary_node..." "false"
+    
+    if ! ssh $SSH_OPTS "$host" "
+      cd $REPO_PATH/database
+      
+      ufw allow 3306,4567,4568,4444/tcp
+      ufw allow 4567/udp
+      ufw enable && ufw reload
+
+      systemctl stop mariadb
+      rm -rf /var/lib/mysql/*
+      cp my.cnf /etc/mysql/my.cnf
+    "; then
+      print_status "failure" "Failed initial database setup on $host" "false"
+      return 1
+    fi
+
+    if ! galera_config "$host" "false" "$primary_node"; then
+      print_status "failure" "Failed to generate Galera config on $host" "false"
+      return 1
+    fi
+
+    if ! ssh $SSH_OPTS "$host" "systemctl start mariadb"; then
+      print_status "failure" "Failed to join Galera cluster on $host" "false"
+      return 1
+    fi
+  fi
+
+  if ! ssh $SSH_OPTS "$host" "
+    systemctl link $REPO_PATH/database/dbworker.service
+    systemctl daemon-reload
+    systemctl enable --now mariadb dbworker.service
+  "; then
+    print_status "failure" "Failed to setup database services on $host" "false"
+    return 1
+  fi
+
+  print_status "success" "Database setup completed on $host" "false"
+  return 0
+}
+
+setup_communication() { # NOTE: This doesn't reflect the actual RMQ clustering setup that Yashi is doing
+  local host=$1
+
+  print_status "info" "Setting up communication services on $host..." "false"
+
+  setup_base_node() {
+    local target=$1
+    ssh $SSH_OPTS "$target" "
+      ufw allow 5672/tcp
+      ufw allow 15672/tcp
+      ufw allow 25672/tcp
+      ufw allow 4369/tcp
+      ufw allow ssh
+      ufw enable && ufw reload
+
+      mkdir -p /etc/rabbitmq
+      cat > /etc/rabbitmq/rabbitmq.conf <<EOF
+      listeners.tcp.default = 5672
+      management.tcp.port = 15672
+      
+      vm_memory_high_watermark.relative = 0.7
+      disk_free_limit.relative = 2.0
+      
+      cluster_partition_handling = ignore
+      cluster_keepalive_interval = 10000
+      EOF
+
+      chown -R rabbitmq:rabbitmq /etc/rabbitmq
+      chmod -R 640 /etc/rabbitmq/*
+
+      systemctl stop rabbitmq-server
+      rm -rf /var/lib/rabbitmq/*
+      systemctl start rabbitmq-server
+    "
+    return $?
+  }
+
+  setup_primary_node() {
+    local target=$1
+    
+    setup_base_node "$target" || return 1
+
+    ssh $SSH_OPTS "$target" "
+      rabbitmq-plugins enable rabbitmq_management
+      rabbitmqctl add_user admin RBMQ 
+      rabbitmqctl set_user_tags admin administrator
+      rabbitmqctl set_permissions -p / admin '.*' '.*' '.*'
+      
+      rabbitmqctl delete_user guest
+      
+      rabbitmqctl set_policy ha-all '.*' '{\"ha-mode\":\"all\", \"ha-sync-mode\":\"automatic\"}'
+      
+      rabbitmq-plugins enable rabbitmq_shovel
+      rabbitmq-plugins enable rabbitmq_federation
+    "
+    return $?
+  }
+
+  join_cluster() {
+    local target=$1
+    local primary=$2
+    
+    setup_base_node "$target" || return 1
+    
+    scp $SSH_OPTS "$primary":/var/lib/rabbitmq/.erlang.cookie "$target":/var/lib/rabbitmq/ &&
+    ssh $SSH_OPTS "$target" "
+      chown rabbitmq:rabbitmq /var/lib/rabbitmq/.erlang.cookie
+      chmod 400 /var/lib/rabbitmq/.erlang.cookie
+      
+      systemctl restart rabbitmq-server
+      rabbitmqctl stop_app
+      rabbitmqctl reset
+      rabbitmqctl join_cluster rabbit@$primary
+      rabbitmqctl start_app
+
+      rabbitmq-plugins enable rabbitmq_management
+      rabbitmq-plugins enable rabbitmq_shovel
+      rabbitmq-plugins enable rabbitmq_federation
+    "
+    return $?
+  }
+
+  find_primary_node() {
+    for h in "${HOSTS[@]}"; do
+      [[ "$h" != communication_* ]] && continue
+      if timeout 5 ssh $SSH_OPTS "$h" "
+        systemctl is-active rabbitmq-server > /dev/null 2>&1 &&
+        rabbitmqctl cluster_status | grep -q 'Running Nodes'
+      " 2>/dev/null; then
+        echo "$h"
+        return 0
+      fi
+    done
+    echo ""
+    return 1
+  }
+
+  if ! ssh $SSH_OPTS "$host" "$(typeset -f install_packages); install_packages ${COMMUNICATION_PACKAGES[*]}"; then
+    print_status "failure" "Failed to install communication packages on $host" "false"
+    return 1
+  fi
+
+  local primary_node
+  primary_node=$(find_primary_node)
+
+  if [[ -z "$primary_node" ]]; then
+    print_status "info" "Setting up first RabbitMQ node on $host..." "false"
+    if ! setup_primary_node "$host"; then
+      print_status "failure" "Failed to setup first RabbitMQ node on $host" "false"
+      return 1
+    fi
+  else
+    print_status "info" "Joining existing RabbitMQ cluster with primary node $primary_node..." "false"
+    if ! join_cluster "$host" "$primary_node"; then
+      print_status "failure" "Failed to join RabbitMQ cluster on $host" "false"
+      return 1
+    fi
+  fi
+
+  print_status "success" "Communication setup completed on $host" "false"
+  return 0
+}
+
+# =============================================================================
+# Main Function
+# =============================================================================
+
 main() {
   local TYPE=""
   local NUMBER=""
@@ -258,7 +694,7 @@ main() {
       echo "Options:"
       echo "  -l, --list <TYPE>       List hosts by status type"
       echo "                          (all|up|active)"
-      echo "  -H, --host <HOST>       Connect only to hosts of specified type"
+      echo "  -t, --type <HOST>       Connect only to hosts of specified type"
       echo "                          (frontend|backend|database|communication)"
       echo "  -n, --number <NUMBER>   Connect only to hosts with specified number (0-3)"
       echo "  -a, --action <ACTION>   Perform the following action on each host (default 'status')"
@@ -272,7 +708,7 @@ main() {
       LIST_MODE="$2"
       shift 2
     ;;
-    -H | --host)
+    -t | --type)
       TYPE="$2"
       shift 2
     ;;
@@ -282,7 +718,7 @@ main() {
     ;;
     -a | --action)
       case "$2" in
-      status | start | stop | restart)
+      status | start | stop | restart | setup)
         ACTION="$2"
       ;;
       *)
@@ -387,6 +823,22 @@ main() {
         else
           return 1
         fi
+      ;;
+      setup)
+        case $server_type in
+          "database")
+            setup_database "$host" || return 1
+          ;;
+          "backend")
+            setup_backend "$host" || return 1
+          ;;
+          "frontend")
+            setup_frontend "$host" || return 1
+          ;;
+          "communication")
+            setup_communication "$host" || return 1
+          ;;
+        esac
       ;;
     esac
   }

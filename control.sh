@@ -5,11 +5,12 @@
 # =============================================================================
 
 declare -a HOSTS
-mapfile -t HOSTS < <(tailscale status | awk '
-  /^100\.[0-9]+\.[0-9]+\.[0-9]+[[:space:]]+((frontend|backend|database|communication)-[0-9]+)$/ {
-    print $2
-  }
-' | sort)
+while IFS= read -r line; do
+  host_name=$(echo "$line" | awk '{print $2}')
+  if [[ "$host_name" =~ ^(frontend|backend|database|communication)-[0-9]+$ ]]; then
+    HOSTS+=("$host_name")
+  fi
+done < <(tailscale status)
 
 readonly SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
 

@@ -6,8 +6,8 @@
 
 declare -a HOSTS
 while IFS= read -r line; do
-  host_name=$(echo "$line" | awk '{print $2}')
-  if [[ "$host_name" =~ ^(frontend|backend|database|communication)-[0-9]+$ ]]; then
+  host_name=$(echo "$line" | awk '{print $2}' | sed 's/-/_/g')
+  if [[ "$host_name" =~ ^(frontend|backend|database|communication)_[0-9]+$ ]]; then
     HOSTS+=("$host_name")
   fi
 done < <(tailscale status)

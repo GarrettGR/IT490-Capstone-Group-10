@@ -20,6 +20,7 @@ import SavedAppliances from './Webpages/SavedAppliances';
 import ShoppingCart from './Webpages/ShoppingCart';
 import ServiceMap from './Webpages/ServiceMap'
 import ApplianceParts from './Webpages/ApplianceParts';
+import CommonIssues from './Webpages/CommonIssues';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path='/ShoppingCart' element={<ShoppingCart />} />
             <Route path='/ServiceMap' element={<ServiceMap />} />
             <Route path='/ApplianceParts' element={<ApplianceParts />} />
+            <Route path='/CommonIssues' element={<CommonIssues /> } />
             
           </Routes>
         </BrowserRouter>

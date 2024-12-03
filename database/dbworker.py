@@ -11,8 +11,16 @@ db_config = {
     'user': 'admin',
     'password': os.environ['db_passwd'],
     'host': 'localhost',
-    'database': 'applicare'
+    'database': 'Applicare',
+    'ssl_disabled': True
 }
+
+try:
+  conn = mysql.connector.connect(**db_config)
+  print("Successfully connected to database")
+  conn.close()
+except mysql.connector.Error as err:
+  print(f"Error: {err}")
 
 pool = pooling.MySQLConnectionPool(pool_name="db_pool", pool_size=5, **db_config)
 

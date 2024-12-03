@@ -4,7 +4,7 @@ After=netwrok.target node_server.service
 BindsTo=node_server.service
 
 [Service]
-Environment=rmq_passwd="student123"
+Environment=rmq_passwd="RBMQ"
 Type=simple
 User=root
 WorkingDirectory=/root/Capstone-Group-09/frontend/

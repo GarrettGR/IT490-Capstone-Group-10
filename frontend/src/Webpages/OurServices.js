@@ -26,7 +26,7 @@ function OurServices() {
   };
 
   const handleCardClick = (serviceName) => {
-    navigate(`CommonIssues.js`); // Navigate to the service's common issues page with service name as a parameter
+    navigate(`/CommonIssues`); // Navigate to the service's common issues page with service name as a parameter
   };
 
   return (

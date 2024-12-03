@@ -22,7 +22,7 @@ function SignUp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: 
                               `INSERT INTO users
-                              (first_name,      last_name,     email,               password_hash,       security_question_1,            security_answer_1) VALUES
+                              (first_name,      last_name,     email,               password_hash,       ,            security_answer_1) VALUES
                               ('${firstName}', '${lastName}', '${formData.email}', '${hashedPassword}', '${formData.securityQuestion_1}', '${hashedsecurityAnswer_1}')`
         }),
       });

@@ -15,7 +15,6 @@ import About from './Webpages/About';
 import Login from './Webpages/Login';
 import SignUp from './Webpages/SignUp';
 import OurServices from './Webpages/OurServices';
-import CommonIssues from './Webpages/CommonIssues';
 import SavedAppliances from './Webpages/SavedAppliances';
 import ShoppingCart from './Webpages/ShoppingCart';
 import ServiceMap from './Webpages/ServiceMap'

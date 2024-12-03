@@ -123,7 +123,7 @@ function SignUp() {
             >
               <option value="" disabled>Select a Security Question</option>
               <option value="What was the name of your first pet?">What was the name of your first pet?</option>
-              <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+              <option value="What is your mother\'s maiden name?">What is your mother's maiden name?</option>
               <option value="What was the name of your elementary school?">What was the name of your elementary school?</option>
               <option value="What is your favorite color?">What is your favorite color?</option>
             </select>

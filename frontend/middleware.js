@@ -147,17 +147,14 @@ app.post('/api/recovery', async (req, res) => {
     });
     await rmq_handler(request, correlation_id)
     const response = await response_promise
-    //Check if the query is requesting the security question
-    if (request.query.includes('SELECT security_question_1 FROM email WHERE email=')) {
+    if (request.query.includes('security_question_1')) {
       const user = response.body.results.length > 0 ? response.body.results[0] : null
       if (!user) {
         res.json({ status: 'error', message: 'Email not found.' })
       } else {
-        //Return the security question if email exists
         res.json({ status: 'success', body: {results: [[user[0]]] } })
       }
     }else if (request.query.includes('SELECT')){
-      //Handle regular login SELECT queries
       const user = response.body.results.length > 0 ? response.body.results[0] : null
       if(!user) {
         res.json({ status: 'error', message: 'Invalid email or password.' })

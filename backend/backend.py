@@ -58,9 +58,12 @@ async def listen_for_messages():
           print(f"JSON decoding error: {e}")
           await message.nack(requeue=True)
         except aio_pika.exceptions.MessageProcessError as e:
-          print(f"Message processing error")
+          if "Message already processed" in str(e):
+            print("Message was already processed")
+          else:
+            print(f"Error processing message: {e}")
         except Exception as e:
-          print(f"Error processing message: {e}")
+          print(f"Error with incoming message: {e}")
           await message.nack(requeue=True)
       request_queue = await channel.declare_queue('request_queue', durable=True, arguments={'x-message-ttl': 60_000})
       response_queue = await channel.declare_queue('response_queue', durable=True, arguments={'x-message-ttl': 60_000})

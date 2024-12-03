@@ -15,6 +15,7 @@ import About from './Webpages/About';
 import Login from './Webpages/Login';
 import SignUp from './Webpages/SignUp';
 import OurServices from './Webpages/OurServices';
+import CommonIssues from './Webpages/CommonIssues';
 import SavedAppliances from './Webpages/SavedAppliances';
 import ShoppingCart from './Webpages/ShoppingCart';
 import ServiceMap from './Webpages/ServiceMap'
@@ -33,6 +34,7 @@ function App() {
             <Route path='/Login' element={<Login />} />
             <Route path='/SignUp' element={<SignUp />} />
             <Route path='/OurServices' element={<OurServices />} />
+            <Route path='/CommonIssues' element={<CommonIssues />} />
             <Route path='/SavedAppliances' element={<SavedAppliances />} />
             <Route path='/ShoppingCart' element={<ShoppingCart />} />
             <Route path='/ServiceMap' element={<ServiceMap />} />

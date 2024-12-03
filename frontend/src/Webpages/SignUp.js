@@ -33,7 +33,7 @@ function SignUp() {
       console.log(result)
       if (result.status === 'success') {
         alert('Signup successful!')
-	window.location.href='LoginPage'
+	window.location.href='Login'
       } else {
         alert(result.message || 'Signup failed.')
       }

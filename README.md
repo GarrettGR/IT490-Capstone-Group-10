@@ -2,8 +2,7 @@
 # AppliCare
 
 ## Contact Information
-Garrett Gonzalez-Rivas - Back-End Developer - grg@njit.edu
-Shakawath Hussain - Front-End Developer - sh692@njit.edu
-Yashi Rastogi - RabbitMQ Developer - yr27@njit.edu
-Jasmin Rutter - Database Manager - jnr7@njit.edu
+Garrett Gonzalez-Rivas - Back-End and RabbitMQ Developer - grg@njit.edu
+Jasmin Rutter - Front-End and Database Developer - jnr7@njit.edu
+
 

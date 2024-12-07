@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Pricing - Brand</title>
+    <title>Integrations - Brand</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.reflowhq.com/v2/toolkit.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
@@ -13,53 +13,14 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md fixed-top navbar-shrink py-3" id="mainNav">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span>Applicare</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about-us.html">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="our-services.html">Our services</a></li>
-                </ul><a class="btn btn-primary shadow" role="button" href="login.html" style="opacity: 1;">Sign In</a><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-star" style="padding: 0px;margin: 0px;width: 21px;height: 20px;">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
-                </svg><span data-reflow-type="view-cart" data-reflow-summary-type="dropdown"><span style="padding: 10px;">Cart</span></span>
-            </div>
-        </div>
-    </nav>
-    <section class="py-5 mt-5">
-        <div class="container py-4 py-xl-5">
-            <section class="position-relative py-4 py-xl-5">
-                <div class="container">
-                    <div class="row mb-5">
-                        <div class="col-md-8 col-xl-6 text-center mx-auto">
-                            <h2>Log in</h2>
-                            <p class="w-lg-50">Curae hendrerit donec commodo hendrerit egestas tempus, turpis facilisis nostra nunc. Vestibulum dui eget ultrices.</p>
-                        </div>
-                    </div>
-                    <div class="row d-flex justify-content-center" style="--bs-primary: #24285b;--bs-primary-rgb: 36,40,91;color: #24285b;border-color: #24285b;">
-                        <div class="col-md-6 col-xl-4">
-                            <div class="card mb-5">
-                                <div class="card-body d-flex flex-column align-items-center">
-                                    <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-person">
-                                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664z"></path>
-                                        </svg></div>
-                                    <form class="text-center" method="post">
-                                        <div class="mb-3"><input class="form-control" type="email" name="email" placeholder="Email"></div>
-                                        <div class="mb-3"><input class="form-control" type="password" name="password" placeholder="Password"></div>
-                                        <div class="mb-3"><button class="btn btn-primary d-block w-100" type="submit">Login</button></div>
-                                        <p class="text-muted">Forgot your password?</p>
-                                        <p class="text-muted">Don't have an account?</p><a class="btn btn-primary d-block w-100" role="button" href="signup.html" style="color: rgb(0,0,0);background: rgb(255,255,255);"><a href="signup.html">Create an Account</a></a>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+    <?php include('header.php'); ?>
+
+    <section class="py-5">
+        <div class="container py-5">
+            <div data-reflow-type="shopping-cart"></div>
         </div>
     </section>
-    <footer>
+    <section>
         <div class="container py-4 py-lg-5">
             <div class="row row-cols-2 row-cols-md-4">
                 <div class="col-sm-4 col-md-3 text-lg-start d-flex flex-column">
@@ -72,7 +33,7 @@
             <hr>
             <div class="text-muted d-flex justify-content-between align-items-center pt-3">
                 <p class="mb-0"></p>
-                <footer class="text-center">
+                <section class="text-center">
                     <div class="container text-muted py-4 py-lg-5">
                         <ul class="list-inline">
                             <li class="list-inline-item me-4"><a class="link-secondary" href="contacts.html">Help Center</a></li>
@@ -92,14 +53,16 @@
                         </ul>
                         <p class="mb-0">Copyright © 2024 Brand</p>
                     </div>
-                </footer>
+                </section>
                 <ul class="list-inline mb-0">
                     <li class="list-inline-item"></li>
                     <li class="list-inline-item"></li>
                 </ul>
             </div>
         </div>
-    </footer>
+    </section>
+    <?php include('footer.php'); ?>
+
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>
     <script src="assets/js/bs-init.js"></script>

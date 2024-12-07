@@ -13,26 +13,14 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md fixed-top navbar-shrink py-3" id="mainNav">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span>Applicare</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about-us.html">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="our-services.html">Our services</a></li>
-                </ul><a class="btn btn-primary shadow" role="button" href="login.html" style="opacity: 1;">Sign In</a><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-star" style="padding: 0px;margin: 0px;width: 21px;height: 20px;">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
-                </svg><span data-reflow-type="view-cart" data-reflow-summary-type="dropdown"><span style="padding: 10px;">Cart</span></span>
-            </div>
-        </div>
-    </nav>
+    <?php include('header.php'); ?>
+
     <section class="py-5">
         <div class="container py-5">
             <div data-reflow-type="shopping-cart"></div>
         </div>
     </section>
-    <footer>
+    <section>
         <div class="container py-4 py-lg-5">
             <div class="row row-cols-2 row-cols-md-4">
                 <div class="col-sm-4 col-md-3 text-lg-start d-flex flex-column">
@@ -45,7 +33,7 @@
             <hr>
             <div class="text-muted d-flex justify-content-between align-items-center pt-3">
                 <p class="mb-0"></p>
-                <footer class="text-center">
+                <section class="text-center">
                     <div class="container text-muted py-4 py-lg-5">
                         <ul class="list-inline">
                             <li class="list-inline-item me-4"><a class="link-secondary" href="contacts.html">Help Center</a></li>
@@ -65,14 +53,16 @@
                         </ul>
                         <p class="mb-0">Copyright © 2024 Brand</p>
                     </div>
-                </footer>
+                </section>
                 <ul class="list-inline mb-0">
                     <li class="list-inline-item"></li>
                     <li class="list-inline-item"></li>
                 </ul>
             </div>
         </div>
-    </footer>
+    </section>
+    <?php include('footer.php'); ?>
+
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>
     <script src="assets/js/bs-init.js"></script>

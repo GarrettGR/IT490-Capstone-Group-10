@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center">
-                        <div class="col-md-6 col-xl-4">
+                        <div class="col-md-8 col-xl-6">
                             <div class="card mb-5">
                                 <div class="card-body d-flex flex-column align-items-center">
                                     <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-person">
@@ -49,7 +49,7 @@
                                         <div class="mb-3">
                                             <label for="security-question" class="form-label text-start w-100">Select a Security Question</label>
                                             <div class="dropdown">
-                                                <button id="security-question" class="btn btn-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button id="security-question" class="btn btn-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: rgb(0,0,0);background: rgb(255,255,255);">
                                                     Choose a Question
                                                 </button>
                                                 <ul class="dropdown-menu">

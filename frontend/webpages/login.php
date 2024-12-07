@@ -37,7 +37,8 @@
                                         <div class="mb-3"><input class="form-control" type="password" name="password" placeholder="Password"></div>
                                         <div class="mb-3"><button class="btn btn-primary d-block w-100" type="submit">Login</button></div>
                                         <p class="text-muted">Forgot your password?</p>
-                                        <p class="text-muted">Don't have an account?</p><a class="btn btn-primary d-block w-100" role="button" href="signup.php" style="color: rgb(0,0,0);background: rgb(255,255,255);"><a href="signup.php">Create an Account</a></a>
+                                        <p class="text-muted">Don't have an account?</p>
+                                        <a class="btn btn-primary d-block w-100" role="button" href="signup.php" style="color: rgb(0,0,0);background: rgb(255,255,255);">Create an Account</a>
                                     </form>
                                 </div>
                             </div>

@@ -21,8 +21,8 @@
                 <div class="container">
                     <div class="row mb-5">
                         <div class="col-md-8 col-xl-6 text-center mx-auto">
-                            <h2>Log in</h2>
-                            <p class="w-lg-50">Curae hendrerit donec commodo hendrerit egestas tempus, turpis facilisis nostra nunc. Vestibulum dui eget ultrices.</p>
+                            <h2>Sign Up</h2>
+                            <p class="w-lg-50">Create an Account</p>
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center">
@@ -35,24 +35,38 @@
                                     <p>Sign Up</p>
                                     <form class="text-center" method="post">
                                         <div class="mb-3">
-                                            <p class="text-start">Name<input class="form-control" type="text" name="name" placeholder="John Doe"></p>
-                                            <div class="mb-3">
-                                                <p class="text-start">Email</p><input class="form-control" type="text" name="email" placeholder="johndoe@gmail.com">
+                                            <label for="name" class="form-label text-start w-100">Name</label>
+                                            <input id="name" class="form-control" type="text" name="name" placeholder="John Doe">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label text-start w-100">Email</label>
+                                            <input id="email" class="form-control" type="text" name="email" placeholder="johndoe@gmail.com">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label text-start w-100">Password</label>
+                                            <input id="password" class="form-control" type="text" name="password" placeholder="Password123!">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="security-question" class="form-label text-start w-100">Select a Security Question</label>
+                                            <div class="dropdown">
+                                                <button id="security-question" class="btn btn-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Choose a Question
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="#">What year was your father born?</a></li>
+                                                    <li><a class="dropdown-item" href="#">What is your favorite color?</a></li>
+                                                    <li><a class="dropdown-item" href="#">What is the name of your first pet?</a></li>
+                                                    <li><a class="dropdown-item" href="#">What elementary school did you attend?</a></li>
+                                                </ul>
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <p class="text-start">Password</p><input class="form-control" type="password" name="email" placeholder="Password123!">
-                                            <div class="mb-3">
-                                                <p class="text-start">Select a Security Question</p>
-                                                <div class="dropdown"><button class="btn btn-primary dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="color: var(--bs-btn-hover-bg);background: var(--bs-btn-color);">Choose a Question</button>
-                                                    <div class="dropdown-menu"><a class="dropdown-item" href="#">What is your favorite color?</a><a class="dropdown-item" href="#">What is the name of your first pet?</a><a class="dropdown-item" href="#"></a></div>
-                                                </div>
-                                                <p style="text-align: left;">Answer<input class="form-control" type="text" name="security_answer_1" placeholder="Blue"></p>
-                                                <div></div>
-                                            </div>
+                                            <label for="security-answer" class="form-label text-start w-100">Answer</label>
+                                            <input id="security-answer" class="form-control" type="text" name="security_answer_1" placeholder="Blue">
                                         </div>
-                                        <div></div>
-                                        <div class="mb-3"><a class="btn btn-primary d-block w-100" role="button" href="login.php">Sign Up</a></div>
+                                        <div class="mb-3">
+                                            <a class="btn btn-primary d-block w-100" role="button" href="login.php">Sign Up</a>
+                                        </div>
                                     </form>
                                 </div>
                             </div>

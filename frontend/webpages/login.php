@@ -22,7 +22,7 @@
                     <div class="row mb-5">
                         <div class="col-md-8 col-xl-6 text-center mx-auto">
                             <h2>Log in</h2>
-                            <p class="w-lg-50">Curae hendrerit donec commodo hendrerit egestas tempus, turpis facilisis nostra nunc. Vestibulum dui eget ultrices.</p>
+                            <p class="w-lg-50">Weclome to Applicare.</p>
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center" style="--bs-primary: #24285b;--bs-primary-rgb: 36,40,91;color: #24285b;border-color: #24285b;">

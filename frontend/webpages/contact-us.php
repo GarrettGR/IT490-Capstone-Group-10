@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <?php include('header.php'); ?>
+    <?php include('../common/header.php'); ?>
 
     <section class="py-5 mt-5">
         <div class="container py-5">
@@ -42,7 +42,6 @@
             <div class="row mb-2">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
                     <h2 class="display-6 fw-bold mb-5"><span class="pb-3 underline">FAQ<br></span></h2>
-                    <p class="text-muted mb-5">Curae hendrerit donec commodo hendrerit egestas tempus, turpis facilisis nostra nunc. Vestibulum dui eget ultrices.</p>
                 </div>
             </div>
             <div class="row mb-2">
@@ -83,28 +82,8 @@
             </div>
         </div>
     </section>
-    <footer>
-        <div class="container py-4 py-lg-5">
-            <div class="row row-cols-2 row-cols-md-4">
-                <div class="col-sm-4 col-md-3 text-lg-start d-flex flex-column">
-                    <ul class="list-unstyled">
-                        <li></li>
-                        <li></li>
-                    </ul>
-                </div>
-            </div>
-            <hr>
-            <div class="text-muted d-flex justify-content-between align-items-center pt-3">
-                <p class="mb-0"></p>
-                <?php include('footer.php'); ?>
+    <?php include('../common/footer.php'); ?>
 
-                <ul class="list-inline mb-0">
-                    <li class="list-inline-item"></li>
-                    <li class="list-inline-item"></li>
-                </ul>
-            </div>
-        </div>
-    </footer>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>
     <script src="assets/js/bs-init.js"></script>

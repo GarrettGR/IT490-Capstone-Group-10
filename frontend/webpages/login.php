@@ -1,3 +1,10 @@
+<?php
+// checks database connection cause it is needed for logging in 
+include('../src/database-applicare.php'); 
+
+?>
+
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -13,7 +20,7 @@
 </head>
 
 <body>
-    <?php include('header.php'); ?>
+    <?php include('../common/header.php'); ?>
 
     <section class="py-5 mt-5">
         <div class="container py-4 py-xl-5">
@@ -48,7 +55,7 @@
             </section>
         </div>
     </section>
-    <?php include('footer.php'); ?>
+    <?php include('../common/footer.php'); ?>
 
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>

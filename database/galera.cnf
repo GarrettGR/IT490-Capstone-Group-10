@@ -8,7 +8,7 @@
 # Mandatory settings
 wsrep_on                 = ON
 wsrep_cluster_name       = "AppliCare Galera Cluster"
-wsrep_cluster_address    = "gcomm://$((for i in {0..3}; do tailscale ip database-$i 2>/dev/null | head -n1; done) | grep . | paste -sd,)"
+wsrep_cluster_address    = "gcomm://$((for i in {0..3}; do tailscale ip droplet-0$i 2>/dev/null | head -n1; done) | grep . | paste -sd,)"
 wsrep_node_name          = "$(hostname)"
 wsrep_node_address	 = "$(tailscale ip | head -n1)"
 binlog_format            = row

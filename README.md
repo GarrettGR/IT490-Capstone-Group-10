@@ -1,4 +1,4 @@
-# Project Repo for Team 9 in IT490 Section 101 Fall of 2024
+# Project Repo for Team 10 in IT490 Section 101 Fall of 2024
 # AppliCare
 
 ## Contact Information

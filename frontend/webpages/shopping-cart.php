@@ -1,3 +1,9 @@
+<?php
+// checks database connection cause it is needed for logging in 
+include('../src/database-applicare.php'); 
+
+?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 

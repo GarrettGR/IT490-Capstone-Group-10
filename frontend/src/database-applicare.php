@@ -1,6 +1,6 @@
 <?php
     // Database connection details
-    $host = "sql1.njit.edu";
+    $host = "159.223.183.25";
     $username = "admin";
     $password = "student123";
     $dbname = "mysql:host=$host;dbname=$username";
@@ -22,9 +22,6 @@
         echo "<p>Database Error</p>";
         echo "<p>There was an error connecting to the database.</p>";
         echo "<p>Error Message: $error_message</p>";
-
-        // Optionally, you could log the error to a file instead of displaying it.
-        // file_put_contents('db_error_log.txt', $error_message, FILE_APPEND);
 
         exit();
     }

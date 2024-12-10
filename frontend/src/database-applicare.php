@@ -1,8 +1,8 @@
 <?php
     // Database connection details
-    $host = "159.223.183.25";
-    $username = "admin";
-    $password = "student123";
+    $host = "sql1.njit.edu";
+    $username = "grg";
+    $password = "3bm3bmchtr-NJIT";
     $dbname = "mysql:host=$host;dbname=$username";
 
     try {

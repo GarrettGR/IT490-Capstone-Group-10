@@ -1,6 +1,36 @@
 <?php
 // checks database connection cause it is needed for signing up to add the user to the user table
 include('../src/database-applicare.php'); 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $first_name = trim($_POST['first_name']);
+    $last_name = trim($_POST['last_name']);
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+    $security_question_1 = trim($_POST['security_question_1']);
+    $security_answer_1 = trim($_POST['security_answer_1']);
+
+    // Validate input so it can be pushed
+    if (empty($first_name) || empty($last_name) || empty($email) || empty($password)) {
+        echo "All fields are required!";
+    } else {
+        // Hash the password for security
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        // Save to database (update your database query accordingly)
+        $sql = "INSERT INTO users (first_name, last_name, email, password, security_question_1, security_answer_1) 
+                VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssss", $first_name, $last_name, $email, $hashed_password, $security_question_1, $security_answer_1);
+
+        if ($stmt->execute()) {
+            echo "User registered successfully!";
+        } else {
+            echo "Error: " . $conn->error;
+        }
+
+        $stmt->close();
+    }
+}
 
 ?>
 
@@ -28,8 +58,8 @@ include('../src/database-applicare.php');
                     <div class="row mb-5">
                         <div class="col-md-8 col-xl-6 text-center mx-auto">
                             <h2>Sign Up</h2>
-                            <p class="w-lg-50">Create an Account</p>
-                        </div>
+                            <?php if (!empty($error)) echo "<p class='text-danger'>$error</p>"; ?>
+                            </div>
                     </div>
                     <div class="row d-flex justify-content-center">
                         <div class="col-md-8 col-xl-6">
@@ -42,33 +72,30 @@ include('../src/database-applicare.php');
                                     <form class="text-center" method="post">
                                         <div class="mb-3">
                                             <label for="name" class="form-label text-start w-100">Name</label>
-                                            <input id="name" class="form-control" type="text" name="name" placeholder="John Doe">
+                                            <input id="name" class="form-control" type="text" name="name" placeholder="John Doe" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="email" class="form-label text-start w-100">Email</label>
-                                            <input id="email" class="form-control" type="text" name="email" placeholder="johndoe@gmail.com">
+                                            <input id="email" class="form-control" type="text" name="email" placeholder="johndoe@gmail.com" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="password" class="form-label text-start w-100">Password</label>
-                                            <input id="password" class="form-control" type="text" name="password" placeholder="Password123!">
+                                            <input id="password" class="form-control" type="text" name="password" placeholder="Password123!" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="security-question" class="form-label text-start w-100">Select a Security Question</label>
-                                            <div class="dropdown">
-                                                <button id="security-question" class="btn btn-primary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: rgb(0,0,0);background: rgb(255,255,255);">
-                                                    Choose a Question
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#">What year was your father born?</a></li>
-                                                    <li><a class="dropdown-item" href="#">What is your favorite color?</a></li>
-                                                    <li><a class="dropdown-item" href="#">What is the name of your first pet?</a></li>
-                                                    <li><a class="dropdown-item" href="#">What elementary school did you attend?</a></li>
+                                            <label for="security_question_1" class="form-label text-start w-100">Select a Security Question</label>
+                                            <select id="security_question_1" name="security_question_1" class="form-control" required>
+                                                <option value="" disabled selected>Choose a Question</option>
+                                                <option value="What year was your father born?">What year was your father born?</option>
+                                                <option value="What is your favorite color?">What is your favorite color?</option>
+                                                <option value="What is the name of your first pet?">What is the name of your first pet?</option>
+                                                <option value="What elementary school did you attend?">What elementary school did you attend?</option>
                                                 </ul>
-                                            </div>
+                                            </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="security-answer" class="form-label text-start w-100">Answer</label>
-                                            <input id="security-answer" class="form-control" type="text" name="security_answer_1" placeholder="Blue">
+                                            <label for="security_answer_1" class="form-label text-start w-100">Answer</label>
+                                            <input id="security_answer_1" class="form-control" type="text" name="security_answer_1" placeholder="Blue" required>
                                         </div>
                                         <div class="mb-3">
                                             <a class="btn btn-primary d-block w-100" role="button" href="login.php">Sign Up</a>

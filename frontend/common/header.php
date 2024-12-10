@@ -1,3 +1,8 @@
+<?php
+  session_start();
+  // Assuming you store the user's name in session when they log in
+  $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+?>
 <html lang="en">
   <head>
     <!-- Add Bootstrap CSS -->

@@ -2,6 +2,50 @@
 // checks database connection cause it is needed for logging in 
 include('../src/database-applicare.php'); 
 
+// checks if the form was submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Collect and sanitize form input in case there's white space
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+   
+    // Validate input
+    if (empty($email) || empty($password)) {
+        echo "Email and Password are required!";
+    } else {
+        try{
+            // Query the database to find the user by email
+            $sql = "SELECT id, password_hash FROM users WHERE email = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$email]);
+
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                // Verify password
+                if (password_verify($password, $user['password_hash'])) {
+                    // Start session and store user information
+                    session_start();
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['email'] = $email;
+                    
+                    // Redirect to another page after successful login
+                    header("Location: dashboard.php"); // Change this to the page you want to redirect to
+                    exit();
+                } else {
+                    echo "Incorrect password!";
+                }
+            } else {
+                echo "No user found with that email address!";
+            }
+        }
+        catch(PDOException $e) {
+            // Handle database connection or query execution errors
+            echo "Error: " . $e->getMessage();
+
+        }
+    }
+}
 ?>
 
 

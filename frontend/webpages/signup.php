@@ -23,7 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("ssssss", $first_name, $last_name, $email, $hashed_password, $security_question_1, $security_answer_1);
 
         if ($stmt->execute()) {
-            echo "User registered successfully!";
+            header("Location: login.php");
+            exit();
         } else {
             echo "Error: " . $conn->error;
         }

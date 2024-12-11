@@ -8,7 +8,7 @@ include('../src/rabbitmq-consumer.php');   // To receive and verify messages
 function testRabbitMQConnection() {
     try {
         // Try to create a connection to RabbitMQ (from the publisher script)
-        $connection = new AMQPStreamConnection(10.0.0.11, 5672, 'guest', 'guest');
+        $connection = new AMQPStreamConnection('10.0.0.11', 5672, 'guest', 'guest');
         $channel = $connection->channel();
         $channel->queue_declare('userQueue', false, true, false, false);
 

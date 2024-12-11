@@ -4,9 +4,11 @@ After=network.target mariadb.service
 BindsTo=mariadb.service
 
 [Service]
+# Environment=mdb_ip="10.0.0.12"
+Environment=mdb_ip="localhost"
 Environment=db_passwd="student123"
 Environment=rmq_ip="100.118.142.26"
-Environment=rmq_passwd="RBMQ"
+Environment=rmq_passwd="student123"
 Environment=PYTHONUNBUFFERED=1
 User=root
 WorkingDirectory=/root/Capstone-Group-09/database/

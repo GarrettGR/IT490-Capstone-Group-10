@@ -10,8 +10,8 @@ from datetime import datetime
 db_config = {
     'user': 'admin',
     'password': os.environ['db_passwd'],
-    'host': 'localhost',
-    'database': 'Applicare',
+    'host': os.environ['mdb_ip'],
+    'database': 'applicare',
     'ssl_disabled': True
 }
 

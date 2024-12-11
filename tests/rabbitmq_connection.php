@@ -4,6 +4,12 @@
 include('../src/rabbitmq-publisher.php');  // To send messages
 include('../src/rabbitmq-consumer.php');   // To receive and verify messages
 
+// Ensure Composer autoload is included
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Can use the AMQPStreamConnection class
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+
 // Basic function to test the RabbitMQ connection
 function testRabbitMQConnection() {
     try {

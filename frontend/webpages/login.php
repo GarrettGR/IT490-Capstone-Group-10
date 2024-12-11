@@ -1,48 +1,46 @@
 <?php
-// checks database connection cause it is needed for logging in 
-include('../src/database-applicare.php'); 
+// Include database connection
+include('../src/database-applicare.php');
 
-// checks if the form was submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Collect and sanitize form input in case there's white space
     $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
-   
-    // Validate input
-    if (empty($email) || empty($password)) {
-        echo "Email and Password are required!";
+
+    if (empty($email)) {
+        echo "Email is required!";
     } else {
-        try{
-            // Query the database to find the user by email
-            $sql = "SELECT id, password_hash FROM users WHERE email = ?";
+        try {
+            // Check if the user exists
+            $sql = "SELECT id FROM users WHERE email = ?";
             $stmt = $db->prepare($sql);
             $stmt->execute([$email]);
-
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($result->num_rows > 0) {
-                $user = $result->fetch_assoc();
-                // Verify password
-                if (password_verify($password, $user['password_hash'])) {
-                    // Start session and store user information
-                    session_start();
-                    $_SESSION['user_id'] = $user['id'];
-                    $_SESSION['email'] = $email;
-                    
-                    // Redirect to another page after successful login
-                    header("Location: dashboard.php"); // Change this to the page you want to redirect to
-                    exit();
+
+            if ($user) {
+                // Generate a unique token
+                $token = bin2hex(random_bytes(32));
+                $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+                // Save the token to the database
+                $insertToken = "INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)";
+                $stmt = $db->prepare($insertToken);
+                $stmt->execute([$email, $token, $expires]);
+
+                // Send the reset link via email
+                $resetLink = "http://yourwebsite.com/reset_password.php?token=$token";
+                $subject = "Password Reset Request";
+                $message = "Click the link below to reset your password:\n\n$resetLink";
+                $headers = "From: no-reply@yourwebsite.com";
+
+                if (mail($email, $subject, $message, $headers)) {
+                    echo "Password reset link has been sent to your email!";
                 } else {
-                    echo "Incorrect password!";
+                    echo "Failed to send email. Please try again.";
                 }
             } else {
-                echo "No user found with that email address!";
+                echo "No user found with that email address.";
             }
-        }
-        catch(PDOException $e) {
-            // Handle database connection or query execution errors
+        } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
-
         }
     }
 }
@@ -55,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Pricing - Brand</title>
+    <title>Applicare</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.reflowhq.com/v2/toolkit.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
@@ -87,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         <div class="mb-3"><input class="form-control" type="email" name="email" placeholder="Email"></div>
                                         <div class="mb-3"><input class="form-control" type="password" name="password" placeholder="Password"></div>
                                         <div class="mb-3"><button class="btn btn-primary d-block w-100" type="submit">Login</button></div>
-                                        <p class="text-muted">Forgot your password?</p>
+                                        <a href="password-recovery.php">Forgot your password?</a>
                                         <p class="text-muted">Don't have an account?</p>
                                         <a class="btn btn-primary d-block w-100" role="button" href="signup.php" style="color: rgb(0,0,0);background: rgb(255,255,255);">Create an Account</a>
                                     </form>
@@ -105,6 +103,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
     <script src="assets/js/startup-modern.js"></script>
+
+    <script>
+        // Display alert if there's an error
+        <?php if (!empty($error)) : ?>
+            alert("<?php echo $error; ?>");
+        <?php endif; ?>
+    </script>
 </body>
 
 </html>

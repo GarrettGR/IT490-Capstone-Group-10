@@ -1,9 +1,9 @@
 <?php
     // Database connection details
-    $host = "sql1.njit.edu";
-    $username = "grg";
-    $password = "3bm3bmchtr-NJIT";
-    $dbname = "mysql:host=$host;dbname=$username";
+    $host = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "mysql:host=$host;dbname=applicare";
 
     try {
         // Create a PDO instance with the appropriate error mode and connection string

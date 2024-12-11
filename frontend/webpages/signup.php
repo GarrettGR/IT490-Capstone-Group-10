@@ -5,22 +5,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    $password_hash = trim($_POST['password_hash']);
     $security_question_1 = trim($_POST['security_question_1']);
     $security_answer_1 = trim($_POST['security_answer_1']);
 
     // Validate input so it can be pushed
-    if (empty($first_name) || empty($last_name) || empty($email) || empty($password)) {
+    if (empty($first_name) || empty($last_name) || empty($email) || empty($password_hash)) {
         echo "All fields are required!";
     } else {
         // Hash the password for security
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $password_hash = password_hash($password_hash, PASSWORD_DEFAULT);
 
         // Save to database (update your database query accordingly)
-        $sql = "INSERT INTO users (first_name, last_name, email, password, security_question_1, security_answer_1) 
-                VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO users (first_name, last_name, email, password_hash, security_question_1, security_answer_1) 
+                VALUES ($first_name, $last_name, $email, $password_hash, $security_question_1, $security_answer_1)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssss", $first_name, $last_name, $email, $hashed_password, $security_question_1, $security_answer_1);
+        $stmt->bind_param($first_name, $last_name, $email, $password_hash, $security_question_1, $security_answer_1);
 
         if ($stmt->execute()) {
             header("Location: login.php");
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Pricing - Brand</title>
+    <title>Applicare</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.reflowhq.com/v2/toolkit.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&amp;display=swap">
@@ -72,16 +72,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <p>Sign Up</p>
                                     <form class="text-center" method="post">
                                         <div class="mb-3">
-                                            <label for="name" class="form-label text-start w-100">Name</label>
-                                            <input id="name" class="form-control" type="text" name="name" placeholder="John Doe" required>
+                                            <label for="first_name" class="form-label text-start w-100">First Name</label>
+                                            <input id="first_name" class="form-control" type="text" name="first_name" placeholder="John" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="last_name" class="form-label text-start w-100">Last Name</label>
+                                            <input id="last_name" class="form-control" type="text" name="last_name" placeholder="Doe" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="email" class="form-label text-start w-100">Email</label>
                                             <input id="email" class="form-control" type="text" name="email" placeholder="johndoe@gmail.com" required>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="password" class="form-label text-start w-100">Password</label>
-                                            <input id="password" class="form-control" type="text" name="password" placeholder="Password123!" required>
+                                            <label for="password_hash" class="form-label text-start w-100">Password</label>
+                                            <input id="password_hash" class="form-control" type="text" name="password_hash" placeholder="Password123!" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="security_question_1" class="form-label text-start w-100">Select a Security Question</label>

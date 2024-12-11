@@ -1,11 +1,8 @@
 <?php
 
 // Include the necessary files for publisher and consumer
-include('../src/rabbitmq-publisher.php');  // To send messages
-include('../src/rabbitmq-consumer.php');   // To receive and verify messages
-
-// Ensure Composer autoload is included
-require_once __DIR__ . '/../vendor/autoload.php';
+include('../src/rabbitmq-publisher.php');  // send messages
+include('../src/rabbitmq-consumer.php');   // receive and verify messages
 
 // Can use the AMQPStreamConnection class
 use PhpAmqpLib\Connection\AMQPStreamConnection;

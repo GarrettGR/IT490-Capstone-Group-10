@@ -10,7 +10,7 @@ Environment=rmq_ip="100.118.142.26"
 Environment=rmq_passwd="student123"
 Environment=PYTHONUNBUFFERED=1
 User=root
-WorkingDirectory=/root/Capstone-Group-09/database/
+WorkingDirectory=/root/Capstone-Group-10/database/
 ExecStart=/usr/bin/python3 dbworker.py
 Restart=on-failure
 RestartSec=10

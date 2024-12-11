@@ -25,4 +25,24 @@
 
         exit();
     }
+    // Check if the user is logged in
+    session_start();
+    if (isset($_SESSION['user_id'])) {
+        $user_id = $_SESSION['user_id'];
+
+        // Get all users from the users table
+        $queryUsers = 'SELECT * FROM users ORDER BY user_id';
+        $statement = $db->prepare($queryUsers);
+        $statement->execute();
+        $users = $statement->fetchAll();
+        $statement->closeCursor();
+        
+        // Display users or further process the data
+        echo '<pre>';
+        print_r($users);
+        echo '</pre>';
+    } else {
+        // If no user is logged in, prompt to log in
+        echo "<p>Please log in to view the users.</p>";
+    }
 ?>

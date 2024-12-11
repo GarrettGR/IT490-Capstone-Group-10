@@ -1,39 +1,54 @@
+<!-- Jasmin Rutter, 12/11/24, IT490-009, User Signup, jnr7@njit.edu -->
 <?php
-// checks database connection cause it is needed for signing up to add the user to the user table
-include('../src/database-applicare.php'); 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $first_name = trim($_POST['first_name']);
-    $last_name = trim($_POST['last_name']);
-    $email = trim($_POST['email']);
-    $password_hash = trim($_POST['password_hash']);
-    $security_question_1 = trim($_POST['security_question_1']);
-    $security_answer_1 = trim($_POST['security_answer_1']);
 
-    // Validate input so it can be pushed
-    if (empty($first_name) || empty($last_name) || empty($email) || empty($password_hash)) {
-        echo "All fields are required!";
-    } else {
-        // Hash the password for security
-        $password_hash = password_hash($password_hash, PASSWORD_DEFAULT);
+// Get the user data
+$first_name = filter_input(INPUT_POST, 'first_name');
+$last_name = filter_input(INPUT_POST, 'last_name');
+$email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+$password = filter_input(INPUT_POST, 'password_hash');
+$security_question = filter_input(INPUT_POST, 'security_question_1');
+$security_answer = filter_input(INPUT_POST, 'security_answer_1');
+$max_length = 255;
 
-        // Save to database (update your database query accordingly)
-        $sql = "INSERT INTO users (first_name, last_name, email, password_hash, security_question_1, security_answer_1) 
-                VALUES ($first_name, $last_name, $email, $password_hash, $security_question_1, $security_answer_1)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param($first_name, $last_name, $email, $password_hash, $security_question_1, $security_answer_1);
+// Validate input
+if ($first_name == NULL || $last_name == NULL || $email == NULL || $email == FALSE || 
+    $password == NULL || $security_question == NULL || $security_answer == NULL || 
+    strlen($first_name) > $max_length || strlen($last_name) > $max_length || 
+    strlen($email) > $max_length || strlen($password) > $max_length) {
 
-        if ($stmt->execute()) {
-            header("Location: login.php");
-            exit();
-        } else {
-            echo "Error: " . $conn->error;
-        }
+    $error = "Invalid user data. Make sure all fields are filled in and meet the requirements.";
+    echo "<center>$error<br></center>";
+    include('signup_form.php');
 
-        $stmt->close();
-    }
+} else {
+    require_once('../src/database-applicare.php');
+
+    // Hash the password securely
+    $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+    // Prepare the SQL query
+    $query = 'INSERT INTO users (first_name, last_name, email, password_hash, security_question_1, security_answer_1) 
+              VALUES (:first_name, :last_name, :email, :password_hash, :security_question, :security_answer)';
+
+    // Add user to database
+    $statement = $db->prepare($query);
+    $statement->bindValue(':first_name', $first_name);
+    $statement->bindValue(':last_name', $last_name);
+    $statement->bindValue(':email', $email);
+    $statement->bindValue(':password_hash', $password_hash);
+    $statement->bindValue(':security_question', $security_question);
+    $statement->bindValue(':security_answer', $security_answer);
+    $success = $statement->execute();
+    $statement->closeCursor();
+
+    echo "<p>Your insert statement status is $success</p>";
+
+    // Redirect to the login page
+    include('login.php');
 }
 
 ?>
+
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">

@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         try {
             // Check if the user exists
-            $sql = "SELECT id FROM users WHERE email = ?";
+            $sql = "SELECT * FROM users WHERE email = ?";
             $stmt = $db->prepare($sql);
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -20,22 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $token = bin2hex(random_bytes(32));
                 $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-                // Save the token to the database
-                $insertToken = "INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)";
+                // Insert the token directly into the users table
+                $insertToken = "UPDATE users SET token = ?, token_expires_at = ? WHERE email = ?";
                 $stmt = $db->prepare($insertToken);
-                $stmt->execute([$email, $token, $expires]);
+                $stmt->execute([$token, $expires, $email]);
 
-                // Send the reset link via email
-                $resetLink = "http://yourwebsite.com/reset_password.php?token=$token";
-                $subject = "Password Reset Request";
-                $message = "Click the link below to reset your password:\n\n$resetLink";
-                $headers = "From: no-reply@yourwebsite.com";
-
-                if (mail($email, $subject, $message, $headers)) {
-                    echo "Password reset link has been sent to your email!";
-                } else {
-                    echo "Failed to send email. Please try again.";
-                }
             } else {
                 echo "No user found with that email address.";
             }
@@ -45,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 
 
 <!DOCTYPE html>

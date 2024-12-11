@@ -27,8 +27,8 @@ pool = pooling.MySQLConnectionPool(pool_name="db_pool", pool_size=5, **db_config
 connection = pika.BlockingConnection(pika.ConnectionParameters(os.environ['rmq_ip'], credentials=pika.PlainCredentials('admin', os.environ['rmq_passwd'])))
 channel = connection.channel()
 
-channel.queue_declare(queue='request_queue', durable=True, arguments={'x-message-ttl':60_000})
-channel.queue_declare(queue='response_queue', durable=True, arguments={'x-message-ttl':60_000})
+channel.queue_declare(queue='request_queue', durable=True, arguments={'x-message-ttl':60_000, 'x-queue-type': 'quorum'})
+channel.queue_declare(queue='response_queue', durable=True, arguments={'x-message-ttl':60_000, 'x-queue-type': 'quorum'})
 
 def listen_for_requests():
   def callback(ch, method, properties, body):

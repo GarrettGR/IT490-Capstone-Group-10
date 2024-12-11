@@ -4,8 +4,7 @@ After=network.target mariadb.service
 BindsTo=mariadb.service
 
 [Service]
-# Environment=mdb_ip="10.0.0.12"
-Environment=mdb_ip="localhost"
+Environment=mdb_ip="10.0.0.12"
 Environment=db_passwd="student123"
 Environment=rmq_ip="100.118.142.26"
 Environment=rmq_passwd="student123"

@@ -142,8 +142,8 @@ class RMQClient {
 if (basename($_SERVER['SCRIPT_FILENAME']) == basename(__FILE__)) {
   if (php_sapi_name() === 'cli') {
     if ($argc < 2) {
-      echo "Usage: ./rabbitmq-proxy.php <message> <destination>\n";
-      echo "Example: ./rabbitmq-proxy.php '{\"query\":\"SELECT * FROM appliances\"}' database\n";
+      echo "Usage: rmq_proxy <message> <destination>\n";
+      echo "Example: rmq_proxy '{\"query\":\"SELECT * FROM appliances\"}' database\n";
       exit(1);
     }
 

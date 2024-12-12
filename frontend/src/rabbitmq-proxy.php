@@ -2,14 +2,18 @@
 
 <?php
 
+if (!extension_loaded('amqp')) {
+  die("AMQP extension is not loaded. Please install php-amqp package.\n");
+}
+
 if (defined('RABBITMQ_PROXY_INCLUDED')) return;
 define('RABBITMQ_PROXY_INCLUDED', true);
 
 class RMQClient {
   private $connection;
   private $channel;
-  private $request_queue;
-  private $response_queue;
+  private $exchange;
+  private $frontend_queue;
   private $pending_requests = [];
 
   public function __construct() {
@@ -19,80 +23,94 @@ class RMQClient {
 
   private function connect() {
     try {
-      $this->connection = new AMQPConnection();
-      $this->connection->setHost('10.0.0.11');
-      $this->connection->setPort(5672);
-      $this->connection->setLogin('admin');
-      $this->connection->setPassword(getenv('rmq_passwd'));
+      $this->connection = new AMQPConnection([
+        'host' => '10.0.0.11',
+        'port' => 5672,
+        'login' => 'admin',
+        'password' => getenv('rmq_passwd')
+      ]);
       $this->connection->connect();
-
       $this->channel = new AMQPChannel($this->connection);
+            
+      $this->exchange = new AMQPExchange($this->channel);
+      $this->exchange->setName('applicare');
+      $this->exchange->setType(AMQP_EX_TYPE_DIRECT);
+      $this->exchange->setFlags(AMQP_DURABLE);
+      $this->exchange->declareExchange();
 
-      $request_queue = new AMQPQueue($this->channel);
-      $request_queue->setName('request_queue');
-      $request_queue->setFlags(AMQP_DURABLE);
-      $request_queue->setArguments([
+      $this->frontend_queue = new AMQPQueue($this->channel);
+      $this->frontend_queue->setName('frontend_queue');
+      $this->frontend_queue->setFlags(AMQP_DURABLE);
+      $this->frontend_queue->setArguments([
         'x-queue-type' => 'quorum',
         'x-message-ttl' => 60000
       ]);
-      $request_queue->declareQueue();
-
-      $response_queue = new AMQPQueue($this->channel);
-      $response_queue->setName('response_queue');
-      $response_queue->setFlags(AMQP_DURABLE);
-      $response_queue->setArguments([
-        'x-queue-type' => 'quorum',
-        'x-message-ttl' => 60000
-      ]);
-      $response_queue->declareQueue();
-
-      $this->request_queue = $request_queue;
-      $this->response_queue = $response_queue;
-
-      $this->response_queue->consume(function($message) {
-        $correlation_id = $message->getCorrelationId();
-        $headers = $message->getHeaders();
-
-        if ($headers['to'] === 'FE' && isset($this->pending_requests[$correlation_id])) {
-          $response = json_decode($message->getBody(), true);
-          call_user_func($this->pending_requests[$correlation_id], $response);
-          unset($this->pending_requests[$correlation_id]);
-        }
-        $message->ack();
-      });
+      $this->frontend_queue->declareQueue();
+      $this->frontend_queue->bind('applicare', 'frontend');
+            
     } catch (AMQPException $e) {
       error_log("RabbitMQ connection error: " . $e->getMessage());
       throw $e;
     }
   }
 
-  public function sendRequest($body, $destination = 'BE') {
-    $correlation_id = $this->getUniqueId();
-
-    $message_body = is_string($body) ? $body : json_encode($body);
-    $message = new AMQPEnvelope($message_body);
-    $message->setCorrelationId($correlation_id);
-    $message->setHeaders([
-      'to' => isset($body['query']) ? 'DB' : $destination,
-      'from' => 'FE'
-    ]);
-    $message->setDeliveryMode(2);
-
-    $this->request_queue->publish($message);
-
-    return $correlation_id;
+  public function sendRequest($body, $destination = 'backend') {
+    try {
+      $correlation_id = $this->getUniqueId();
+      $message_body = is_string($body) ? $body : json_encode($body);
+          
+      $this->exchange->publish(
+        $message_body,
+        $destination,
+        AMQP_NOPARAM,
+        [
+          'correlation_id' => $correlation_id,
+          'delivery_mode' => 2
+        ]
+      );
+  
+      error_log("Published message with correlation_id: $correlation_id to $destination");
+      return $correlation_id;
+    } catch (Exception $e) {
+      error_log("Error sending request: " . $e->getMessage());
+      throw $e;
+    }
   }
 
   public function waitForResponse($correlation_id, $timeout = 30) {
-    $response = null;
-    $this->pending_requests[$correlation_id] = function($data) use (&$response) { $response = $data; };
     $start = time();
+    $response = null;
+    $processed_messages = [];
 
     while ($response === null && (time() - $start) < $timeout) {
-      $this->response_queue->consume(null, AMQP_NOPARAM, 1);
+      try {
+        while ($message = $this->frontend_queue->get(AMQP_AUTOACK)) {
+          $msg_correlation_id = $message->getCorrelationId();
+ 
+          if ($msg_correlation_id !== $correlation_id) {
+            if (!in_array($msg_correlation_id, $processed_messages)) {
+              $processed_messages[] = $msg_correlation_id;
+              $this->frontend_queue->nack($message->getDeliveryTag(), AMQP_REQUEUE);
+            }
+            continue;
+          }
+
+          $response = json_decode($message->getBody(), true);
+          $this->frontend_queue->ack($message->getDeliveryTag());
+          break;
+        }
+
+        if ($response === null) {
+          usleep(100000);
+        }
+      } catch (Exception $e) {
+        error_log("Error in consume: " . $e->getMessage());
+      }
+    }
+    if ($response === null) {
+      error_log("Timeout waiting for response to correlation_id: $correlation_id");
     }
 
-    unset($this->pending_requests[$correlation_id]);
     return $response;
   }
 
@@ -102,21 +120,21 @@ class RMQClient {
 
   public function close() {
     if ($this->channel) {
-      $this->channel->close();
+      $this->channel = null;
     }
     if ($this->connection) {
-      $this->connection->close();
+      $this->connection->disconnect();
     }
   }
 
   public function queryDatabase($query) {
     $message = ['query' => $query];
-    $correlation_id = $this->sendRequest($message, 'DB');
+    $correlation_id = $this->sendRequest($message, 'database');
     return $this->waitForResponse($correlation_id);
   }
 
   public function sendToBackend($data) {
-    $correlation_id = $this->sendRequest($data, 'BE');
+    $correlation_id = $this->sendRequest($data, 'backend');
     return $this->waitForResponse($correlation_id);
   }
 }
@@ -124,8 +142,8 @@ class RMQClient {
 if (basename($_SERVER['SCRIPT_FILENAME']) == basename(__FILE__)) {
   if (php_sapi_name() === 'cli') {
     if ($argc < 2) {
-      echo "Usage: php rabbitmq-proxy.php <message> <destination>\n";
-      echo "Example: php rabbitmq-proxy.php '{\"query\":\"SELECT * FROM users\"}' DB\n";
+      echo "Usage: ./rabbitmq-proxy.php <message> <destination>\n";
+      echo "Example: ./rabbitmq-proxy.php '{\"query\":\"SELECT * FROM appliances\"}' database\n";
       exit(1);
     }
 
@@ -136,11 +154,11 @@ if (basename($_SERVER['SCRIPT_FILENAME']) == basename(__FILE__)) {
       if (json_last_error() !== JSON_ERROR_NONE) {
         throw new Exception("Invalid JSON message provided");
       }
-        
+
       $destination = isset($argv[2]) ? $argv[2] : 'BE';
       echo "Sending message to $destination...\n";
       $correlation_id = $rmq->sendRequest($message, $destination);        
-    
+ 
       echo "Waiting for response...\n";
       $response = $rmq->waitForResponse($correlation_id);    
       if ($response) {

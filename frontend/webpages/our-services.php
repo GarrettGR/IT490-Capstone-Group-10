@@ -48,13 +48,15 @@ include('../src/database-applicare.php');
                 foreach ($appliances as $appliance) {
                     echo '
                     <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="' . $appliance['image'] . '" class="card-img-top" alt="' . $appliance['name'] . '">
-                            <div class="card-body">
-                                <h5 class="card-title">' . $appliance['name'] . '</h5>
-                                <p class="card-text">' . $appliance['description'] . '</p>
+                        <a href="appliance.php?id=' . $appliance['id'] . '" class="text-decoration-none">
+                            <div class="card">
+                                <img src="' . $appliance['image'] . '" class="card-img-top" alt="' . $appliance['name'] . '">
+                                <div class="card-body">
+                                    <h5 class="card-title">' . $appliance['name'] . '</h5>
+                                    <p class="card-text">' . $appliance['description'] . '</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>';
                 }
                 ?>

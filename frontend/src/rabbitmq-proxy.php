@@ -25,35 +25,30 @@ class RMQClient {
       $this->connection->setLogin('admin');
       $this->connection->setPassword(getenv('rmq_passwd'));
       $this->connection->connect();
-
       $this->channel = new AMQPChannel($this->connection);
 
-      $request_queue = new AMQPQueue($this->channel);
-      $request_queue->setName('request_queue');
-      $request_queue->setFlags(AMQP_DURABLE);
-      $request_queue->setArguments([
+      $exchange = new AMQPExchange($this->channel);
+      $exchange->setName('applicare');
+      $exchange->setType(AMQP_EX_TYPE_DIRECT);
+      $exchange->setFlags(AMQP_DURABLE);
+      $exchange->declareExchange();
+
+      $frontend_queue = new AMQPQueue($this->channel);
+      $frontend_queue->setName('frontend_queue');
+      $frontend_queue->setFlags(AMQP_DURABLE);
+      $frontend_queue->setArguments([
         'x-queue-type' => 'quorum',
         'x-message-ttl' => 60000
       ]);
-      $request_queue->declareQueue();
+      $frontend_queue->declareQueue();
+      $frontend_queue->bind('applicare', 'frontend');
 
-      $response_queue = new AMQPQueue($this->channel);
-      $response_queue->setName('response_queue');
-      $response_queue->setFlags(AMQP_DURABLE);
-      $response_queue->setArguments([
-        'x-queue-type' => 'quorum',
-        'x-message-ttl' => 60000
-      ]);
-      $response_queue->declareQueue();
+      $this->exchange = $exchange;
+      $this->frontend_queue = $frontend_queue;
 
-      $this->request_queue = $request_queue;
-      $this->response_queue = $response_queue;
-
-      $this->response_queue->consume(function($message) {
+      $this->frontend_queue->consume(function($message) {
         $correlation_id = $message->getCorrelationId();
-        $headers = $message->getHeaders();
-
-        if ($headers['to'] === 'FE' && isset($this->pending_requests[$correlation_id])) {
+        if (isset($this->pending_requests[$correlation_id])) {
           $response = json_decode($message->getBody(), true);
           call_user_func($this->pending_requests[$correlation_id], $response);
           unset($this->pending_requests[$correlation_id]);
@@ -66,30 +61,51 @@ class RMQClient {
     }
   }
 
-  public function sendRequest($body, $destination = 'BE') {
-    $correlation_id = $this->getUniqueId();
-
-    $message_body = is_string($body) ? $body : json_encode($body);
-    $message = new AMQPEnvelope($message_body);
-    $message->setCorrelationId($correlation_id);
-    $message->setHeaders([
-      'to' => isset($body['query']) ? 'DB' : $destination,
-      'from' => 'FE'
-    ]);
-    $message->setDeliveryMode(2);
-
-    $this->request_queue->publish($message);
-
-    return $correlation_id;
+  public function sendRequest($body, $destination = 'backend') {
+    try {
+      $correlation_id = $this->getUniqueId();
+      $message_body = is_string($body) ? $body : json_encode($body);
+          
+      $message = new AMQPMessage($message_body, [
+        'correlation_id' => $correlation_id,
+        'delivery_mode' => 2
+      ]);
+          
+      $this->exchange->publish(
+        $message_body,
+        $destination,
+        AMQP_NOPARAM,
+        [
+          'correlation_id' => $correlation_id,
+          'delivery_mode' => 2
+        ]
+      );
+  
+      error_log("Published message with correlation_id: $correlation_id to $destination");
+      return $correlation_id;
+    } catch (Exception $e) {
+      error_log("Error sending request: " . $e->getMessage());
+      throw $e;
+    }
   }
 
   public function waitForResponse($correlation_id, $timeout = 30) {
     $response = null;
-    $this->pending_requests[$correlation_id] = function($data) use (&$response) { $response = $data; };
+    $this->pending_requests[$correlation_id] = function($data) use (&$response) { 
+      error_log("Received response for correlation_id: $correlation_id");
+      $response = $data; 
+    };
     $start = time();
 
     while ($response === null && (time() - $start) < $timeout) {
-      $this->response_queue->consume(null, AMQP_NOPARAM, 1);
+      try {
+        $this->response_queue->consume(null, AMQP_NOPARAM, 1);
+      } catch (Exception $e) {
+        error_log("Error in consume: " . $e->getMessage());
+      }
+    }
+    if ($response === null) {
+      error_log("Timeout waiting for response to correlation_id: $correlation_id");
     }
 
     unset($this->pending_requests[$correlation_id]);
@@ -136,11 +152,11 @@ if (basename($_SERVER['SCRIPT_FILENAME']) == basename(__FILE__)) {
       if (json_last_error() !== JSON_ERROR_NONE) {
         throw new Exception("Invalid JSON message provided");
       }
-        
+
       $destination = isset($argv[2]) ? $argv[2] : 'BE';
       echo "Sending message to $destination...\n";
       $correlation_id = $rmq->sendRequest($message, $destination);        
-    
+ 
       echo "Waiting for response...\n";
       $response = $rmq->waitForResponse($correlation_id);    
       if ($response) {

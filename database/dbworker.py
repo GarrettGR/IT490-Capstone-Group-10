@@ -78,11 +78,11 @@ def send_db_response(response, correlation_id):
   try:
     channel.basic_publish(
       exchange='applicare',
-      routing_key='backend',
+      routing_key='frontend',  # Changed from 'backend' to 'frontend'
       body=message,
       properties=pika.BasicProperties(correlation_id=correlation_id)
     )
-    print(f"Sent response to backend: {response}")
+    print(f"Sent response to frontend: {response}")
   except Exception as e:
     print(f"Error sending response: {e}")
 

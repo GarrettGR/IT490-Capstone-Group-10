@@ -25,12 +25,17 @@ async def send_message(destination, body, correlation_id):
   )
   async with connection:
     async with connection.channel() as channel:
-      await channel.default_exchange.publish(
+      exchange = await channel.declare_exchange(
+        name='applicare',
+        type=aio_pika.ExchangeType.DIRECT,
+        durable=True
+      )
+      await exchange.publish(
         aio_pika.Message(
           body=message.encode(),
           correlation_id=correlation_id,
         ),
-        routing_key=destination.lower(),  # 'frontend' or 'database' as routing key
+        routing_key=destination.lower()  # 'frontend' or 'database'
       )
 
 async def listen_for_messages():

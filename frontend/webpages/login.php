@@ -1,12 +1,15 @@
 <?php
 // Include database connection
-include('../src/database-applicare.php');
+require_once('../src/database-applicare.php');
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = trim($_POST['email']);
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+    $password = trim($_POST['password_hash']);
+    $error = '';
 
-    if (empty($email)) {
-        echo "Email is required!";
+    if (empty($email) || empty($password)) {
+        echo "Both email and password are required!";
     } else {
         try {
             // Check if the user exists
@@ -16,20 +19,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user) {
-                // Generate a unique token
-                $token = bin2hex(random_bytes(32));
-                $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+               // Verify the password
+               if ($password == $user['password_hash']) {
+                // Successful login
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['first_name'] = $user['first_name'];
 
-                // Insert the token directly into the users table
-                $insertToken = "UPDATE users SET token = ?, token_expires_at = ? WHERE email = ?";
-                $stmt = $db->prepare($insertToken);
-                $stmt->execute([$token, $expires, $email]);
-
+                // Redirect to dashboard or home page
+                header("Location: index.php");
+                exit();
+                } else {
+                    $error = "Incorrect password.";
+                }
+                
             } else {
                 echo "No user found with that email address.";
             }
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            echo "Database Error: " . $e->getMessage();
         }
     }
 }
@@ -73,7 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         </svg></div>
                                     <form class="text-center" method="post">
                                         <div class="mb-3"><input class="form-control" type="email" name="email" placeholder="Email"></div>
-                                        <div class="mb-3"><input class="form-control" type="password" name="password" placeholder="Password"></div>
+                                        <div class="mb-3"><input class="form-control" type="password" name="password_hash" placeholder="Password"></div>
+                                        <?php if (!empty($error)) : ?>
+                                            <div class="alert alert-danger"><?php echo $error; ?></div>
+                                        <?php endif; ?>
+                                        
                                         <div class="mb-3"><button class="btn btn-primary d-block w-100" type="submit">Login</button></div>
                                         <a href="password-recovery.php">Forgot your password?</a>
                                         <p class="text-muted">Don't have an account?</p>

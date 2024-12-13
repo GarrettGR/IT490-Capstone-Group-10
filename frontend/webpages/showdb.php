@@ -35,6 +35,7 @@ $statement->closeCursor();
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
+                        <th>Password</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -44,6 +45,7 @@ $statement->closeCursor();
                         <td><?php echo $user['first_name']; ?></td>
                         <td><?php echo $user['last_name']; ?></td>
                         <td><?php echo $user['email']; ?></td>
+                        <td><?php echo $user['password_hash']; ?></td>
                     </tr>
                     <?php endforeach ?>
                 </tbody>

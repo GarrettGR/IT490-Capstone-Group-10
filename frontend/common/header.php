@@ -1,7 +1,10 @@
 <?php
-  session_start();
+  // Start the session only if it's not already active
+  if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+  }
   // Assuming you store the user's name in session when they log in
-  $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+  $first_name = isset($_SESSION['first_name']) ? $_SESSION['first_name'] : '';
 ?>
 <html lang="en">
   <head>

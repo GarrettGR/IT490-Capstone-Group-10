@@ -1,23 +1,67 @@
-<!-- Jasmin Rutter, 12/11/24, IT490-009, User Signup, jnr7@njit.edu -->
 <?php
 
     // connecting to the database
     require_once('../src/database-applicare.php');
 
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // getting the data from the form
-    $first_name = filter_input(INPUT_POST, 'first_name');
-    $last_name = filter_input(INPUT_POST, 'last_name');
-    $email = filter_input(INPUT_POST, 'email');
-    $password_hash = filter_input(INPUT_POST, 'password_hash');
-    $security_question_1 = filter_input(INPUT_POST, 'security_question_1');
-    $security_answer_1 = filter_input(INPUT_POST, 'security_answer_1');
+        $first_name = filter_input(INPUT_POST, 'first_name');
+        $last_name = filter_input(INPUT_POST, 'last_name');
+        $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+        $password_hash = filter_input(INPUT_POST, 'password_hash');
+        $security_question_1 = filter_input(INPUT_POST, 'security_question_1');
+        $security_answer_1 = filter_input(INPUT_POST, 'security_answer_1');
 
-    $statement = $db->prepare($query);
-    $statement->bindValue(':animal_code', )
+        // Validate required fields
+        if (empty($first_name) || empty($last_name) || empty($email) || empty($password_hash) || empty($security_question_1) || empty($security_answer_1)) {
+            echo "All fields are required!";
+            
+        } else{
+            // Checks if email already exists 
+            $query = "SELECT * FROM users WHERE email = :email";
+            $tatement = $db->prepare($query);
+            $statement->bindValue(':email', $email);
+            $statement->execute();
+            $count = $statement->fetchColumn();
 
+            if($count > 0){
+                echo "<p class='text-danger text-center'>Email is already registered. Please log in or use another email.</p>";
 
+            }else{
+                $password_hash = password_hash($password_hash, PASSWORD_DEFAULT);
+                $security_answer_hash = password_hash($security_answer_1, PASSWORD_DEFAULT);
 
+                // insert data from form into the database
+                $query = 'INSERT IGNORE INTO users (first_name, last_name, email, password_hash, security_question_1, security_answer_1)
+                VALUES
+                (:first_name, :last_name, :email, :password_hash, :security_question_1, :security_answer_1)';
 
+                $statement = $db->prepare($query);
+                $statement->bindValue(':first_name', $first_name);
+                $statement->bindValue(':last_name', $last_name);
+                $statement->bindValue(':email', $email);
+                $statement->bindValue(':password_hash', $password_hash);
+                $statement->bindValue(':security_question_1', $security_question_1);
+                $statement->bindValue(':security_answer_1', $security_answer_1);
+                $success = $statement->execute();
+                $statement->closeCursor();
+
+                try {
+                    $success = $statement->execute();
+                    if ($success) {
+                        echo "<p class='text-success text-center'>Sign up successful! You can now <a href='login.php'>log in</a>.</p>";
+                    } else {
+                        echo "<p class='text-danger text-center'>Error signing up. Please try again later.</p>";
+                    }
+                } catch (PDOException $e) {
+                    echo "<p class='text-danger text-center'>Error: " . $e->getMessage() . "</p>";
+                }
+
+            }
+            
+        }
+
+    }
 
 ?>
 

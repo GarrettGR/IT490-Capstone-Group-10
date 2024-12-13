@@ -38,9 +38,22 @@
 
           <!-- Right-aligned Section (Sign In, Star Icon, Cart) -->
           <ul class="navbar-nav ms-auto"> <!-- ms-auto pushes the items to the right -->
-            <li class="nav-item">
-              <a class="btn btn-primary" href="login.php" role="button">Sign In</a>
-            </li>
+          <?php if (!empty($first_name)): ?>
+              <!-- If user is logged in, display their name -->
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <?php echo htmlspecialchars($first_name); ?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                  <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                </ul>
+              </li>
+            <?php else: ?>
+              <!-- If user is not logged in, show "Sign In" button -->
+              <li class="nav-item">
+                <a class="btn btn-primary" href="login.php" role="button">Sign In</a>
+              </li>
+            <?php endif; ?>
             <li class="nav-item">
               <a href="saved.php" class="nav-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-star" style="width: 21px; height: 20px;">

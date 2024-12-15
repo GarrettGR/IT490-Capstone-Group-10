@@ -1,6 +1,13 @@
 <?php
 // checks database connection cause it is needed for troubleshooting
-include('../src/database-applicare.php'); 
+require_once('../src/database-applicare.php'); 
+ 
+// Fetch all appliances from the appliances table
+$queryAppliances = 'SELECT * FROM appliances ORDER BY appliance_id';
+$statement = $db->prepare($queryAppliances);
+$statement->execute();
+$appliances = $statement->fetchAll(PDO::FETCH_ASSOC); // Fetch as an associative array
+$statement->closeCursor();
 
 ?>
 <!DOCTYPE html>
@@ -33,31 +40,47 @@ include('../src/database-applicare.php');
     <section class="appliance-cards-section py-5">
         <div class="container">
             <div class="row">
-                <?php
-                // different appliances 
-                $appliances = [
-                    ['id' => 1, 'name' => 'Washers', 'image' => 'https://image-us.samsung.com/SamsungUS/home/home-appliances/washers/front-load/pd/wf45t6000aw-a5/gallery/Gallery-WF45T6000AW-01-White-1600x1200.jpg?$product-details-jpg$', 'description' => 'Troubleshoot issues with washing performance, leaks, and spinning.'],
-                    ['id' => 2, 'name' => 'Dryers', 'image' => 'https://mobileimages.lowes.com/productimages/4fbb1116-847f-45ce-8cb4-f3fbe3428101/17585630.jpg', 'description' => 'Resolve heating, tumbling, and drying problems.'],
-                    ['id' => 3, 'name' => 'Refrigerators', 'image' => 'https://d1b5h9psu9yexj.cloudfront.net/55772/LG-LRFLC2706S_20230823-182245_full.jpeg', 'description' => 'Fix cooling, temperature regulation, and ice maker issues.'],
-                    ['id' => 4, 'name' => 'Dishwashers', 'image' => 'https://images.webfronts.com/cache/frouerpscico.jpg?imgeng=/w_500/h_500/m_letterbox_ffffff_100', 'description' => 'Get help with drainage, cleaning, and drying cycles.'],
-                    ['id' => 5, 'name' => 'Microwaves', 'image' => 'https://target.scene7.com/is/image/Target/GUEST_738eeb63-eb0c-415f-a2c1-0dcf6ad03ea1?wid=488&hei=488&fmt=pjpeg', 'description' => 'Troubleshoot heating, power, and display issues.'],
-                    ['id' => 6, 'name' => 'Ovens', 'image' => 'https://mobileimages.lowes.com/productimages/06a6bba8-81e9-47ed-90ce-4a1f2b235af6/42672585.jpg', 'description' => 'Resolve temperature regulation and heating problems.'],
-                ];
-
-                // loop for creating a card for each appliance
+                <?php 
                 foreach ($appliances as $appliance) {
+                    $image = '';
+                    switch ($appliance['appliance_name']) {
+                        case 'Washers':
+                            $image = 'https://image-us.samsung.com/SamsungUS/home/home-appliances/washers/front-load/pd/wf45t6000aw-a5/gallery/Gallery-WF45T6000AW-01-White-1600x1200.jpg?$product-details-jpg$';
+                            break;
+                        case 'Dryers':
+                            $image = 'https://mobileimages.lowes.com/productimages/4fbb1116-847f-45ce-8cb4-f3fbe3428101/17585630.jpg';
+                            break;
+                        case 'Refrigerators':
+                            $image = 'https://d1b5h9psu9yexj.cloudfront.net/55772/LG-LRFLC2706S_20230823-182245_full.jpeg';
+                            break;
+                        case 'Dishwashers':
+                            $image = 'https://images.webfronts.com/cache/frouerpscico.jpg?imgeng=/w_500/h_500/m_letterbox_ffffff_100';
+                            break;
+                        case 'Microwaves':
+                            $image = 'https://target.scene7.com/is/image/Target/GUEST_738eeb63-eb0c-415f-a2c1-0dcf6ad03ea1?wid=488&hei=488&fmt=pjpeg';
+                            break;
+                        case 'Ovens':
+                            $image = 'https://mobileimages.lowes.com/productimages/06a6bba8-81e9-47ed-90ce-4a1f2b235af6/42672585.jpg';
+                            break;
+                        default:
+                            $image = 'assets/images/default-appliance.jpg'; // Default image for unknown appliances
+                            break;
+                    }
+
+                
                     echo '
                     <div class="col-md-4 mb-4">
-                        <a href="appliance.php?id=' . $appliance['id'] . '" class="text-decoration-none">
+                        <a href="appliance.php?id=' . htmlspecialchars($appliance['appliance_id']) . '" class="text-decoration-none">
                             <div class="card">
-                                <img src="' . $appliance['image'] . '" class="card-img-top" alt="' . $appliance['name'] . '">
+                                <img src="' . htmlspecialchars($image) . '" class="card-img-top" alt="' . htmlspecialchars($appliance['appliance_name']) . '">
                                 <div class="card-body">
-                                    <h5 class="card-title">' . $appliance['name'] . '</h5>
-                                    <p class="card-text">' . $appliance['description'] . '</p>
+                                    <h5 class="card-title">' . htmlspecialchars($appliance['appliance_name']) . '</h5>
+                                    <p class="card-text">' . htmlspecialchars($appliance['description']) . '</p>
                                 </div>
                             </div>
                         </a>
                     </div>';
+                    
                 }
                 ?>
             </div>

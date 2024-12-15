@@ -3,15 +3,15 @@
 include('../src/database-applicare.php');
 
 // Retrieve the appliance ID from the query string
-$applianceId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$applianceId = isset($_GET['appliance_id']) ? (int) $_GET['appliance_id'] : 0;
 
 // Fetch appliance details
-$applianceQuery = $db->prepare("SELECT * FROM appliances WHERE id = ?");
+$applianceQuery = $db->prepare("SELECT * FROM appliances WHERE appliance_id = ?");
 $applianceQuery->execute([$applianceId]);
 $appliance = $applianceQuery->fetch();
 
 // Fetch all brands for the selected appliance
-$brandsQuery = $db->prepare("SELECT id, name FROM brands WHERE appliance_id = ?");
+$brandsQuery = $db->prepare("SELECT appliance_id, name FROM brands WHERE appliance_id = ?");
 $brandsQuery->execute([$applianceId]);
 $brands = $brandsQuery->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -21,7 +21,7 @@ $brands = $brandsQuery->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Applicare - Choose Brand and Model</title>
+    <title>Choose a Brand and Model</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:300,400,600,700&amp;display=swap">
     <link rel="stylesheet" href="assets/css/bs-theme-overrides.css">
@@ -51,7 +51,7 @@ $brands = $brandsQuery->fetchAll(PDO::FETCH_ASSOC);
                 <select class="form-select" id="brandSelect" aria-label="Select Brand">
                     <option selected disabled>Select a Brand</option>
                     <?php foreach ($brands as $brand): ?>
-                        <option value="<?php echo $brand['id']; ?>"><?php echo htmlspecialchars($brand['name']); ?></option>
+                        <option value="<?php echo $brand['brand_id']; ?>"><?php echo htmlspecialchars($brand['name']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>

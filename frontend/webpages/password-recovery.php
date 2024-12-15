@@ -1,3 +1,78 @@
+<?php
+  require_once('../src/database-applicare.php');
+
+  // Start the session only if it's not already active
+  if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+  }
+
+  if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+    $error = '';
+
+    if(empty($email)){
+        echo "Email address is required!";
+    }else{
+        try{
+            // checks if the email exists in users table
+            $sql = "SELECT * FROM users WHERE email = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if($user){
+                $_SESSION['email'] = $email;
+                $_SESSION['user_id'] = $user['user_id'];
+                $security_question = $user['security_question_1'];
+            } else {
+                $error = "No user with that email address.";
+            }
+
+        } catch(PDOException $e){
+            echo "Database Error: " . $e->getMessage();
+        }
+    }
+  }
+
+  if (isset($_POST['security_answer'])){
+    $security_answer = trim($_POST['security_answer']);
+    $new_password = trim($_POST['new_password']);
+    $error = '';
+
+    if(empty($security_answer) || empty($new_password)) {
+        echo "Both answer and new password are required!";
+    } else {
+        try {
+             // checks if the user exists again in users table
+             $sql = "SELECT * FROM users WHERE email = ?";
+             $stmt = $db->prepare($sql);
+             $stmt->execute([$email]);
+             $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+             if($user){
+                if($user['security_answer_1'] == $security_answer){
+                    // if answer matches, allow password change
+                    $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+                    $sql = "UPDATE users SET password_hash = ? WHERE email = ?";
+                    $stmt = $db->prepare($sql);
+                    $stmt->execute([$hashed_password, $_SESSION['email']]);
+                    echo "Password updated successfully";
+                    header("Location: login.php");
+                    exit();
+                } else {
+                    $error = "Incorrect security answer.";
+                }
+             }else{
+                $error = "User not found.";
+             }
+            } catch (PDOException $e){
+                echo "Databae Error: " . $e->getMessage();
+            }
+        
+    }
+  }
+
+?>
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -17,40 +92,42 @@
 
     <section class="py-5 mt-5">
         <div class="container py-4 py-xl-5">
-            <section class="position-relative py-4 py-xl-5">
-                <div class="container">
-                    <div class="row mb-5">
-                        <div class="col-md-8 col-xl-6 text-center mx-auto">
-                            <h2>Password Recovery</h2>
-                            <p class="w-lg-50">Enter your email address to reset your password.</p>
+            <?php if (!isset($security_question)): ?>
+                <div class="text-center">
+                    
+                    <h2>Password Recovery</h2>
+                    <p class="w-lg-50">Enter your email address to reset your password.</p>
+                    <form method="post">
+                        <div class="mb-3">
+                            <input class="form-control" type="email" name="email" placeholder="Enter your email" required>
                         </div>
-                    </div>
-                    <div class="row d-flex justify-content-center" style="--bs-primary: #24285b; --bs-primary-rgb: 36,40,91;color: #24285b;border-color: #24285b;">
-                        <div class="col-md-6 col-xl-4">
-                            <div class="card mb-5">
-                                <div class="card-body d-flex flex-column align-items-center">
-                                    <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-lock">
-                                            <path d="M8 0a4 4 0 0 0-4 4v4H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-1V4a4 4 0 0 0-4-4zM4 4a3 3 0 1 1 6 0v4H4V4z"></path>
-                                        </svg>
-                                    </div>
-                                    <!-- Password Recovery Form -->
-                                    <form class="text-center" method="post">
-                                        <div class="mb-3">
-                                            <input class="form-control" type="email" name="email" placeholder="Enter your email" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <button class="btn btn-primary d-block w-100" type="submit">Send Recovery Email</button>
-                                        </div>
-                                    </form>
-                                    <p class="text-muted">Remembered your password?</p>
-                                    <a class="btn btn-link d-block w-100" href="login.php" style="color: #24285b; text-decoration: none;">Back to Login</a>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <button class="btn btn-primary d-block w-100" type="submit">Send Recovery Email</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
-            </section>
+            <?php else: ?>
+                <!-- security question form -->
+                 <div class="text-center">
+                    <h2>Security Question</h2>
+                    <p>Answer the security question to reset your password.</p>
+                    <form method="post">
+                        <div class="mb-3">
+                            <p><strong><?php echo $security_question; ?></strong></p>
+                            <input class="form-control" type="text" name="security_answer" placeholder="Your answer" required>
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control" type="password" name="new_password" placeholder="New password" required>
+                        </div>
+                        <?php if (!empty($error)) : ?>
+                            <div class="alert alert-danger"><?php echo $error; ?></div>
+                        <?php endif; ?>
+                        <div class="mb-3">
+                            <button class="btn btn-primary d-block w-100" type="submit">Reset Password</button>
+                        </div>
+                    </form>
+                </div>
+            <?php endif; ?>
         </div>
     </section>
 

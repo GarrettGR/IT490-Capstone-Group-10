@@ -6,10 +6,10 @@
 
   // destorys session to log user out
   session_unset();
-  session_destory();
+  session_destroy();
 
   //redirect to the homepage or login page
-  header("Location: login.php");
+  header("Location: index.php");
   exit();
 
 ?>

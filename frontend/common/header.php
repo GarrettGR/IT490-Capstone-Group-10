@@ -41,10 +41,10 @@
           <?php if (!empty($first_name)): ?>
               <!-- If user is logged in, display their name -->
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="true">
                   <?php echo htmlspecialchars($first_name); ?>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="userDropdown">
                   <li><a class="dropdown-item" href="logout.php">Logout</a></li>
                 </ul>
               </li>
@@ -68,6 +68,5 @@
     </nav>
 
     <!-- Add Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

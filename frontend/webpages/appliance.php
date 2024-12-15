@@ -73,7 +73,7 @@ $brands = $brandsQuery->fetchAll(PDO::FETCH_ASSOC);
 
     <?php include('../common/footer.php'); ?>
 
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         // Fetch models when brand is selected

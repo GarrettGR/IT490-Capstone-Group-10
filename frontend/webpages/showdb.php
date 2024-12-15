@@ -55,5 +55,6 @@ $statement->closeCursor();
 
     <?php include('../common/footer.php'); ?>
     </center>
+
 </body>
 </html>

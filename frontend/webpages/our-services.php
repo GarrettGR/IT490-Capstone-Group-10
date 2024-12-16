@@ -9,6 +9,20 @@ $statement->execute();
 $appliances = $statement->fetchAll(PDO::FETCH_ASSOC); // Fetch as an associative array
 $statement->closeCursor();
 
+
+// fetch brands if appliance_id is sent via AJAX
+if (isset($_POST['appliance_id'])) {
+    $queryBrands = 'SELECT * FROM brands WHERE appliance_id = :appliance_id';
+    $statement = $db->prepare($queryBrands);
+    $statement->bindValue(':appliance_id', $_POST['appliance_id'], PDO::PARAM_INT);
+    $statement->execute();
+    $brands = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    // Return brands as JSON for AJAX
+    echo json_encode($brands);
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
@@ -23,6 +37,7 @@ $statement->closeCursor();
     <link rel="stylesheet" href="assets/css/bs-theme-overrides.css">
     <link rel="stylesheet" href="assets/css/Login-Form-Basic-icons.css">
 </head>
+
 <body>
     <?php include('../common/header.php'); ?>
     <header class="pt-5">
@@ -40,8 +55,7 @@ $statement->closeCursor();
     <section class="appliance-cards-section py-5">
         <div class="container">
             <div class="row">
-                <?php 
-                foreach ($appliances as $appliance) {
+                <?php foreach ($appliances as $appliance) {
                     $image = '';
                     switch ($appliance['appliance_name']) {
                         case 'Washers':
@@ -87,12 +101,57 @@ $statement->closeCursor();
         </div>
     </section>
 
+<section class="brand-selection-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <h3 class="text-center">Select Brand</h3>
+                    <select id="brand" class="form-select" style="display: none;">
+                        <option value="" disabled selected>Select a brand</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
     <?php include('../common/footer.php'); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
     <script src="assets/js/startup-modern.js"></script>
+
+    <script>
+        // Handle appliance button click
+        $(document).on('click', '.select-appliance', function () {
+            var applianceId = $(this).data('appliance-id');
+
+            if (applianceId) {
+                // Fetch brands via AJAX
+                $.ajax({
+                    url: '', // Current file handles the request
+                    method: 'POST',
+                    data: { appliance_id: applianceId },
+                    success: function (response) {
+                        var brands = JSON.parse(response);
+                        var brandSelect = $('#brand');
+
+                        // Populate the dropdown
+                        brandSelect.empty().append('<option value="" disabled selected>Select a brand</option>');
+                        brands.forEach(function (brand) {
+                            brandSelect.append('<option value="' + brand.brand_id + '">' + brand.brand_name + '</option>');
+                        });
+
+                        // Show the dropdown
+                        brandSelect.show();
+                    },
+                    error: function () {
+                        alert('Error fetching brands. Please try again.');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
+
 
 </html>

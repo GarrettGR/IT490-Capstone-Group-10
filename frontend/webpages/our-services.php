@@ -14,7 +14,6 @@ $models = [];
 $parts = [];
 $issues = [];
 
-// fetch brands if appliance_id is sent via AJAX
 if (isset($_GET['appliance_id'])) {
     $appliance_id = $_GET['appliance_id'];  // Store appliance_id for further use
 
@@ -23,6 +22,14 @@ if (isset($_GET['appliance_id'])) {
     $statement->bindValue(':appliance_id', $_GET['appliance_id'], PDO::PARAM_INT);
     $statement->execute();
     $brands = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    // selects parts of the appliance that might have issues
+    $queryParts = 'SELECT * FROM problem_areas WHERE appliance_id = :appliance_id';
+    $statement = $db->prepare($queryParts);
+    $statement->bindValue(':appliance_id', $appliance_id, PDO::PARAM_INT);
+    $statement->execute();
+    $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
     $statement->closeCursor();
 }
 
@@ -42,14 +49,6 @@ if (isset($_GET['brand_id'])) {
 
 if (isset($_GET['area_id'])) {
     $area_id = $_GET['area_id'];
-
-    // selects parts of the appliance that might have issues
-    $queryParts = 'SELECT * FROM problem_areas WHERE appliance_id = :appliance_id';
-    $statement = $db->prepare($queryParts);
-    $statement->bindValue(':appliance_id', $appliance_id, PDO::PARAM_INT);
-    $statement->execute();
-    $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
-    $statement->closeCursor();
 
     // selects issues that are relevant that specific part
     $queryIssues = 'SELECT * FROM issue_types WHERE area_id = :area_id';

@@ -136,33 +136,33 @@ if (isset($_POST['appliance_id'])) {
                     url: '', // Current file handles the request
                     method: 'POST',
                     data: { appliance_id: applianceId },
-                    success: function (response)
-                    {
+                    success: function (response) {
                         loader.hide();
-                        try{
+                        try {
                             var brands = JSON.parse(response);
                             brandSelect.empty().append('<option value="" disabled selected>Select a Brand</option>');
-                            
-                            if(brands.length > 0){
-                                brands.forEach(function(brand)){
-                                    brandSelect.append('<option value="' + brand.brand_id + '">'+ brand.brand_name + '</option>')
+
+                            if (brands.length > 0) {
+                                brands.forEach(function (brand) {
+                                    brandSelect.append('<option value="' + brand.brand_id + '">' + brand.brand_name + '</option>');
                                 });
                                 brandSelect.show();
-                            }else{
+                            } else {
                                 alert('No brands available for the selected appliance.');
                             }
 
-                        }catch(e){
+                        } catch (e) {
                             alert('Error processing the response. Please try again.');
-
                         }
                     },
-                    error: function(){
+                    error: function () {
                         loader.hide();
                         alert('Error fetching brands. Please try again.');
                     }
-
                 });
+            }
+        });
+
                     
                         
     </script>

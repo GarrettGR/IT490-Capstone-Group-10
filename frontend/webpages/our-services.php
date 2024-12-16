@@ -84,12 +84,12 @@ if (isset($_POST['appliance_id'])) {
                 
                     echo '
                     <div class="col-md-4 mb-4">
-                        <a href="appliance.php?id=' . htmlspecialchars($appliance['appliance_id']) . '" class="text-decoration-none">
+                        <a href="appliance.php?id=' . $appliance['appliance_id'] . '" class="text-decoration-none">
                             <div class="card">
-                                <img src="' . htmlspecialchars($image) . '" class="card-img-top" alt="' . htmlspecialchars($appliance['appliance_name']) . '">
+                                <img src="' . $image . '" class="card-img-top" alt="' . htmlspecialchars($appliance['appliance_name']) . '">
                                 <div class="card-body">
-                                    <h5 class="card-title">' . htmlspecialchars($appliance['appliance_name']) . '</h5>
-                                    <p class="card-text">' . htmlspecialchars($appliance['description']) . '</p>
+                                    <h5 class="card-title">' . $appliance['appliance_name'] . '</h5>
+                                    <p class="card-text">' . $appliance['description'] . '</p>
                                 </div>
                             </div>
                         </a>
@@ -124,32 +124,47 @@ if (isset($_POST['appliance_id'])) {
         // Handle appliance button click
         $(document).on('click', '.select-appliance', function () {
             var applianceId = $(this).data('appliance-id');
+            var brandSelect = $('#brand');
+            var loader = $('#brand-loader');
 
             if (applianceId) {
+                brandSelect.hide();
+                loader.show();
+
                 // Fetch brands via AJAX
                 $.ajax({
                     url: '', // Current file handles the request
                     method: 'POST',
                     data: { appliance_id: applianceId },
-                    success: function (response) {
-                        var brands = JSON.parse(response);
-                        var brandSelect = $('#brand');
+                    success: function (response)
+                    {
+                        loader.hide();
+                        try{
+                            var brands = JSON.parse(response);
+                            brandSelect.empty().append('<option value="" disabled selected>Select a Brand</option>');
+                            
+                            if(brands.length > 0){
+                                brands.forEach(function(brand)){
+                                    brandSelect.append('<option value="' + brand.brand_id + '">'+ brand.brand_name + '</option>')
+                                });
+                                brandSelect.show();
+                            }else{
+                                alert('No brands available for the selected appliance.');
+                            }
 
-                        // Populate the dropdown
-                        brandSelect.empty().append('<option value="" disabled selected>Select a brand</option>');
-                        brands.forEach(function (brand) {
-                            brandSelect.append('<option value="' + brand.brand_id + '">' + brand.brand_name + '</option>');
-                        });
+                        }catch(e){
+                            alert('Error processing the response. Please try again.');
 
-                        // Show the dropdown
-                        brandSelect.show();
+                        }
                     },
-                    error: function () {
+                    error: function(){
+                        loader.hide();
                         alert('Error fetching brands. Please try again.');
                     }
+
                 });
-            }
-        });
+                    
+                        
     </script>
 </body>
 

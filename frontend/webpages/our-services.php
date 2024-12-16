@@ -10,6 +10,9 @@ $appliances = $statement->fetchAll(PDO::FETCH_ASSOC); // Fetch as an associative
 $statement->closeCursor();
 
 $brands = [];
+$models = [];
+$parts = [];
+$issues = [];
 
 // fetch brands if appliance_id is sent via AJAX
 if (isset($_GET['appliance_id'])) {
@@ -35,7 +38,30 @@ if (isset($_GET['brand_id'])) {
     $models = $statement->fetchAll(PDO::FETCH_ASSOC);
     $statement->closeCursor();
 }
+
+
+if (isset($_GET['area_id'])) {
+    $area_id = $_GET['area_id'];
+
+    // selects parts of the appliance that might have issues
+    $queryParts = 'SELECT * FROM problem_areas WHERE appliance_id = :appliance_id';
+    $statement = $db->prepare($queryParts);
+    $statement->bindValue(':appliance_id', $appliance_id, PDO::PARAM_INT);
+    $statement->execute();
+    $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    // selects issues that are relevant that specific part
+    $queryIssues = 'SELECT * FROM issue_types WHERE area_id = :area_id';
+    $statement = $db->prepare($queryIssues);
+    $statement->bindValue(':area_id', $area_id, PDO::PARAM_INT);
+    $statement->execute();
+    $issues = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
@@ -115,46 +141,79 @@ if (isset($_GET['brand_id'])) {
         </div>
     </section>
 
-    <?php if (!empty($brands)) : ?>
-    <section class="brand-selection-section py-5" id="brand-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 mx-auto">
-                    <h3 class="text-center">Select Brand</h3>
-                    <select id="brand" class="form-select" onchange="window.location.href = '?appliance_id=<?php echo $_GET['appliance_id']; ?>&brand_id=' + this.value  + '#brand-section';">
+    <?php if (isset($_GET['appliance_id']) && !empty($brands)) : ?>
+        <section class="brand-selection py-5">
+            <div class="container">
+                <h2>Select Brand</h2>
+                <form method="get" action="">
+                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
+                    <select class="form-select" name="brand_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a brand</option>
-                        <?php foreach ($brands as $brand) {
-                            $selected = (isset($_GET['brand_id']) && $_GET['brand_id'] == $brand['brand_id']) ? 'selected' : '';
-                        ?>
-                            <option value="<?php echo $brand['brand_id']; ?>" <?php echo $selected; ?>>
-                                <?php echo htmlspecialchars($brand['name']); ?>
-                            </option>                        
-                        <?php } ?>
+                        <?php foreach ($brands as $brand) : ?>
+                            <option value="<?php echo $brand['brand_id']; ?>"><?php echo htmlspecialchars($brand['name']); ?></option>
+                        <?php endforeach; ?>
                     </select>
-                </div>
+                </form>
             </div>
-        </div>
-    </section>
+        </section>
     <?php endif; ?>
 
-    <?php if (!empty($models)) : ?>
-    <section class="model-selection-section py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 mx-auto">
-                    <h3 class="text-center">Select Model</h3>
-                    <select id="model" class="form-select">
+    <?php if (isset($_GET['brand_id']) && !empty($models)) : ?>
+        <section class="model-selection py-5">
+            <div class="container">
+                <h2>Select Model</h2>
+                <form method="get" action="">
+                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
+                    <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
+                    <select class="form-select" name="model_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a model</option>
-                        <?php foreach ($models as $model) {
-                            echo '<option value="' . $model['model_id'] . '">' . htmlspecialchars($model['name']) . '</option>';
-                        } ?>
+                        <?php foreach ($models as $model) : ?>
+                            <option value="<?php echo $model['model_id']; ?>"><?php echo htmlspecialchars($model['name']); ?></option>
+                        <?php endforeach; ?>
                     </select>
-                </div>
+                </form>
             </div>
-        </div>
-    </section>
+        </section>
     <?php endif; ?>
 
+    <?php if (isset($_GET['model_id']) && !empty($parts)) : ?>
+        <section class="parts-selection py-5">
+            <div class="container">
+                <h2>Select Part</h2>
+                <form method="get" action="">
+                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
+                    <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
+                    <input type="hidden" name="model_id" value="<?php echo $_GET['model_id']; ?>">
+                    <select class="form-select" name="area_id" onchange="this.form.submit()">
+                        <option value="" disabled selected>Select a part</option>
+                        <?php foreach ($parts as $part) : ?>
+                            <option value="<?php echo $part['area_id']; ?>"><?php echo htmlspecialchars($part['area_name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
+            </div>
+        </section>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['area_id']) && !empty($issues)) : ?>
+        <section class="issue-selection py-5">
+            <div class="container">
+                <h2>Select Issue</h2>
+                <form method="get" action="">
+                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
+                    <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
+                    <input type="hidden" name="model_id" value="<?php echo $_GET['model_id']; ?>">
+                    <input type="hidden" name="area_id" value="<?php echo $_GET['area_id']; ?>">
+                    <select class="form-select" name="issue_id">
+                        <option value="" disabled selected>Select an issue</option>
+                        <?php foreach ($issues as $issue) : ?>
+                            <option value="<?php echo $issue['issue_id']; ?>"><?php echo htmlspecialchars($issue['issue_description']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
+            </div>
+        </section>
+    <?php endif; ?>
 
     <?php include('../common/footer.php'); ?>
 

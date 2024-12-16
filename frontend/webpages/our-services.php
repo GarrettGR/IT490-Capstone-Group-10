@@ -149,7 +149,10 @@ if (isset($_GET['area_id'])) {
                     <select class="form-select" name="brand_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a brand</option>
                         <?php foreach ($brands as $brand) : ?>
-                            <option value="<?php echo $brand['brand_id']; ?>"><?php echo htmlspecialchars($brand['name']); ?></option>
+                            <option value="<?= $brand['brand_id']; ?>"
+                                <?= isset($_GET['brand_id']) && $_GET['brand_id'] == $brand['brand_id'] ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($brand['name']); ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </form>
@@ -167,7 +170,10 @@ if (isset($_GET['area_id'])) {
                     <select class="form-select" name="model_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a model</option>
                         <?php foreach ($models as $model) : ?>
-                            <option value="<?php echo $model['model_id']; ?>"><?php echo htmlspecialchars($model['name']); ?></option>
+                            <option value="<?= $model['model_id']; ?>"
+                                <?= isset($_GET['model_id']) && $_GET['model_id'] == $model['model_id'] ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($model['name']); ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </form>
@@ -186,7 +192,10 @@ if (isset($_GET['area_id'])) {
                     <select class="form-select" name="area_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a part</option>
                         <?php foreach ($parts as $part) : ?>
-                            <option value="<?php echo $part['area_id']; ?>"><?php echo htmlspecialchars($part['area_name']); ?></option>
+                            <option value="<?= $part['area_id']; ?>"
+                                <?= isset($_GET['area_id']) && $_GET['area_id'] == $part['area_id'] ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($part['area_name']); ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </form>
@@ -206,7 +215,10 @@ if (isset($_GET['area_id'])) {
                     <select class="form-select" name="issue_id">
                         <option value="" disabled selected>Select an issue</option>
                         <?php foreach ($issues as $issue) : ?>
-                            <option value="<?php echo $issue['issue_id']; ?>"><?php echo htmlspecialchars($issue['issue_description']); ?></option>
+                            <option value="<?= $issue['issue_id']; ?>"
+                                <?= isset($_GET['issue_id']) && $_GET['issue_id'] == $brand['brand_id'] ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($issue['issue_description']); ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </form>
@@ -215,6 +227,19 @@ if (isset($_GET['area_id'])) {
     <?php endif; ?>
 
     <?php include('../common/footer.php'); ?>
+
+    <script>
+        // Automatically scroll to the anchor section if it exists in the URL
+        document.addEventListener('DOMContentLoaded', function () {
+            const hash = window.location.hash;
+            if (hash) {
+                const element = document.querySelector(hash);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>

@@ -9,21 +9,21 @@ $statement->execute();
 $appliances = $statement->fetchAll(PDO::FETCH_ASSOC); // Fetch as an associative array
 $statement->closeCursor();
 
+$brands = [];
 
 // fetch brands if appliance_id is sent via AJAX
-if (isset($_POST['appliance_id'])) {
+if (isset($_GET['appliance_id'])) {
+    $appliance_id = $_GET['appliance_id'];  // Store appliance_id for further use
+
     $queryBrands = 'SELECT * FROM brands WHERE appliance_id = :appliance_id';
     $statement = $db->prepare($queryBrands);
-    $statement->bindValue(':appliance_id', $_POST['appliance_id'], PDO::PARAM_INT);
+    $statement->bindValue(':appliance_id', $_GET['appliance_id'], PDO::PARAM_INT);
     $statement->execute();
     $brands = $statement->fetchAll(PDO::FETCH_ASSOC);
     $statement->closeCursor();
-
-    // Return brands as JSON for AJAX
-    echo json_encode($brands);
-    exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
@@ -84,15 +84,16 @@ if (isset($_POST['appliance_id'])) {
                 
                     echo '
                     <div class="col-md-4 mb-4">
-                        <a href="appliance.php?id=' . $appliance['appliance_id'] . '" class="text-decoration-none">
-                            <div class="card">
-                                <img src="' . $image . '" class="card-img-top" alt="' . htmlspecialchars($appliance['appliance_name']) . '">
-                                <div class="card-body">
-                                    <h5 class="card-title">' . $appliance['appliance_name'] . '</h5>
-                                    <p class="card-text">' . $appliance['description'] . '</p>
-                                </div>
+                        <div class="card">
+                            <img src="' . $image . '" class="card-img-top" alt="' . htmlspecialchars($appliance['appliance_name']) . '">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">' . $appliance['appliance_name'] . '</h5>
+                                <p class="card-text">' . $appliance['description'] . '</p>
+                                <a href="?appliance_id=' . $appliance['appliance_id'] . '" class="btn btn-primary">Select Brand</a>
+
                             </div>
-                        </a>
+                        </div>
+                       
                     </div>';
                     
                 }
@@ -101,18 +102,25 @@ if (isset($_POST['appliance_id'])) {
         </div>
     </section>
 
-<section class="brand-selection-section py-5">
+    <?php if (!empty($brands)) : ?>
+    <section class="brand-selection-section py-5">
         <div class="container">
             <div class="row">
                 <div class="col-md-6 mx-auto">
                     <h3 class="text-center">Select Brand</h3>
-                    <select id="brand" class="form-select" style="display: none;">
+                    <select id="brand" class="form-select">
                         <option value="" disabled selected>Select a brand</option>
+                        <?php foreach ($brands as $brand) {
+                            echo '<option value="' . $brand['brand_id'] . '">' . htmlspecialchars($brand['name']) . '</option>';
+                        } ?>
                     </select>
                 </div>
             </div>
         </div>
     </section>
+    <?php endif; ?>
+
+
     <?php include('../common/footer.php'); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -120,52 +128,6 @@ if (isset($_POST['appliance_id'])) {
     <script src="assets/js/bs-init.js"></script>
     <script src="assets/js/startup-modern.js"></script>
 
-    <script>
-        // Handle appliance button click
-        $(document).on('click', '.select-appliance', function () {
-            var applianceId = $(this).data('appliance-id');
-            var brandSelect = $('#brand');
-            var loader = $('#brand-loader');
-
-            if (applianceId) {
-                brandSelect.hide();
-                loader.show();
-
-                // Fetch brands via AJAX
-                $.ajax({
-                    url: '', // Current file handles the request
-                    method: 'POST',
-                    data: { appliance_id: applianceId },
-                    success: function (response) {
-                        loader.hide();
-                        try {
-                            var brands = JSON.parse(response);
-                            brandSelect.empty().append('<option value="" disabled selected>Select a Brand</option>');
-
-                            if (brands.length > 0) {
-                                brands.forEach(function (brand) {
-                                    brandSelect.append('<option value="' + brand.brand_id + '">' + brand.brand_name + '</option>');
-                                });
-                                brandSelect.show();
-                            } else {
-                                alert('No brands available for the selected appliance.');
-                            }
-
-                        } catch (e) {
-                            alert('Error processing the response. Please try again.');
-                        }
-                    },
-                    error: function () {
-                        loader.hide();
-                        alert('Error fetching brands. Please try again.');
-                    }
-                });
-            }
-        });
-
-                    
-                        
-    </script>
 </body>
 
 

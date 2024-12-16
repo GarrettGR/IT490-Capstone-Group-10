@@ -22,6 +22,19 @@ if (isset($_GET['appliance_id'])) {
     $brands = $statement->fetchAll(PDO::FETCH_ASSOC);
     $statement->closeCursor();
 }
+
+
+// Fetch models based on the selected brand (AJAX request)
+if (isset($_GET['brand_id'])) {
+    $brand_id = $_GET['brand_id'];
+
+    $queryModels = 'SELECT * FROM models WHERE brand_id = :brand_id';
+    $statement = $db->prepare($queryModels);
+    $statement->bindValue(':brand_id', $brand_id, PDO::PARAM_INT);
+    $statement->execute();
+    $models = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+}
 ?>
 
 <!DOCTYPE html>
@@ -103,15 +116,37 @@ if (isset($_GET['appliance_id'])) {
     </section>
 
     <?php if (!empty($brands)) : ?>
-    <section class="brand-selection-section py-5">
+    <section class="brand-selection-section py-5" id="brand-section">
         <div class="container">
             <div class="row">
                 <div class="col-md-6 mx-auto">
                     <h3 class="text-center">Select Brand</h3>
-                    <select id="brand" class="form-select">
+                    <select id="brand" class="form-select" onchange="window.location.href = '?appliance_id=<?php echo $_GET['appliance_id']; ?>&brand_id=' + this.value  + '#brand-section';">
                         <option value="" disabled selected>Select a brand</option>
                         <?php foreach ($brands as $brand) {
-                            echo '<option value="' . $brand['brand_id'] . '">' . htmlspecialchars($brand['name']) . '</option>';
+                            $selected = (isset($_GET['brand_id']) && $_GET['brand_id'] == $brand['brand_id']) ? 'selected' : '';
+                        ?>
+                            <option value="<?php echo $brand['brand_id']; ?>" <?php echo $selected; ?>>
+                                <?php echo htmlspecialchars($brand['name']); ?>
+                            </option>                        
+                        <?php } ?>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!empty($models)) : ?>
+    <section class="model-selection-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mx-auto">
+                    <h3 class="text-center">Select Model</h3>
+                    <select id="model" class="form-select">
+                        <option value="" disabled selected>Select a model</option>
+                        <?php foreach ($models as $model) {
+                            echo '<option value="' . $model['model_id'] . '">' . htmlspecialchars($model['name']) . '</option>';
                         } ?>
                     </select>
                 </div>

@@ -118,7 +118,7 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
     <!-- Review Form -->
     <h3 class="text-center" mt-5 mb-4>Leave a Review</h3>
         <form method="POST" action="" class="mx-auto" style="max-width: 600px; border: 1px solid #ccc; padding: 20px; border-radius:8px; background-color: #f9f9f9;">
-        <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['part_id'] : '' ?>">
+            <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['part_id'] : '' ?>">
             <div class="mb-3">
                 <label for="user_name" class="form-label">Your Name</label>
                 <input type="text" class="form-control" id="user_name" name="user_name" required>

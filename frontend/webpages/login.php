@@ -12,37 +12,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Both email and password are required!";
     } else {
         try {
-            // Check if the user exists
-            $sql = "SELECT * FROM users WHERE email = ?";
-            $stmt = $db->prepare($sql);
-            $stmt->execute([$email]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            // verify the user exists
+            $query = "SELECT * FROM users WHERE email = '$email'";
+            $response = $db->queryDatabase($query);
+            
+            if (isset($response['body']['results']) && !empty($response['body']['results'])) {
+                $user = $response['body']['results'][0];
+                
+                // verify the password
+                if (password_verify($password, $user[2])) { // password_hash is the 3rd column
+                    $_SESSION['email'] = $user[1];  // email is the 2nd column
+                    $_SESSION['first_name'] = $user[3]; // first_name is the 4th column
 
-            if ($user) {
-               // Verify the password
-               if (password_verify(trim($_POST['password_hash']), $user['password_hash'])) {
-                // Successful login
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['first_name'] = $user['first_name'];
-
-                // Redirect to dashboard or home page
-                header("Location: index.php");
-                exit();
+                    header("Location: index.php");
+                    exit();
                 } else {
                     $error = "Incorrect password.";
                 }
-                
             } else {
                 echo "No user found with that email address.";
             }
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             echo "Database Error: " . $e->getMessage();
         }
     }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">

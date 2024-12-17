@@ -109,11 +109,6 @@ if ($zip_code) {
 
         <!-- Form to collect Zip Code input -->
         <h3 class="mt-5 text-center">Find Nearby Handymen</h3>
-        <h4 class="mt-5 text-center">Enter Zip Code</42>
-        <form method="get" action="" class="text-center mb-4">
-            <input type="text" name="zip_code" placeholder="Enter Zip Code" value="<?= htmlspecialchars($zip_code); ?>" class="form-control w-50 d-inline" required>
-            <button type="submit" class="btn btn-primary">Search</button>
-        </form>
 
         <!-- Google Maps Iframe to search for Handymen -->
         <?php

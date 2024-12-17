@@ -6,7 +6,7 @@ if (!extension_loaded('amqp')) {
   die("AMQP extension is not loaded. Please install php-amqp package.\n");
 }
 
-$env = file_get_contents(__DIR__."/root/Capstone-Group-10/.env");
+$env = file_get_contents("/root/Capstone-Group-10/.env");
 $lines = explode("\n",$env);
 
 foreach($lines as $line){

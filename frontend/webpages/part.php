@@ -58,20 +58,6 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
     exit;
 }
 
-$zip_code = '';
-
-// Check if a zip code (or area) is provided
-$zip_code = isset($_GET['zip_code']) ? $_GET['zip_code'] : '';
-
-// If zip code is provided, create a dynamic search query for Google Maps
-if ($zip_code) {
-    $searchQuery = "handyman+" . urlencode($zip_code);
-    $useSearchMap = true; // Flag to indicate dynamic search map
-} else {
-    // Default location if no zip code is provided
-    $searchQuery = "handyman+New+Jersey"; // Default location
-    $useSearchMap = false; // Flag for static map
-}
 ?>
 
 <!DOCTYPE html>
@@ -117,18 +103,7 @@ if ($zip_code) {
         $searchQuery = "handyman+" . urlencode($location);
         ?>
         <div class="text-center">
-        <?php if ($useSearchMap): ?>
-                <!-- Dynamic Google Maps Search based on zip code -->
-                <iframe 
-                    src="https://www.google.com/maps/embed/v1/search?q=<?= $searchQuery; ?>&key=YOUR_GOOGLE_MAPS_API_KEY" 
-                    width="100%" 
-                    height="500" 
-                    style="border:0;" 
-                    allowfullscreen="" 
-                    loading="lazy">
-                </iframe>
-            <?php else: ?>
-                <!-- Static Google Map with predefined coordinates -->
+            <!-- Static Google Map with predefined coordinates -->
                 <iframe 
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12091.640837505438!2d-74.19203265527406!3d40.74200124412969!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2534cc006098b%3A0xfac623bce8f114d8!2sMaple%20Hall%20NJIT!5e0!3m2!1sen!2sus!4v1696634464882!5m2!1sen!2sus" 
                     width="100%" 
@@ -137,9 +112,33 @@ if ($zip_code) {
                     allowfullscreen="" 
                     loading="lazy">
                 </iframe>
-            <?php endif; ?>
-
         </div>
+    </div>
+
+    <!-- Review Form -->
+    <h3 class="text-center" mt-5 mb-4>Leave a Review</h3>
+        <form method="POST" action="" class="mx-auto" style="max-width: 600px; border: 1px solid #ccc; padding: 20px; border-radius:8px; background-color: #f9f9f9;">
+        <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['part_id'] : '' ?>">
+            <div class="mb-3">
+                <label for="user_name" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="user_name" name="user_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="rating" class="form-label">Rating</label>
+                <select class="form-select" id="rating" name="rating" required>
+                    <option value="1">1 - Poor</option>
+                    <option value="2">2 - Fair</option>
+                    <option value="3">3 - Good</option>
+                    <option value="4">4 - Very Good</option>
+                    <option value="5">5 - Excellent</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="comment" class="form-label">Your Review</label>
+                <textarea class="form-control" id="comment" name="comment" rows="4" required></textarea>
+            </div>
+            <button type="submit" name="submit_review" class="btn btn-primary">Submit Review</button>
+        </form>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($user) {
                // Verify the password
-               if ($password == $user['password_hash']) {
+               if (password_verify(trim($_POST['password_hash']), $user['password_hash'])) {
                 // Successful login
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['first_name'] = $user['first_name'];

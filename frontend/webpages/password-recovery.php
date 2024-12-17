@@ -35,6 +35,14 @@
   }
 
   if (isset($_POST['security_answer'])){
+    
+    if(isset($_SESSION['email'])){
+        $email = $SESSION['email'];
+    }else{
+        echo "Session error: Email not found. Please start the process again.";
+        exit();
+    }
+
     $security_answer = trim($_POST['security_answer']);
     $new_password = trim($_POST['new_password']);
     $error = '';

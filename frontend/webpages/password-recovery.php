@@ -63,7 +63,7 @@
                     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                     $sql = "UPDATE users SET password_hash = ? WHERE email = ?";
                     $stmt = $db->prepare($sql);
-                    $stmt->execute([$hashed_password, $_SESSION['email']]);
+                    $stmt->execute([$hashed_password, $email]);
                     echo "Password updated successfully";
                     header("Location: login.php");
                     exit();

@@ -37,7 +37,7 @@
   if (isset($_POST['security_answer'])){
     
     if(isset($_SESSION['email'])){
-        $email = $SESSION['email'];
+        $email = $_SESSION['email'];
     }else{
         echo "Session error: Email not found. Please start the process again.";
         exit();

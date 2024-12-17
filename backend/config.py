@@ -78,3 +78,15 @@ DB_CONFIG = {
     (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)
   '''
 }
+
+TEST_CONFIG = { # for testing purposes
+  'enabled': True,
+  'output_file': 'scraper_test_output.json',
+  'mock_db_response': {
+    'results': [
+      {'brand': 'whirlpool', 'model': 'WTW5000DW', 'type': 'washer'},
+      {'brand': 'lg', 'model': 'WM3900HWA', 'type': 'washer'},
+      {'brand': 'samsung', 'model': 'RF28R7551SR', 'type': 'refrigerator'}
+    ]
+  }
+}

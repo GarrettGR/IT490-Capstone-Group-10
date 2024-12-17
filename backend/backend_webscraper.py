@@ -2,14 +2,16 @@
 
 import asyncio
 import aiohttp
-import pika
+import aio_pika
 import json
+import os
 from datetime import datetime
 import logging
 from typing import Dict, List
-from config import RMQ_CONFIG, SCRAPING_CONFIG, APPLIANCE_PROBLEMS, APPLIANCE_FILTERS, DB_CONFIG
+from config import RMQ_CONFIG, SCRAPING_CONFIG, APPLIANCE_PROBLEMS, APPLIANCE_FILTERS, DB_CONFIG, TEST_CONFIG
 from backend.retail_scraper import RetailScraper
 from backend.parts_scraper import PartsScraper
+from pathlib import Path
 
 logging.basicConfig(
   level=logging.INFO,
@@ -17,8 +19,16 @@ logging.basicConfig(
 )
 
 class ApplianceWebScraper:
-  def __init__(self):
-    self.setup_rmq()
+  def __init__(self, test_mode=False):
+    self.test_mode = test_mode
+    self.connection = None
+    self.channel = None
+    self.exchange = None
+    if not test_mode:
+      self.setup_rmq()
+    else:
+      self.test_queries = []
+      logging.info("Running in test mode - no database updates will be made")
     self.retail_scrapers = {
       site: RetailScraper(
         SCRAPING_CONFIG['headers'],
@@ -37,29 +47,34 @@ class ApplianceWebScraper:
     }
     self.appliances_cache = []
 
-  def setup_rmq(self):
-    self.rmq_credentials = pika.PlainCredentials(
-      RMQ_CONFIG['credentials']['username'],
-      RMQ_CONFIG['credentials']['password']
+  async def setup_rmq(self):
+    if self.test_mode:
+      return
+    self.connection = await aio_pika.connect(
+      f"amqp://admin:{os.environ['rmq_passwd']}@{os.environ['rmq_ip']}/"
     )
-    self.rmq_connection = pika.BlockingConnection(
-      pika.ConnectionParameters(
-        RMQ_CONFIG['host'],
-        credentials=self.rmq_credentials
-      )
-    )
-    self.channel = self.rmq_connection.channel()
-    self.channel.exchange_declare(
-      exchange=RMQ_CONFIG['exchange'],
-      exchange_type='direct',
+    self.channel = await self.connection.channel()
+    self.exchange = await self.channel.declare_exchange(
+      name='applicare',
+      type=aio_pika.ExchangeType.DIRECT,
       durable=True
     )
+    self.queue = await self.channel.declare_queue(
+      'scraper_queue',
+      durable=True,
+      arguments={'x-message-ttl': 60000, 'x-queue-type': 'quorum'}
+    )
+    await self.queue.bind(self.exchange, routing_key='scraper')
 
   async def run_scraping_cycle(self):
     """Main scraping cycle that runs in phases"""
-    async with aiohttp.ClientSession() as session:
-      await self.phase_appliance_collection(session)
-      await self.phase_parts_collection(session)
+    await self.setup_rmq()
+    try:
+      async with aiohttp.ClientSession() as session:
+        await self.phase_appliance_collection(session)
+        await self.phase_parts_collection(session)
+    finally:
+      await self.cleanup()
 
   async def phase_appliance_collection(self, session):
     """Phase 1: Collect appliances from retail sites"""
@@ -74,7 +89,7 @@ class ApplianceWebScraper:
       })
     await self._wait_for_db_sync()
     
-  def _filter_appliances(self, appliances: List[Dict]) -> List[Dict]:
+  async def _filter_appliances(self, appliances: List[Dict]) -> List[Dict]:
     """Filter appliances based on configured types and brands"""
     return [
       app for app in appliances
@@ -85,17 +100,20 @@ class ApplianceWebScraper:
   async def phase_parts_collection(self, session):
     """Phase 2: Collect parts for known appliances"""
     logging.info("Starting Phase 2: Parts Collection")
-    query = DB_CONFIG['select_appliances']
-    params = (
-      ','.join([f"'{t}'" for t in APPLIANCE_FILTERS['types']]),
-      ','.join([f"'{b}'" for b in APPLIANCE_FILTERS['brands']])
-    )
-    self.send_to_database({
-      'query': query,
-      'params': params,
-      'response_required': True
-    })
-    appliances = await self._wait_for_db_response()
+    if self.test_mode:
+      appliances = TEST_CONFIG['mock_db_response']['results']
+    else:
+      query = DB_CONFIG['select_appliances']
+      params = (
+        ','.join([f"'{t}'" for t in APPLIANCE_FILTERS['types']]),
+        ','.join([f"'{b}'" for b in APPLIANCE_FILTERS['brands']])
+      )
+      self.send_to_database({
+        'query': query,
+        'params': params,
+        'response_required': True
+      })
+      appliances = await self._wait_for_db_response()
     for appliance in appliances:
       await self._gather_parts_for_appliance(session, appliance)
 
@@ -119,7 +137,7 @@ class ApplianceWebScraper:
             'params': {**part, 'appliance_model': appliance['model']}
           })
 
-  def _get_parts_sources(self, brand: str) -> List[str]:
+  async def _get_parts_sources(self, brand: str) -> List[str]:
     """Determine which parts sources to use based on brand"""
     sources = list(SCRAPING_CONFIG['parts_urls'].keys())  # always include generic parts sites
     brand = brand.lower()
@@ -177,10 +195,7 @@ class ApplianceWebScraper:
 
   async def _process_scraped_data(self, appliances: List[Dict]):
     for appliance in appliances:
-      # Store appliance basic data
       await self.store_appliance_data(appliance)
-      
-      # Store parts data
       if 'parts' in appliance:
         for part in appliance['parts']:
           await self.store_part_data(part, appliance['model'])
@@ -209,31 +224,61 @@ class ApplianceWebScraper:
       return APPLIANCE_PROBLEMS[appliance_type]
     return {}
 
-  def send_to_database(self, query: str):
+  async def send_to_database(self, data: Dict):
+    if self.test_mode:
+      self.test_queries.append({
+        'timestamp': datetime.now().isoformat(),
+        'data': data
+      })
+      logging.info(f"Test mode: Stored query: {data}")
+      return
     try:
-      self.channel.basic_publish(
-        exchange=RMQ_CONFIG['exchange'],
-        routing_key='database',
-        body=json.dumps({'query': query}),
-        properties=pika.BasicProperties(
-          delivery_mode=2,
-          correlation_id=str(datetime.now().timestamp())
-        )
+      message = aio_pika.Message(
+        body=json.dumps({'query': data}).encode(),
+        delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+        correlation_id=str(datetime.now().timestamp())
+      )
+      await self.exchange.publish(
+        message,
+        routing_key='database'
       )
       logging.info("Successfully sent data to database queue")
     except Exception as e:
       logging.error(f"Error sending to RabbitMQ: {e}")
 
-  def cleanup(self):
-    if not self.rmq_connection.is_closed:
-      self.rmq_connection.close()
+  async def _wait_for_db_response(self):
+    if self.test_mode:
+      return TEST_CONFIG['mock_db_response']['results']
+    response_future = asyncio.Future()
+    correlation_id = str(datetime.now().timestamp())
+    async def callback(message):
+      nonlocal response_future
+      if message.correlation_id == correlation_id:
+        data = json.loads(message.body)
+        if 'error' in data:
+          response_future.set_exception(Exception(data['error']))
+        else:
+          response_future.set_result(data.get('results', []))
+    try:
+      return await asyncio.wait_for(response_future, timeout=30.0)
+    except asyncio.TimeoutError:
+      logging.error("Timeout waiting for database response")
+      raise
+    
+  async def cleanup(self):
+    if self.test_mode:
+      output_path = Path(TEST_CONFIG['output_file'])
+      with open(output_path, 'w') as f:
+        json.dump(self.test_queries, f, indent=2)
+      logging.info(f"Test results written to {output_path}")
+      return
+    if self.connection and not self.connection.is_closed:
+      await self.connection.close()
 
 async def main():
-  scraper = ApplianceWebScraper()
-  try:
-    await scraper.run_scraping_cycle()
-  finally:
-    scraper.cleanup()
+  test_mode = TEST_CONFIG['enabled'] or os.environ.get('test_mode', '').lower() == 'true'
+  scraper = ApplianceWebScraper(test_mode=test_mode)
+  await scraper.run_scraping_cycle()
 
 if __name__ == "__main__":
   asyncio.run(main())

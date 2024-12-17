@@ -42,7 +42,7 @@
                 $statement->bindValue(':email', $email);
                 $statement->bindValue(':password_hash', $password_hash);
                 $statement->bindValue(':security_question_1', $security_question_1);
-                $statement->bindValue(':security_answer_1', $security_answer_1);
+                $statement->bindValue(':security_answer_1', $security_answer_hash);
                 $success = $statement->execute();
                 $statement->closeCursor();
 
@@ -50,7 +50,7 @@
                     if ($success) {
                         echo "<p class='text-success text-center'>Sign up successful! You can now <a href='login.php'>log in</a>.</p>";
                         header('Location: login.php'); // Redirect to the login page
-                        exit()
+                        exit();
                     } else {
                         echo "<p class='text-danger text-center'>Error signing up. Please try again later.</p>";
                     }

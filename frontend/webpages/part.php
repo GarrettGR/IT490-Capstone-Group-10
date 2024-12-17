@@ -14,17 +14,17 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
     $query = '
         SELECT parts.part_name, parts.part_image, parts.part_link, parts.instructions_video
         FROM parts
-        JOIN issue_types ON parts.part_id = issue_types.issue_id
+        JOIN issues_parts ON parts.part_id = issues_parts.part_id
+        JOIN issue_types ON issues_parts.issue_id = issue_types.issue_id
         JOIN problem_areas ON issue_types.area_id = problem_areas.area_id
         JOIN brands b1 ON problem_areas.appliance_id = b1.appliance_id
         JOIN models ON models.brand_id = b1.brand_id
-        JOIN brands b2 ON models.brand_id = b2.brand_id
-        JOIN appliances ON b1.appliance_id = appliances.appliance_id
-        WHERE appliances.appliance_id = :appliance_id
-          AND b1.brand_id = :brand_id
-          AND models.model_id = :model_id
-          AND problem_areas.area_id = :area_id
-          AND issue_types.issue_id = :issue_id
+        WHERE b1.appliance_id = :appliance_id
+        AND b1.brand_id = :brand_id
+        AND models.model_id = :model_id
+        AND problem_areas.area_id = :area_id
+        AND issue_types.issue_id = :issue_id
+
     ';
     
     $statement = $db->prepare($query);

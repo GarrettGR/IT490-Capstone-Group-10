@@ -86,6 +86,15 @@ if (isset($_GET['area_id'])) {
         </div>
     </header>
 
+    <section class="search-bar py-3">
+        <div class="container">
+            <form method="get" action="" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Search appliances..." value="<?= htmlspecialchars($search); ?>">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </section>
+
     <section class="appliance-cards-section py-5">
         <div class="container">
             <div class="row">

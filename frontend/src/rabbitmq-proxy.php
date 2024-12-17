@@ -6,14 +6,7 @@ if (!extension_loaded('amqp')) {
   die("AMQP extension is not loaded. Please install php-amqp package.\n");
 }
 
-$env = file_get_contents("/root/Capstone-Group-10/.env");
-$lines = explode("\n",$env);
-
-foreach($lines as $line){
-  preg_match("/([^#]+)\=(.*)/",$line,$matches);
-  if(isset($matches[2])){ putenv(trim($line)); }
-} # SOURCE: https://stackoverflow.com/questions/67963371/load-a-env-file-with-php
-#NOTE: I could use parse_ini or otherwise create a worse solution for parsing the .env file, but this one is how I would do it, and it just so happens that someone has already done it and posted about it online before too
+$env = parse_ini_file('.env');
 
 if (defined('RABBITMQ_PROXY_INCLUDED')) return;
 define('RABBITMQ_PROXY_INCLUDED', true);
@@ -36,7 +29,7 @@ class RMQClient {
         'host' => '10.0.0.11',
         'port' => 5672,
         'login' => 'admin',
-        'password' => getenv('rmq_passwd')
+        'password' => $env['rmq_passwd']
       ]);
       $this->connection->connect();
       $this->channel = new AMQPChannel($this->connection);

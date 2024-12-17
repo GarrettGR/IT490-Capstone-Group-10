@@ -1,4 +1,4 @@
-from .base_scraper import BaseScraper
+from base_scraper import BaseScraper
 from bs4 import BeautifulSoup
 from typing import Dict, List, Optional
 import logging

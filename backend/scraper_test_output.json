@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": "2024-12-17T19:11:02.104170",
+    "timestamp": "2024-12-17T20:04:48.264024",
     "query": {
       "phase": "appliance_collection",
       "status": "using_mock_data",
@@ -106,7 +106,7 @@
     "query_type": "insert_appliance"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.009647",
+    "timestamp": "2024-12-17T20:04:50.699646",
     "query": {
       "phase": "parts_collection",
       "status": "using_mock_data",
@@ -131,7 +131,7 @@
     "query_type": "insert_appliance"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.010325",
+    "timestamp": "2024-12-17T20:04:50.699922",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -144,7 +144,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.010648",
+    "timestamp": "2024-12-17T20:04:50.699996",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -156,7 +156,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.010793",
+    "timestamp": "2024-12-17T20:04:50.700066",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -169,7 +169,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.010861",
+    "timestamp": "2024-12-17T20:04:50.700126",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -181,7 +181,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011058",
+    "timestamp": "2024-12-17T20:04:50.700210",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -194,7 +194,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011137",
+    "timestamp": "2024-12-17T20:04:50.700274",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -206,7 +206,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011198",
+    "timestamp": "2024-12-17T20:04:50.700342",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -219,7 +219,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011254",
+    "timestamp": "2024-12-17T20:04:50.700394",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -231,7 +231,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011313",
+    "timestamp": "2024-12-17T20:04:50.700450",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -244,7 +244,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011361",
+    "timestamp": "2024-12-17T20:04:50.700503",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -256,7 +256,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011412",
+    "timestamp": "2024-12-17T20:04:50.700572",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -269,7 +269,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011457",
+    "timestamp": "2024-12-17T20:04:50.700636",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -281,7 +281,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011519",
+    "timestamp": "2024-12-17T20:04:50.700734",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -294,7 +294,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011570",
+    "timestamp": "2024-12-17T20:04:50.700813",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -306,7 +306,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011739",
+    "timestamp": "2024-12-17T20:04:50.700902",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -319,7 +319,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011802",
+    "timestamp": "2024-12-17T20:04:50.700967",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -331,7 +331,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011853",
+    "timestamp": "2024-12-17T20:04:50.701030",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -344,7 +344,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011900",
+    "timestamp": "2024-12-17T20:04:50.701086",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -356,7 +356,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.011948",
+    "timestamp": "2024-12-17T20:04:50.701153",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -369,7 +369,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012012",
+    "timestamp": "2024-12-17T20:04:50.701209",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -381,7 +381,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012069",
+    "timestamp": "2024-12-17T20:04:50.701273",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -394,7 +394,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012119",
+    "timestamp": "2024-12-17T20:04:50.701332",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -406,7 +406,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012169",
+    "timestamp": "2024-12-17T20:04:50.701386",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -419,7 +419,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012219",
+    "timestamp": "2024-12-17T20:04:50.701442",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -431,7 +431,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012269",
+    "timestamp": "2024-12-17T20:04:50.701504",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -444,7 +444,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012314",
+    "timestamp": "2024-12-17T20:04:50.701554",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -456,7 +456,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012361",
+    "timestamp": "2024-12-17T20:04:50.701620",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -469,7 +469,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012407",
+    "timestamp": "2024-12-17T20:04:50.701725",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -481,7 +481,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012454",
+    "timestamp": "2024-12-17T20:04:50.701791",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -494,7 +494,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012500",
+    "timestamp": "2024-12-17T20:04:50.701847",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -506,7 +506,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012548",
+    "timestamp": "2024-12-17T20:04:50.701904",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -519,7 +519,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012594",
+    "timestamp": "2024-12-17T20:04:50.701959",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -531,7 +531,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012663",
+    "timestamp": "2024-12-17T20:04:50.702031",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -544,7 +544,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012764",
+    "timestamp": "2024-12-17T20:04:50.702088",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -556,7 +556,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012817",
+    "timestamp": "2024-12-17T20:04:50.702157",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -569,7 +569,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012873",
+    "timestamp": "2024-12-17T20:04:50.702212",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -581,7 +581,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012928",
+    "timestamp": "2024-12-17T20:04:50.702266",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -594,7 +594,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.012981",
+    "timestamp": "2024-12-17T20:04:50.702317",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -606,7 +606,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.013487",
+    "timestamp": "2024-12-17T20:04:50.702373",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -619,7 +619,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.013599",
+    "timestamp": "2024-12-17T20:04:50.702450",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -631,7 +631,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.014027",
+    "timestamp": "2024-12-17T20:04:50.702508",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -644,7 +644,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.014281",
+    "timestamp": "2024-12-17T20:04:50.702559",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -656,7 +656,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.014743",
+    "timestamp": "2024-12-17T20:04:50.702614",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -669,7 +669,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.014840",
+    "timestamp": "2024-12-17T20:04:50.702665",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -681,7 +681,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.015053",
+    "timestamp": "2024-12-17T20:04:50.702744",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -694,7 +694,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.015249",
+    "timestamp": "2024-12-17T20:04:50.702796",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -706,7 +706,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.015540",
+    "timestamp": "2024-12-17T20:04:50.702849",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -719,7 +719,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.015634",
+    "timestamp": "2024-12-17T20:04:50.702900",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -731,7 +731,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.015749",
+    "timestamp": "2024-12-17T20:04:50.702954",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -744,7 +744,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.015813",
+    "timestamp": "2024-12-17T20:04:50.703005",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -756,7 +756,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.015877",
+    "timestamp": "2024-12-17T20:04:50.703069",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -769,7 +769,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.015958",
+    "timestamp": "2024-12-17T20:04:50.703127",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -781,7 +781,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.016027",
+    "timestamp": "2024-12-17T20:04:50.703185",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -794,7 +794,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.016101",
+    "timestamp": "2024-12-17T20:04:50.703238",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -806,7 +806,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.016159",
+    "timestamp": "2024-12-17T20:04:50.703301",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -819,7 +819,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.016210",
+    "timestamp": "2024-12-17T20:04:50.703359",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -831,7 +831,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.016285",
+    "timestamp": "2024-12-17T20:04:50.703415",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -844,7 +844,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.016383",
+    "timestamp": "2024-12-17T20:04:50.703479",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -856,7 +856,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.016452",
+    "timestamp": "2024-12-17T20:04:50.703538",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -869,7 +869,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.016516",
+    "timestamp": "2024-12-17T20:04:50.703589",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -881,7 +881,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.017746",
+    "timestamp": "2024-12-17T20:04:50.703644",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -894,7 +894,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.017937",
+    "timestamp": "2024-12-17T20:04:50.703765",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -906,7 +906,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.018100",
+    "timestamp": "2024-12-17T20:04:50.703821",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -919,7 +919,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.018235",
+    "timestamp": "2024-12-17T20:04:50.703897",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -931,7 +931,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.018385",
+    "timestamp": "2024-12-17T20:04:50.703959",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -944,7 +944,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.018490",
+    "timestamp": "2024-12-17T20:04:50.704023",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -956,7 +956,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.018655",
+    "timestamp": "2024-12-17T20:04:50.704093",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -969,7 +969,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.018763",
+    "timestamp": "2024-12-17T20:04:50.704153",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -981,7 +981,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.018929",
+    "timestamp": "2024-12-17T20:04:50.704210",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -994,7 +994,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.019003",
+    "timestamp": "2024-12-17T20:04:50.704271",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1006,7 +1006,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.019420",
+    "timestamp": "2024-12-17T20:04:50.704328",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1019,7 +1019,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.019519",
+    "timestamp": "2024-12-17T20:04:50.704382",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1031,7 +1031,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.019767",
+    "timestamp": "2024-12-17T20:04:50.704439",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1044,7 +1044,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.019866",
+    "timestamp": "2024-12-17T20:04:50.704492",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1056,7 +1056,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020531",
+    "timestamp": "2024-12-17T20:04:50.704568",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1069,7 +1069,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020593",
+    "timestamp": "2024-12-17T20:04:50.704624",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1081,7 +1081,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020649",
+    "timestamp": "2024-12-17T20:04:50.704704",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1094,7 +1094,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020751",
+    "timestamp": "2024-12-17T20:04:50.704763",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1106,7 +1106,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020806",
+    "timestamp": "2024-12-17T20:04:50.704820",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1119,7 +1119,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020851",
+    "timestamp": "2024-12-17T20:04:50.704874",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1131,7 +1131,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020899",
+    "timestamp": "2024-12-17T20:04:50.704931",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1144,7 +1144,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020945",
+    "timestamp": "2024-12-17T20:04:50.704979",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1156,7 +1156,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.020991",
+    "timestamp": "2024-12-17T20:04:50.705024",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1169,7 +1169,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.021044",
+    "timestamp": "2024-12-17T20:04:50.705059",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1181,7 +1181,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.021091",
+    "timestamp": "2024-12-17T20:04:50.705126",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1194,7 +1194,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.021133",
+    "timestamp": "2024-12-17T20:04:50.705168",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1206,7 +1206,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.021177",
+    "timestamp": "2024-12-17T20:04:50.705201",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1219,7 +1219,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.021218",
+    "timestamp": "2024-12-17T20:04:50.705232",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1231,7 +1231,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.021263",
+    "timestamp": "2024-12-17T20:04:50.705270",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1244,7 +1244,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.021571",
+    "timestamp": "2024-12-17T20:04:50.705305",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1256,7 +1256,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.021965",
+    "timestamp": "2024-12-17T20:04:50.705338",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1269,7 +1269,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.022050",
+    "timestamp": "2024-12-17T20:04:50.705372",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1281,7 +1281,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.022820",
+    "timestamp": "2024-12-17T20:04:50.705413",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1294,7 +1294,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.022881",
+    "timestamp": "2024-12-17T20:04:50.705448",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [
@@ -1306,7 +1306,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.022932",
+    "timestamp": "2024-12-17T20:04:50.705492",
     "query": {
       "query": "\n          INSERT IGNORE INTO parts \n          (part_name, part_image, part_link, instructions_video)\n          VALUES (%s, %s, %s, %s)\n        ",
       "params": [
@@ -1319,7 +1319,7 @@
     "query_type": "insert_part"
   },
   {
-    "timestamp": "2024-12-17T19:11:04.022987",
+    "timestamp": "2024-12-17T20:04:50.705526",
     "query": {
       "query": "\n            INSERT IGNORE INTO issues_parts (issue_id, part_id)\n            SELECT i.issue_id, p.part_id\n            FROM issue_types i\n            JOIN parts p ON p.part_name = %s\n            JOIN problem_areas pa ON i.area_id = pa.area_id\n            WHERE i.issue_description = %s\n            AND pa.area_name = %s\n          ",
       "params": [

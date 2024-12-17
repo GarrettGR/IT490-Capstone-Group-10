@@ -146,7 +146,7 @@ if (isset($_GET['area_id'])) {
                 <h2>Select Brand</h2>
                 <form method="get" action="">
                     <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
-                    <select class="form-select" name="brand_id" onchange="this.form.submit()">
+                    <select class="form-select form-select-lg mb-3" name="brand_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a brand</option>
                         <?php foreach ($brands as $brand) : ?>
                             <option value="<?= $brand['brand_id']; ?>"
@@ -167,7 +167,7 @@ if (isset($_GET['area_id'])) {
                 <form method="get" action="">
                     <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
                     <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
-                    <select class="form-select" name="model_id" onchange="this.form.submit()">
+                    <select class="form-select form-select-lg mb-3" name="model_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a model</option>
                         <?php foreach ($models as $model) : ?>
                             <option value="<?= $model['model_id']; ?>"
@@ -189,7 +189,7 @@ if (isset($_GET['area_id'])) {
                     <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
                     <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
                     <input type="hidden" name="model_id" value="<?php echo $_GET['model_id']; ?>">
-                    <select class="form-select" name="area_id" onchange="this.form.submit()">
+                    <select class="form-select form-select-lg mb-3" name="area_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a part</option>
                         <?php foreach ($parts as $part) : ?>
                             <option value="<?= $part['area_id']; ?>"
@@ -212,11 +212,11 @@ if (isset($_GET['area_id'])) {
                     <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
                     <input type="hidden" name="model_id" value="<?php echo $_GET['model_id']; ?>">
                     <input type="hidden" name="area_id" value="<?php echo $_GET['area_id']; ?>">
-                    <select class="form-select" name="issue_id">
+                    <select class="form-select form-select-lg mb-3" name="issue_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select an issue</option>
                         <?php foreach ($issues as $issue) : ?>
                             <option value="<?= $issue['issue_id']; ?>"
-                                <?= isset($_GET['issue_id']) && $_GET['issue_id'] == $brand['brand_id'] ? 'selected' : ''; ?>>
+                                <?= isset($_GET['issue_id']) && $_GET['issue_id'] == $issue['issue_id'] ? 'selected' : ''; ?>>
                                 <?= htmlspecialchars($issue['issue_description']); ?>
                             </option>
                         <?php endforeach; ?>
@@ -224,6 +224,14 @@ if (isset($_GET['area_id'])) {
                 </form>
             </div>
         </section>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['issue_id'])): ?>
+        <!-- Button to redirect to the part page with the selected issue -->
+        <div class="text-center my-4">
+            <a href="part.php?appliance_id=<?= $_GET['appliance_id']; ?>&brand_id=<?= $_GET['brand_id']; ?>&model_id=<?= $_GET['model_id']; ?>&area_id=<?= $_GET['area_id']; ?>&issue_id=<?= $_GET['issue_id']; ?>"
+                class="btn btn-primary mt-3">View Recommended Parts</a>
+        </div>
     <?php endif; ?>
 
     <?php include('../common/footer.php'); ?>
@@ -239,6 +247,15 @@ if (isset($_GET['area_id'])) {
                 }
             }
         });
+        document.addEventListener('DOMContentLoaded', function () {
+        const viewPartsButton = document.getElementById('viewPartsButton');
+        if (viewPartsButton) {
+            viewPartsButton.addEventListener('click', function (event) {
+                viewPartsButton.classList.add('disabled');
+                viewPartsButton.textContent = 'Loading...';
+            });
+        }
+    });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,0 +1,205 @@
+[
+  {
+    "timestamp": "2024-12-17T17:36:08.632518",
+    "query": {
+      "phase": "appliance_collection",
+      "status": "using_mock_data",
+      "mock_appliances": [
+        {
+          "brand": "whirlpool",
+          "model": "WTW5000DW",
+          "type": "washer"
+        },
+        {
+          "brand": "lg",
+          "model": "WM3900HWA",
+          "type": "washer"
+        },
+        {
+          "brand": "samsung",
+          "model": "RF28R7551SR",
+          "type": "refrigerator"
+        }
+      ]
+    },
+    "query_type": "insert_appliance"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.222665",
+    "query": {
+      "phase": "parts_collection",
+      "status": "using_mock_data",
+      "mock_appliances_processed": [
+        {
+          "brand": "whirlpool",
+          "model": "WTW5000DW",
+          "type": "washer"
+        },
+        {
+          "brand": "lg",
+          "model": "WM3900HWA",
+          "type": "washer"
+        },
+        {
+          "brand": "samsung",
+          "model": "RF28R7551SR",
+          "type": "refrigerator"
+        }
+      ]
+    },
+    "query_type": "insert_appliance"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.222906",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Washer Drive Belt",
+        "part_number": "WPW10006384",
+        "price": "$29.99",
+        "type": "belt",
+        "problem_area": "drum",
+        "source": "repairclinic",
+        "url": "https://www.repairclinic.com/part/details/washer-belt-wp10006384",
+        "appliance_model": "WTW5000DW"
+      }
+    },
+    "query_type": "insert_part"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.223003",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Control Board Assembly",
+        "part_number": "W10480777",
+        "price": "$159.99",
+        "type": "board",
+        "problem_area": "control",
+        "source": "whirlpool",
+        "url": "https://www.whirlpoolparts.com/parts/W10480777",
+        "appliance_model": "WTW5000DW"
+      }
+    },
+    "query_type": "insert_part"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.223079",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Water Pump",
+        "part_number": "LP6000",
+        "price": "$45.99",
+        "type": "pump",
+        "problem_area": "water_system",
+        "source": "partselect",
+        "url": "https://www.partselect.com/parts/LP6000-water-pump",
+        "appliance_model": "WTW5000DW"
+      }
+    },
+    "query_type": "insert_part"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.223173",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Door Boot Seal",
+        "part_number": "WPW10290499",
+        "price": "$89.99",
+        "type": "seal",
+        "problem_area": "door",
+        "source": "repairclinic",
+        "url": "https://www.repairclinic.com/part/details/door-seal-wp10290499",
+        "appliance_model": "WTW5000DW"
+      }
+    },
+    "query_type": "insert_part"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.223248",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Washer Drive Belt",
+        "part_number": "WPW10006384",
+        "price": "$29.99",
+        "type": "belt",
+        "problem_area": "drum",
+        "source": "repairclinic",
+        "url": "https://www.repairclinic.com/part/details/washer-belt-wp10006384",
+        "appliance_model": "WM3900HWA"
+      }
+    },
+    "query_type": "insert_part"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.223323",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Water Pump",
+        "part_number": "LP6000",
+        "price": "$45.99",
+        "type": "pump",
+        "problem_area": "water_system",
+        "source": "partselect",
+        "url": "https://www.partselect.com/parts/LP6000-water-pump",
+        "appliance_model": "WM3900HWA"
+      }
+    },
+    "query_type": "insert_part"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.223405",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Door Boot Seal",
+        "part_number": "WPW10290499",
+        "price": "$89.99",
+        "type": "seal",
+        "problem_area": "door",
+        "source": "repairclinic",
+        "url": "https://www.repairclinic.com/part/details/door-seal-wp10290499",
+        "appliance_model": "WM3900HWA"
+      }
+    },
+    "query_type": "insert_part"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.223480",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Refrigerator Compressor",
+        "part_number": "DA97-12540A",
+        "price": "$249.99",
+        "type": "compressor",
+        "problem_area": "cooling",
+        "source": "samsung",
+        "url": "https://samsungparts.com/products/DA97-12540A",
+        "appliance_model": "RF28R7551SR"
+      }
+    },
+    "query_type": "insert_part"
+  },
+  {
+    "timestamp": "2024-12-17T17:36:11.223551",
+    "query": {
+      "query": "\n    INSERT INTO parts \n    (part_name, part_number, price, type, problem_area, source, url, appliance_model) \n    VALUES \n    (%(name)s, %(part_number)s, %(price)s, %(type)s, %(problem_area)s, %(source)s, %(url)s, %(appliance_model)s)\n  ",
+      "params": {
+        "name": "Evaporator Fan Motor",
+        "part_number": "DA31-00028E",
+        "price": "$89.99",
+        "type": "fan",
+        "problem_area": "cooling",
+        "source": "samsung",
+        "url": "https://samsungparts.com/products/DA31-00028E",
+        "appliance_model": "RF28R7551SR"
+      }
+    },
+    "query_type": "insert_part"
+  }
+]

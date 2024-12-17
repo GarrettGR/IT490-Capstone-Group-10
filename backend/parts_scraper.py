@@ -19,6 +19,18 @@ class PartsScraper(BaseScraper):
       'ge': self._scrape_ge
     }
 
+  async def scrape(self, session, url: str) -> Dict:
+    """Implementation of abstract scrape method from BaseScraper"""
+    html = await self.fetch_page(session, url)
+    if not html:
+      return {}
+    soup = BeautifulSoup(html, 'html.parser')
+    return {
+      'site': self.site,
+      'url': url,
+      'parts': await self._scraping_methods[self.site](soup, '', '')
+    }
+
   async def search_parts(self, session, model: str, part_type: str, problem_area: str) -> List[Dict]:
     if self.site not in self._scraping_methods:
       logging.error(f"Unsupported site: {self.site}")

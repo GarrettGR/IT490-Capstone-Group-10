@@ -84,6 +84,18 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
                 No recommended parts found for the selected issue.
             </div>
         <?php endif; ?>
+
+        <!-- Google Maps Iframe to search for Handymen -->
+        <?php
+        // Example location for searching handymen, could be dynamic based on 'area_id'
+        $location = "New+Jersey"; // You could dynamically populate this
+        $searchQuery = "handyman+" . urlencode($location);
+        ?>
+        <h3 class="mt-5 text-center">Find Nearby Handymen</h3>
+        <div class="text-center">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12091.640837505438!2d-74.19203265527406!3d40.74200124412969!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2534cc006098b%3A0xfac623bce8f114d8!2sMaple%20Hall%20NJIT!5e0!3m2!1sen!2sus!4v1696634464882!5m2!1sen!2sus" width="240" height="180" style="border:0; display:flex; justify-content:left" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

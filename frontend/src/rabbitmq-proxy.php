@@ -6,6 +6,15 @@ if (!extension_loaded('amqp')) {
   die("AMQP extension is not loaded. Please install php-amqp package.\n");
 }
 
+$env = file_get_contents(__DIR__."/root/Capstone-Group-10/.env");
+$lines = explode("\n",$env);
+
+foreach($lines as $line){
+  preg_match("/([^#]+)\=(.*)/",$line,$matches);
+  if(isset($matches[2])){ putenv(trim($line)); }
+} # SOURCE: https://stackoverflow.com/questions/67963371/load-a-env-file-with-php
+#NOTE: I could use parse_ini or otherwise create a worse solution for parsing the .env file, but this one is how I would do it, and it just so happens that someone has already done it and posted about it online before too
+
 if (defined('RABBITMQ_PROXY_INCLUDED')) return;
 define('RABBITMQ_PROXY_INCLUDED', true);
 
@@ -31,7 +40,7 @@ class RMQClient {
       ]);
       $this->connection->connect();
       $this->channel = new AMQPChannel($this->connection);
-            
+
       $this->exchange = new AMQPExchange($this->channel);
       $this->exchange->setName('applicare');
       $this->exchange->setType(AMQP_EX_TYPE_DIRECT);
@@ -47,7 +56,7 @@ class RMQClient {
       ]);
       $this->frontend_queue->declareQueue();
       $this->frontend_queue->bind('applicare', 'frontend');
-            
+
     } catch (AMQPException $e) {
       error_log("RabbitMQ connection error: " . $e->getMessage());
       throw $e;
@@ -58,7 +67,7 @@ class RMQClient {
     try {
       $correlation_id = $this->getUniqueId();
       $message_body = is_string($body) ? $body : json_encode($body);
-          
+
       $this->exchange->publish(
         $message_body,
         $destination,
@@ -68,7 +77,7 @@ class RMQClient {
           'delivery_mode' => 2
         ]
       );
-  
+
       error_log("Published message with correlation_id: $correlation_id to $destination");
       return $correlation_id;
     } catch (Exception $e) {

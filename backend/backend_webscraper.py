@@ -9,8 +9,8 @@ from datetime import datetime
 import logging
 from typing import Dict, List
 from config import RMQ_CONFIG, SCRAPING_CONFIG, APPLIANCE_PROBLEMS, APPLIANCE_FILTERS, DB_CONFIG, TEST_CONFIG
-from backend.retail_scraper import RetailScraper
-from backend.parts_scraper import PartsScraper
+from retail_scraper import RetailScraper
+from parts_scraper import PartsScraper
 from pathlib import Path
 
 logging.basicConfig(
@@ -79,17 +79,29 @@ class ApplianceWebScraper:
   async def phase_appliance_collection(self, session):
     """Phase 1: Collect appliances from retail sites"""
     logging.info("Starting Phase 1: Appliance Collection")    
+    if self.test_mode:
+      test_data = {
+        'phase': 'appliance_collection',
+        'status': 'using_mock_data',
+        'mock_appliances': [
+          {
+            'type': app['type'],
+            'brand': app['brand'],
+            'model': app['model'],
+            'description': f"Common {app['type']} problems and solutions",
+            'problems': APPLIANCE_PROBLEMS.get(app['type'].lower(), {})
+          }
+          for app in TEST_CONFIG['mock_db_response']['results']
+        ]
+      }
+      await self.send_to_database(test_data)
     appliances = await self._gather_appliance_data(session)
     filtered_appliances = self._filter_appliances(appliances)
     for appliance in filtered_appliances:
-      query = DB_CONFIG['insert_appliance']
-      self.send_to_database({
-        'query': query,
-        'params': appliance
-      })
-    await self._wait_for_db_sync()
-    
-  async def _filter_appliances(self, appliances: List[Dict]) -> List[Dict]:
+      await self.store_appliance_data(appliance)
+    await self._wait_for_db_response()
+
+  def _filter_appliances(self, appliances: List[Dict]) -> List[Dict]:
     """Filter appliances based on configured types and brands"""
     return [
       app for app in appliances
@@ -100,20 +112,25 @@ class ApplianceWebScraper:
   async def phase_parts_collection(self, session):
     """Phase 2: Collect parts for known appliances"""
     logging.info("Starting Phase 2: Parts Collection")
-    if self.test_mode:
-      appliances = TEST_CONFIG['mock_db_response']['results']
-    else:
+    appliances = TEST_CONFIG['mock_db_response']['results'] if self.test_mode else []
+    if not self.test_mode:
       query = DB_CONFIG['select_appliances']
       params = (
         ','.join([f"'{t}'" for t in APPLIANCE_FILTERS['types']]),
         ','.join([f"'{b}'" for b in APPLIANCE_FILTERS['brands']])
       )
-      self.send_to_database({
+      await self.send_to_database({
         'query': query,
         'params': params,
         'response_required': True
       })
       appliances = await self._wait_for_db_response()
+    if self.test_mode:
+      await self.send_to_database({
+        'phase': 'parts_collection',
+        'status': 'using_mock_data',
+        'mock_appliances_processed': appliances
+      })
     for appliance in appliances:
       await self._gather_parts_for_appliance(session, appliance)
 
@@ -131,13 +148,9 @@ class ApplianceWebScraper:
           sources
         )
         for part in parts:
-          query = DB_CONFIG['insert_part']
-          self.send_to_database({
-            'query': query,
-            'params': {**part, 'appliance_model': appliance['model']}
-          })
+          await self.store_part_data(part, appliance['model'])
 
-  async def _get_parts_sources(self, brand: str) -> List[str]:
+  def _get_parts_sources(self, brand: str) -> List[str]:
     """Determine which parts sources to use based on brand"""
     sources = list(SCRAPING_CONFIG['parts_urls'].keys())  # always include generic parts sites
     brand = brand.lower()
@@ -147,12 +160,44 @@ class ApplianceWebScraper:
 
   async def _search_parts_specific_sources(self, session, model: str, part_type: str, problem_area: str, sources: List[str]) -> List[Dict]:
     """Search for parts in specific sources only"""
+    if self.test_mode:
+      return [{
+        'part_name': f"{part_type} for {model}",
+        'part_image': f"https://example.com/{part_type}.jpg",
+        'part_link': f"https://example.com/parts/{part_type}",
+        'instructions_video': f"https://example.com/videos/{part_type}",
+        'problem_area': problem_area,
+        'issue_description': f"Faulty {part_type}",
+        'appliance_model': model
+      }]
     tasks = []
     for site in sources:
       if site in self.parts_scrapers:
         tasks.append(self.parts_scrapers[site].search_parts(session, model, part_type, problem_area))
     results = await asyncio.gather(*tasks, return_exceptions=True)
     return [part for result in results if isinstance(result, list) for part in result]
+
+  async def _search_parts_all_sources(self, session, model: str, part_type: str, problem_area: str) -> List[Dict]:
+    if self.test_mode:
+      parts = []
+      for source, source_parts in TEST_CONFIG['mock_scraped_data'].items():
+        matching_parts = [
+          part for part in source_parts
+          if part['type'] == part_type and part['problem_area'] == problem_area
+        ]
+        parts.extend(matching_parts)
+      return parts
+    tasks = []
+    for site, scraper in self.parts_scrapers.items():
+      tasks.append(scraper.search_parts(session, model, part_type, problem_area))    
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    parts = []
+    for result in results:
+      if isinstance(result, Exception):
+        logging.error(f"Parts scraping error: {result}")
+      else:
+        parts.extend(result)
+    return parts
 
   async def _gather_appliance_data(self, session) -> List[Dict]:
     tasks = []
@@ -180,19 +225,6 @@ class ApplianceWebScraper:
           parts = await self._search_parts_all_sources(session, model, part_type, problem_area)
           appliance['parts'].extend(parts)
 
-  async def _search_parts_all_sources(self, session, model: str, part_type: str, problem_area: str) -> List[Dict]:
-    tasks = []
-    for site, scraper in self.parts_scrapers.items():
-      tasks.append(scraper.search_parts(session, model, part_type, problem_area))    
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    parts = []
-    for result in results:
-      if isinstance(result, Exception):
-        logging.error(f"Parts scraping error: {result}")
-      else:
-        parts.extend(result)
-    return parts
-
   async def _process_scraped_data(self, appliances: List[Dict]):
     for appliance in appliances:
       await self.store_appliance_data(appliance)
@@ -200,23 +232,146 @@ class ApplianceWebScraper:
         for part in appliance['parts']:
           await self.store_part_data(part, appliance['model'])
 
+  def construct_appliance_query(self, appliance: Dict) -> List[Dict]:
+    """Constructs queries for appliance and related data insertion"""
+    queries = []
+    appliance_query = {
+      'query': """
+        INSERT IGNORE INTO appliances (appliance_name, description) 
+        VALUES (%s, %s)
+      """,
+      'params': [appliance['type'], appliance.get('description', f"Common {appliance['type']} issues")]
+    }
+    queries.append(appliance_query)
+    brand_query = {
+      'query': """
+        INSERT IGNORE INTO brands (appliance_id, name)
+        SELECT appliance_id, %s FROM appliances 
+        WHERE appliance_name = %s
+      """,
+      'params': [appliance['brand'], appliance['type']]
+    }
+    queries.append(brand_query)
+    model_query = {
+      'query': """
+        INSERT IGNORE INTO models (brand_id, name)
+        SELECT b.brand_id, %s 
+        FROM brands b
+        JOIN appliances a ON b.appliance_id = a.appliance_id
+        WHERE b.name = %s AND a.appliance_name = %s
+      """,
+      'params': [appliance['model'], appliance['brand'], appliance['type']]
+    }
+    queries.append(model_query)
+    problems = APPLIANCE_PROBLEMS.get(appliance['type'].lower(), {})
+    for problem_area, issues in problems.items():
+      area_query = self.construct_problem_area_query(appliance['type'], problem_area)
+      queries.append(area_query)
+      for issue in issues:
+        issue_query = self.construct_issue_type_query(problem_area, issue)
+        queries.append(issue_query)    
+    return queries
+
+  def construct_problem_area_query(self, appliance_type: str, problem_area: str) -> Dict:
+    """Constructs query for problem area insertion"""
+    return {
+      'query': """
+        INSERT IGNORE INTO problem_areas (appliance_id, area_name)
+        SELECT appliance_id, %s FROM appliances 
+        WHERE appliance_name = %s
+      """,
+      'params': [problem_area, appliance_type]
+    }
+
+  def construct_issue_type_query(self, problem_area: str, issue_desc: str) -> Dict:
+    """Constructs query for issue type insertion"""
+    return {
+      'query': """
+        INSERT IGNORE INTO issue_types (area_id, issue_description)
+        SELECT area_id, %s FROM problem_areas 
+        WHERE area_name = %s
+      """,
+      'params': [issue_desc, problem_area]
+    }
+
+  def construct_part_query(self, part: Dict, model: str) -> List[Dict]:
+    """Constructs queries for part insertion and all relationships"""
+    queries = []
+    part_data = {
+      'part_name': part.get('part_name', 'Unknown Part'),
+      'part_image': part.get('part_image', None),
+      'part_link': part.get('part_link', None),
+      'instructions_video': part.get('instructions_video', None)
+    }
+    part_query = {
+      'query': """
+        INSERT IGNORE INTO parts 
+        (part_name, part_image, part_link, instructions_video)
+        VALUES (%s, %s, %s, %s)
+      """,
+      'params': list(part_data.values())
+    }
+    queries.append(part_query)
+    if all(k in part for k in ['problem_area', 'issue_description']):
+      issue_part_query = {
+        'query': """
+          INSERT IGNORE INTO issues_parts (issue_id, part_id)
+          SELECT i.issue_id, p.part_id
+          FROM issue_types i
+          JOIN parts p ON p.part_name = %s
+          JOIN problem_areas pa ON i.area_id = pa.area_id
+          WHERE i.issue_description = %s
+          AND pa.area_name = %s
+        """,
+        'params': [part_data['part_name'], part['issue_description'], part['problem_area']]
+      }
+    queries.append(issue_part_query)
+    return queries
+
   async def store_appliance_data(self, appliance: Dict):
+    """Store appliance data and its associated problem areas"""
     try:
-      query = self.db_handler.construct_insert_query(
-        {**appliance, 'problems': json.dumps(self.associate_problems_parts(appliance['type']))},
-        'appliances'
-      )
-      self.send_to_database(query)
+      queries = self.construct_appliance_query(appliance)
+      for query in queries:
+        await self.send_to_database(query)
+      problems = self.associate_problems_parts(appliance['type'])
+      for problem_area, issues in problems.items():
+        area_query = {
+          'query': """
+            INSERT IGNORE INTO problem_areas (appliance_id, area_name)
+            SELECT appliance_id, %s FROM appliances 
+            WHERE appliance_name = %s
+          """,
+          'params': [problem_area, appliance['type']]
+        }
+        await self.send_to_database(area_query)
+        for issue_desc in issues:
+          issue_query = {
+            'query': """
+              INSERT IGNORE INTO issue_types (area_id, issue_description)
+              SELECT pa.area_id, %s 
+              FROM problem_areas pa
+              JOIN appliances a ON pa.appliance_id = a.appliance_id
+              WHERE pa.area_name = %s AND a.appliance_name = %s
+            """,
+            'params': [issue_desc, problem_area, appliance['type']]
+          }
+          await self.send_to_database(issue_query)
     except Exception as e:
       logging.error(f"Error storing appliance data: {e}")
+      logging.debug(f"Problem appliance data: {appliance}")
 
   async def store_part_data(self, part: Dict, model: str):
     try:
-      part['appliance_model'] = model
-      query = self.db_handler.construct_insert_query(part, 'parts')
-      self.send_to_database(query)
+      if not isinstance(part, dict) or 'part_name' not in part:
+        logging.error(f"Invalid part data structure: {part}")
+        return
+      queries = self.construct_part_query(part, model)
+      for query in queries:
+        await self.send_to_database(query)
     except Exception as e:
-      logging.error(f"Error storing part data: {e}")
+        logging.error(f"Error storing part data: {e}")
+        logging.debug(f"Problem part data: {part}")
 
   def associate_problems_parts(self, appliance_type: str) -> Dict:
     appliance_type = appliance_type.lower()
@@ -226,11 +381,13 @@ class ApplianceWebScraper:
 
   async def send_to_database(self, data: Dict):
     if self.test_mode:
-      self.test_queries.append({
+      query_info = {
         'timestamp': datetime.now().isoformat(),
-        'data': data
-      })
-      logging.info(f"Test mode: Stored query: {data}")
+        'query': data,
+        'query_type': 'insert_part' if 'part_name' in str(data) else 'insert_appliance'
+      }
+      self.test_queries.append(query_info)
+      logging.info(f"Test mode: Stored query: {json.dumps(query_info['timestamp'], indent=2)}")
       return
     try:
       message = aio_pika.Message(

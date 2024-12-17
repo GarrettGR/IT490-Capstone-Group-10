@@ -88,5 +88,69 @@ TEST_CONFIG = { # for testing purposes
       {'brand': 'lg', 'model': 'WM3900HWA', 'type': 'washer'},
       {'brand': 'samsung', 'model': 'RF28R7551SR', 'type': 'refrigerator'}
     ]
+  },
+  'mock_scraped_data': {
+    'repairclinic': [
+      {
+        'name': 'Washer Drive Belt',
+        'part_number': 'WPW10006384',
+        'price': '$29.99',
+        'type': 'belt',
+        'problem_area': 'drum',
+        'source': 'repairclinic',
+        'url': 'https://www.repairclinic.com/part/details/washer-belt-wp10006384'
+      },
+      {
+        'name': 'Door Boot Seal',
+        'part_number': 'WPW10290499',
+        'price': '$89.99',
+        'type': 'seal',
+        'problem_area': 'door',
+        'source': 'repairclinic',
+        'url': 'https://www.repairclinic.com/part/details/door-seal-wp10290499'
+      }
+    ],
+    'partselect': [
+      {
+        'name': 'Water Pump',
+        'part_number': 'LP6000',
+        'price': '$45.99',
+        'type': 'pump',
+        'problem_area': 'water_system',
+        'source': 'partselect',
+        'url': 'https://www.partselect.com/parts/LP6000-water-pump'
+      }
+    ],
+    'whirlpool': [
+      {
+        'name': 'Control Board Assembly',
+        'part_number': 'W10480777',
+        'price': '$159.99',
+        'type': 'board',
+        'problem_area': 'control',
+        'source': 'whirlpool',
+        'url': 'https://www.whirlpoolparts.com/parts/W10480777'
+      }
+    ],
+    'samsung': [
+      {
+        'name': 'Refrigerator Compressor',
+        'part_number': 'DA97-12540A',
+        'price': '$249.99',
+        'type': 'compressor',
+        'problem_area': 'cooling',
+        'source': 'samsung',
+        'url': 'https://samsungparts.com/products/DA97-12540A'
+      },
+      {
+        'name': 'Evaporator Fan Motor',
+        'part_number': 'DA31-00028E',
+        'price': '$89.99',
+        'type': 'fan',
+        'problem_area': 'cooling',
+        'source': 'samsung',
+        'url': 'https://samsungparts.com/products/DA31-00028E'
+      }
+    ]
   }
 }

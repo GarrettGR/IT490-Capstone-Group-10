@@ -19,7 +19,7 @@
         } else{
             // Checks if email already exists 
             $query = "SELECT * FROM users WHERE email = :email";
-            $tatement = $db->prepare($query);
+            $statement = $db->prepare($query);
             $statement->bindValue(':email', $email);
             $statement->execute();
             $count = $statement->fetchColumn();
@@ -32,7 +32,7 @@
                 $security_answer_hash = password_hash($security_answer_1, PASSWORD_DEFAULT);
 
                 // insert data from form into the database
-                $query = 'INSERT IGNORE INTO users (first_name, last_name, email, password_hash, security_question_1, security_answer_1)
+                $query = 'INSERT INTO users (first_name, last_name, email, password_hash, security_question_1, security_answer_1)
                 VALUES
                 (:first_name, :last_name, :email, :password_hash, :security_question_1, :security_answer_1)';
 
@@ -47,7 +47,6 @@
                 $statement->closeCursor();
 
                 try {
-                    $success = $statement->execute();
                     if ($success) {
                         echo "<p class='text-success text-center'>Sign up successful! You can now <a href='login.php'>log in</a>.</p>";
                     } else {
@@ -116,7 +115,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="password_hash" class="form-label text-start w-100">Password</label>
-                                            <input id="password_hash" class="form-control" type="text" name="password_hash" placeholder="Password123!" required>
+                                            <input id="password_hash" class="form-control" type="password" name="password_hash" placeholder="Password123!" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="security_question_1" class="form-label text-start w-100">Select a Security Question</label>
@@ -134,7 +133,7 @@
                                             <input id="security_answer_1" class="form-control" type="text" name="security_answer_1" placeholder="Blue" required>
                                         </div>
                                         <div class="mb-3">
-                                            <a class="btn btn-primary d-block w-100" role="button" href="login.php">Sign Up</a>
+                                            <button class="btn btn-primary d-block w-100" role="button" href="login.php">Sign Up</button>
                                         </div>
                                     </form>
                                 </div>

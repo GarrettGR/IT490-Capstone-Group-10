@@ -49,6 +49,8 @@
                 try {
                     if ($success) {
                         echo "<p class='text-success text-center'>Sign up successful! You can now <a href='login.php'>log in</a>.</p>";
+                        header('Location: login.php'); // Redirect to the login page
+                        exit()
                     } else {
                         echo "<p class='text-danger text-center'>Error signing up. Please try again later.</p>";
                     }

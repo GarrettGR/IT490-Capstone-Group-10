@@ -35,6 +35,13 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
     $statement->bindValue(':issue_id', $issue_id, PDO::PARAM_INT);
     $statement->execute();
     $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!$parts) {
+        echo "No parts found. Check database entries and query conditions.";
+    } else {
+        var_dump($parts); // Display fetched parts for debugging
+    }
+    
     $statement->closeCursor();
 
     // Check if parts are found for the selected issue

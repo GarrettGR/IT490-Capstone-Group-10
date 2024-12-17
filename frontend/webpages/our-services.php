@@ -2,62 +2,58 @@
 // checks database connection cause it is needed for troubleshooting
 require_once('../src/database-applicare.php'); 
  
-// Fetch all appliances from the appliances table
-$queryAppliances = 'SELECT * FROM appliances ORDER BY appliance_id';
-$statement = $db->prepare($queryAppliances);
-$statement->execute();
-$appliances = $statement->fetchAll(PDO::FETCH_ASSOC); // Fetch as an associative array
-$statement->closeCursor();
+/// Helper function to fetch data with prepared statements
+function fetchData($query, $parameters = []) {
+    global $db;
+    try {
+        $statement = $db->prepare($query);
+        foreach ($parameters as $param => $value) {
+            $statement->bindValue($param, $value['value'], $value['type']);
+        }
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        // Log error instead of exposing it
+        error_log("Database error: " . $e->getMessage());
+        return [];
+    }
+}
 
-$brands = [];
-$models = [];
-$parts = [];
-$issues = [];
+// Fetch all appliances
+$appliances = fetchData('SELECT * FROM appliances ORDER BY appliance_id');
 
+$brands = $models = $parts = $issues = [];
+$appliance_id = $brand_id = $model_id = $area_id = null;
+
+// Sanitize and fetch appliance ID
 if (isset($_GET['appliance_id'])) {
-    $appliance_id = $_GET['appliance_id'];  // Store appliance_id for further use
-
-    $queryBrands = 'SELECT * FROM brands WHERE appliance_id = :appliance_id';
-    $statement = $db->prepare($queryBrands);
-    $statement->bindValue(':appliance_id', $_GET['appliance_id'], PDO::PARAM_INT);
-    $statement->execute();
-    $brands = $statement->fetchAll(PDO::FETCH_ASSOC);
-    $statement->closeCursor();
-
-    // selects parts of the appliance that might have issues
-    $queryParts = 'SELECT * FROM problem_areas WHERE appliance_id = :appliance_id';
-    $statement = $db->prepare($queryParts);
-    $statement->bindValue(':appliance_id', $appliance_id, PDO::PARAM_INT);
-    $statement->execute();
-    $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
-    $statement->closeCursor();
+    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
+    $brands = fetchData('SELECT * FROM brands WHERE appliance_id = :appliance_id', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+    ]);
+    $parts = fetchData('SELECT * FROM problem_areas WHERE appliance_id = :appliance_id', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+    ]);
 }
 
-
-// Fetch models based on the selected brand (AJAX request)
+// Fetch models
 if (isset($_GET['brand_id'])) {
-    $brand_id = $_GET['brand_id'];
-
-    $queryModels = 'SELECT * FROM models WHERE brand_id = :brand_id';
-    $statement = $db->prepare($queryModels);
-    $statement->bindValue(':brand_id', $brand_id, PDO::PARAM_INT);
-    $statement->execute();
-    $models = $statement->fetchAll(PDO::FETCH_ASSOC);
-    $statement->closeCursor();
+    $brand_id = filter_input(INPUT_GET, 'brand_id', FILTER_VALIDATE_INT);
+    $models = fetchData('SELECT * FROM models WHERE brand_id = :brand_id', [
+        ':brand_id' => ['value' => $brand_id, 'type' => PDO::PARAM_INT]
+    ]);
 }
 
-
+// Fetch parts issues
 if (isset($_GET['area_id'])) {
-    $area_id = $_GET['area_id'];
-
-    // selects issues that are relevant that specific part
-    $queryIssues = 'SELECT * FROM issue_types WHERE area_id = :area_id';
-    $statement = $db->prepare($queryIssues);
-    $statement->bindValue(':area_id', $area_id, PDO::PARAM_INT);
-    $statement->execute();
-    $issues = $statement->fetchAll(PDO::FETCH_ASSOC);
-    $statement->closeCursor();
+    $area_id = filter_input(INPUT_GET, 'area_id', FILTER_VALIDATE_INT);
+    $issues = fetchData('SELECT * FROM issue_types WHERE area_id = :area_id', [
+        ':area_id' => ['value' => $area_id, 'type' => PDO::PARAM_INT]
+    ]);
 }
+
 ?>
 
 

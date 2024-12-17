@@ -50,6 +50,21 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
     header('Location: our-services.php');
     exit;
 }
+
+$zip_code = '';
+
+// Check if a zip code (or area) is provided
+$zip_code = isset($_GET['zip_code']) ? $_GET['zip_code'] : '';
+
+// If zip code is provided, create a dynamic search query for Google Maps
+if ($zip_code) {
+    $searchQuery = "handyman+" . urlencode($zip_code);
+    $useSearchMap = true; // Flag to indicate dynamic search map
+} else {
+    // Default location if no zip code is provided
+    $searchQuery = "handyman+New+Jersey"; // Default location
+    $useSearchMap = false; // Flag for static map
+}
 ?>
 
 <!DOCTYPE html>
@@ -85,15 +100,42 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
             </div>
         <?php endif; ?>
 
+        <!-- Form to collect Zip Code input -->
+        <h3 class="mt-5 text-center">Find Nearby Handymen</h3>
+        <h4 class="mt-5 text-center">Enter Zip Code</42>
+        <form method="get" action="" class="text-center mb-4">
+            <input type="text" name="zip_code" placeholder="Enter Zip Code" value="<?= htmlspecialchars($zip_code); ?>" class="form-control w-50 d-inline" required>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
         <!-- Google Maps Iframe to search for Handymen -->
         <?php
         // Example location for searching handymen, could be dynamic based on 'area_id'
         $location = "New+Jersey"; // You could dynamically populate this
         $searchQuery = "handyman+" . urlencode($location);
         ?>
-        <h3 class="mt-5 text-center">Find Nearby Handymen</h3>
         <div class="text-center">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12091.640837505438!2d-74.19203265527406!3d40.74200124412969!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2534cc006098b%3A0xfac623bce8f114d8!2sMaple%20Hall%20NJIT!5e0!3m2!1sen!2sus!4v1696634464882!5m2!1sen!2sus" width="240" height="180" style="border:0; display:flex; justify-content:left" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <?php if ($useSearchMap): ?>
+                <!-- Dynamic Google Maps Search based on zip code -->
+                <iframe 
+                    src="https://www.google.com/maps/embed/v1/search?q=<?= $searchQuery; ?>&key=YOUR_GOOGLE_MAPS_API_KEY" 
+                    width="100%" 
+                    height="500" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy">
+                </iframe>
+            <?php else: ?>
+                <!-- Static Google Map with predefined coordinates -->
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12091.640837505438!2d-74.19203265527406!3d40.74200124412969!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2534cc006098b%3A0xfac623bce8f114d8!2sMaple%20Hall%20NJIT!5e0!3m2!1sen!2sus!4v1696634464882!5m2!1sen!2sus" 
+                    width="100%" 
+                    height="500" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy">
+                </iframe>
+            <?php endif; ?>
 
         </div>
     </div>

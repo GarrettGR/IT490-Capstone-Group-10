@@ -126,7 +126,7 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
             <div class="col-md-4 mb-3"> <!-- Create 3 cards per row for larger screens -->
                 <div class="card h-100">
                     <div class="card-body">
-                    <h3><?= htmlspecialchars($appliance['type']); ?> - <?php echo htmlspecialchars($appliance['brand']); ?></h3>
+                    <h3><?= htmlspecialchars($appliance['type']); ?></h3>
                         <?php
                         $image = '';
                         switch ($appliance['type']) {

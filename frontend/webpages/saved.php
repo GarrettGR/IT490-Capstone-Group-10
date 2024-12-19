@@ -28,6 +28,12 @@ $is_logged_in = isset($_SESSION['user_id']); // assuming 'user_id' is stored in 
 <body>
     <?php include('../common/header.php'); ?>
 
+    <?php if (!$is_logged_in): ?>
+                <div class="text-center pt-3">
+                    <a href="login.php" class="btn btn-primary">Login</a>
+                </div>
+    <?php endif; ?>
+    
     <section class="py-5">
         <div class="container py-5">
             <div data-reflow-type="shopping-cart"></div>
@@ -45,12 +51,6 @@ $is_logged_in = isset($_SESSION['user_id']); // assuming 'user_id' is stored in 
             </div>
             <hr>
 
-            <?php if (!$is_logged_in): ?>
-                <div class="text-center pt-3">
-                    <a href="login.php" class="btn btn-primary">Login</a>
-                </div>
-            <?php endif; ?>
-            
             <div class="text-muted d-flex justify-content-between align-items-center pt-3">
                 <p class="mb-0"></p>
                 <section class="text-center">

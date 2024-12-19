@@ -107,7 +107,6 @@ if (isset($_GET['id'])) {
                     switch ($appliance['type']) {
                         case 'Washer':
                             $image = 'assets/img/appliances/washer.jpeg';
-                            echo $image;
                             break;
                         case 'Dryer':
                             $image = 'assets/img/appliances/dryer.jpeg';
@@ -155,7 +154,7 @@ if (isset($_GET['id'])) {
             <div class="container">
                 <h2>Select Brand</h2>
                 <form method="get" action="">
-                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
+                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['id']; ?>">
                     <select class="form-select form-select-lg mb-3" name="brand" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a brand</option>
                         <?php foreach ($brands as $brand) : ?>

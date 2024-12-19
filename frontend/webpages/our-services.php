@@ -24,22 +24,30 @@ function fetchData($query, $parameters = []) {
 // Fetch all appliances
 $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
 $brands = $models = $parts = $common_problems = [];
-
-// fetch modles based on selected appliance type and brand
-if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
-    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $brand = filter_input(INPUT_GET, 'brand', FILTER_SANITIZE_STRING);
-    $models = fetchData('SELECT DISTINCT model FROM appliances WHERE type = :type AND brand = :brand', [
-        ':type' => ['value' => $_GET['appliance_type'], 'type' => PDO::PARAM_STR],
-        ':brand' => ['value' => $brand, 'type' => PDO::PARAM_STR]
-    ]);
-}
-
+$appliance_id = $brand_id = $model_id = $area_id = null;
 // Sanitize and fetch appliance ID
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
     $parts = fetchData('SELECT * FROM problem_areas WHERE id = :appliance_id', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+    ]);
+}
+
+// Fetch brands based on selected appliance type
+if (isset($_GET['appliance_id'])) {
+    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
+    $brands = fetchData('SELECT DISTINCT brand FROM appliances WHERE id = :appliance_id', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+    ]);
+}
+
+// fetch models based on selected appliance type and brand
+if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
+    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
+    $brand = filter_input(INPUT_GET, 'brand', FILTER_SANITIZE_STRING);
+    $models = fetchData('SELECT DISTINCT model FROM appliances WHERE type = :type AND brand = :brand', [
+        ':type' => ['value' => $_GET['type'], 'type' => PDO::PARAM_STR],
+        ':brand' => ['value' => $brand, 'type' => PDO::PARAM_STR]
     ]);
 }
 

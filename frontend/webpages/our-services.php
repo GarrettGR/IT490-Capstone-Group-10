@@ -10,32 +10,27 @@ if (session_status() === PHP_SESSION_NONE) {
 function fetchData($query, $parameters = []) {
     global $db;
     try {
-        echo "<p>Executing query: $query</p>"; // Echo query for debugging
         $statement = $db->prepare($query);
         foreach ($parameters as $param => $value) {
-            echo "<p>Binding parameter: $param with value: " . htmlspecialchars($value['value']) . "</p>"; // Echo parameters being bound
+            $statement->bindValue($param, $value['value'], $value['type']);
         }
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        echo "<pre>" . print_r($result, true) . "</pre>"; // Echo fetched data for debugging
         return $result;
     } catch (PDOException $e) {
         // Log error instead of exposing it
         error_log("Database error: " . $e->getMessage());
-        echo "<p>Error: " . $e->getMessage() . "</p>"; // Display error for debugging
         return [];
     }
 }
 
 // Fetch all appliances
-echo "<p>Fetching all appliances...</p>";
 $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
 $brands = $models = $parts = $common_problems = [];
 
 // Sanitize and fetch appliance ID
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    echo "<p>Appliance ID: $appliance_id</p>"; // Echo appliance ID
     $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
     ]);
@@ -44,7 +39,6 @@ if (isset($_GET['appliance_id'])) {
 // Fetch brands based on selected appliance type
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    echo "<p>Fetching brands for appliance ID: $appliance_id</p>"; // Echo appliance ID
     $brands = fetchData('SELECT DISTINCT brand FROM appliances WHERE appliance_id = :appliance_id', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
     ]);
@@ -54,7 +48,6 @@ if (isset($_GET['appliance_id'])) {
 if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
     $brand = filter_input(INPUT_GET, 'brand', FILTER_SANITIZE_STRING);
-    echo "<p>Fetching models for appliance ID: $appliance_id and brand: $brand</p>"; // Echo appliance and brand
     $models = fetchData('SELECT DISTINCT model FROM appliances WHERE appliance_id = :appliance_id AND brand = :brand', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT],
         ':brand' => ['value' => $brand, 'type' => PDO::PARAM_STR]
@@ -64,7 +57,6 @@ if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
 // Fetch common problems for specific appliances (based off of type, brand, model, area)
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    echo "<p>Fetching common problems for appliance ID: $appliance_id</p>"; // Echo appliance ID
     $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
     ]);
@@ -74,7 +66,6 @@ if (isset($_GET['appliance_id'])) {
 if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
     $area = filter_input(INPUT_GET, 'area', FILTER_SANITIZE_STRING);
-    echo "<p>Fetching parts for appliance ID: $appliance_id and area: $area</p>"; // Echo appliance ID and area
     $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id AND area = :area', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_STR],
         ':area' => ['value' => $area, 'type' => PDO::PARAM_STR]
@@ -121,7 +112,6 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
         // Handle search functionality
         if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
             $searchTerm = '%' . trim($_GET['search']) . '%';
-            echo "<p>Search term: $searchTerm</p>"; // Echo search term
             $query = "SELECT * FROM appliances WHERE type LIKE :search OR brand LIKE :search OR model LIKE :search";
             $appliances = fetchData($query, ['search' => ['value' => $searchTerm, 'type' => PDO::PARAM_STR]]);
         }

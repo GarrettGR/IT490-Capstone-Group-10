@@ -23,7 +23,7 @@
             if($user){
                 $_SESSION['email'] = $email;
                 $_SESSION['user_id'] = $user['user_id'];
-                $security_question = $user['security_question_1'];
+                $security_question = $user['security_question'];
             } else {
                 $error = "No user with that email address.";
             }
@@ -35,7 +35,7 @@
   }
 
   if (isset($_POST['security_answer'])){
-    
+
     if(isset($_SESSION['email'])){
         $email = $_SESSION['email'];
     }else{
@@ -58,7 +58,7 @@
              $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
              if($user){
-                if($user['security_answer_1'] == $security_answer){
+                if($user['security_answer_hash'] == $security_answer){
                     // if answer matches, allow password change
                     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                     $sql = "UPDATE users SET password_hash = ? WHERE email = ?";
@@ -76,7 +76,7 @@
             } catch (PDOException $e){
                 echo "Databae Error: " . $e->getMessage();
             }
-        
+
     }
   }
 
@@ -102,7 +102,7 @@
         <div class="container py-4 py-xl-5">
             <?php if (!isset($security_question)): ?>
                 <div class="text-center">
-                    
+
                     <h2>Password Recovery</h2>
                     <p class="w-lg-50">Enter your email address to reset your password.</p>
                     <form method="post">

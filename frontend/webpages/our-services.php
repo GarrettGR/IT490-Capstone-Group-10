@@ -23,7 +23,6 @@ function fetchData($query, $parameters = []) {
 
 // Fetch all appliances
 $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
-
 $brands = $models = $parts = $common_problems = [];
 $appliance_id = $brand_id = $model_id = $area_id = null;
 
@@ -40,17 +39,17 @@ if (isset($_GET['appliance_id'])) {
 
 // Fetch models
 if (isset($_GET['brand'])) {
-    $brand_id = filter_input(INPUT_GET, 'brand_id', FILTER_VALIDATE_INT);
-    $models = fetchData('SELECT * FROM models WHERE brand_id = :brand_id', [
-        ':brand_id' => ['value' => $brand_id, 'type' => PDO::PARAM_INT]
+    $brand = filter_input(INPUT_GET, 'brand', FILTER_VALIDATE_INT);
+    $models = fetchData('SELECT * FROM models WHERE brand = :brand', [
+        ':brand' => ['value' => $brand, 'type' => PDO::PARAM_INT]
     ]);
 }
 
 // Fetch parts common problems
-if (isset($_GET['area_id'])) {
-    $area_id = filter_input(INPUT_GET, 'area_id', FILTER_VALIDATE_INT);
+if (isset($_GET['id'])) {
+    $problem_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
     $common_problems = fetchData('SELECT * FROM common_problems WHERE part_id = :appliance_id', [
-        ':area_id' => ['value' => $area_id, 'type' => PDO::PARAM_INT]
+        ':id' => ['value' => $id, 'type' => PDO::PARAM_INT]
     ]);
 }
 

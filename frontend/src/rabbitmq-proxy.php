@@ -6,8 +6,6 @@ if (!extension_loaded('amqp')) {
   die("AMQP extension is not loaded. Please install php-amqp package.\n");
 }
 
-# $env = parse_ini_file('.env');
-
 if (defined('RABBITMQ_PROXY_INCLUDED')) return;
 define('RABBITMQ_PROXY_INCLUDED', true);
 
@@ -16,24 +14,25 @@ class RMQClient {
   private $channel;
   private $exchange;
   private $frontend_queue;
-  private $pending_requests = [];
-  private $consuming = false;
+  private $last_error;
 
-  public function __construct() {
-    $this->connect();
-    register_shutdown_function([$this, 'close']);
-  }
-
-  private function connect() {
-    try {
-      $this->connection = new AMQPConnection([
+  public function __construct($config = null) {
+    if ($config === null) {
+      // $env = parse_ini_file(__DIR__ . '/.env');
+      $config = [
         'host' => '10.0.0.11',
         'port' => 5672,
         'login' => 'admin',
-        'password' => 'student123', # $env['rmq_passwd'],
-        'read_timeout' => 30,
-        'write_timeout' => 30
-      ]);
+        'password' => 'student123' // $env['rmq_passwd']
+      ];
+    }
+    $this->connect($config);
+    register_shutdown_function([$this, 'close']);
+  }
+
+  private function connect($config) {
+    try {
+      $this->connection = new AMQPConnection($config);
       $this->connection->connect();
       $this->channel = new AMQPChannel($this->connection);
       $this->channel->setPrefetchCount(1);
@@ -42,7 +41,6 @@ class RMQClient {
       $this->exchange->setType(AMQP_EX_TYPE_DIRECT);
       $this->exchange->setFlags(AMQP_DURABLE);
       $this->exchange->declareExchange();
-
       $this->frontend_queue = new AMQPQueue($this->channel);
       $this->frontend_queue->setName('frontend_queue');
       $this->frontend_queue->setFlags(AMQP_DURABLE);
@@ -52,78 +50,117 @@ class RMQClient {
       ]);
       $this->frontend_queue->declareQueue();
       $this->frontend_queue->bind('applicare', 'frontend');
-
     } catch (AMQPException $e) {
-      error_log("RabbitMQ connection error: " . $e->getMessage());
-      throw $e;
+      $this->last_error = $e->getMessage();
+      throw new Exception("RabbitMQ connection error: " . $e->getMessage());
     }
   }
+
+  public function query($sql) {
+    try {
+      $result = $this->queryDatabase($sql);
+      error_log("Query result from database: " . print_r($result, true));
+      if (isset($result['error'])) {
+        $this->last_error = $result['error'];
+        error_log("Query error: " . $result['error']);
+        return false;
+      }
+      if (isset($result['status']) && $result['status'] === 'error') {
+        $this->last_error = isset($result['message']) ? $result['message'] : 'Unknown error';
+        return false;
+      }
+      if (isset($result['results'])) {
+        error_log("Creating RMQResult with data: " . print_r($result['results'], true));
+        return new RMQResult($result['results']);
+      } else if (isset($result['affected_rows'])) {
+        return new RMQResult([]);
+      } else {
+        error_log("No results found, creating empty RMQResult");
+        return new RMQResult([]);
+      }
+    } catch (Exception $e) {
+      $this->last_error = $e->getMessage();
+      error_log("Error in query method: " . $e->getMessage());
+      return false;
+    }
+  }
+
+  public function exec($sql) {
+    try {
+      $result = $this->queryDatabase($sql);
+      if (isset($result['status']) && $result['status'] === 'error') {
+        $this->last_error = $result['message'];
+        return false;
+      }      
+      return isset($result['affected_rows']) ? $result['affected_rows'] : 0;
+    } catch (Exception $e) {
+      $this->last_error = $e->getMessage();
+      return false;
+    }
+  }
+
+  public function prepare($sql) { return new RMQStatement($this, $sql); }
+
+  public function errorInfo() { return [$this->last_error]; }
 
   public function sendRequest($body, $destination = 'backend') {
     try {
       $correlation_id = $this->getUniqueId();
       $message_body = is_string($body) ? $body : json_encode($body);
-
+      // $reply_to = $this->frontend_queue->getName();
       $this->exchange->publish(
         $message_body,
         $destination,
         AMQP_NOPARAM,
         [
           'correlation_id' => $correlation_id,
-          # 'reply_to' => 'frontend',
+          // 'reply_to' => $reply_to,
           'delivery_mode' => 2
         ]
       );
-
       error_log("Published message with correlation_id: $correlation_id to $destination");
       return $correlation_id;
     } catch (Exception $e) {
-      error_log("Error sending request: " . $e->getMessage());
+      $this->last_error = $e->getMessage();
       throw $e;
     }
   }
 
   public function waitForResponse($correlation_id, $timeout = 30) {
     $start = time();
-    $this->pending_requests[$correlation_id] = null;
-    if (!$this->consuming) {
-      $this->startConsumer();
-    }
-    while (time() - $start < $timeout) {
-      if (isset($this->pending_requests[$correlation_id]) && 
-          $this->pending_requests[$correlation_id] !== null) {
-        $response = $this->pending_requests[$correlation_id];
-        unset($this->pending_requests[$correlation_id]);
-        return $response;
-      }
-      usleep(100000);
-    }
-    unset($this->pending_requests[$correlation_id]);
-    error_log("Timeout waiting for response to correlation_id: $correlation_id");
-    return null;
-  }
-
-  private function startConsumer() {
-    try {
-      $this->frontend_queue->consume(
-        function($message, $queue) {
-          $correlation_id = $message->getCorrelationId();
-          if (isset($this->pending_requests[$correlation_id])) {
-            $this->pending_requests[$correlation_id] = json_decode($message->getBody(), true);
-            $queue->ack($message->getDeliveryTag());
-          } else {
-            $queue->nack($message->getDeliveryTag(), AMQP_REQUEUE);
+    $response = null;
+    $processed_messages = [];
+    while ($response === null && (time() - $start) < $timeout) {
+      try {
+        while ($message = $this->frontend_queue->get()) {
+          $msg_correlation_id = $message->getCorrelationId();
+          error_log("Received message with correlation_id: " . $msg_correlation_id);
+          error_log("Message body: " . $message->getBody());
+          if ($msg_correlation_id !== $correlation_id) {
+            if (!in_array($msg_correlation_id, $processed_messages)) {
+              $processed_messages[] = $msg_correlation_id;
+              $this->frontend_queue->nack($message->getDeliveryTag(), AMQP_REQUEUE);
+            }
+            continue;
           }
-          return false;
-        },
-        AMQP_NOPARAM
-      );
-      
-      $this->consuming = true;
-    } catch (AMQPException $e) {
-      error_log("Error starting consumer: " . $e->getMessage());
-      throw $e;
+          $wrapped_response = json_decode($message->getBody(), true);
+          error_log("Parsed response: " . print_r($wrapped_response, true));
+          $response = isset($wrapped_response['body']) ? $wrapped_response['body'] : $wrapped_response;
+          $this->frontend_queue->ack($message->getDeliveryTag());
+          break;
+        }
+        if ($response === null) {
+          usleep(100000);
+        }
+      } catch (Exception $e) {
+        error_log("Error in consume: " . $e->getMessage());
+      }
     }
+    if ($response === null) {
+      $this->last_error = "Request timeout";
+      error_log("Timeout waiting for response to correlation_id: $correlation_id");
+    }
+    return $response;
   }
 
   private function getUniqueId() {
@@ -151,66 +188,117 @@ class RMQClient {
   }
 }
 
+class RMQResult implements Iterator {
+  private $results;
+  private $position = 0;
+
+  public function __construct($results = []) {
+    $this->results = is_array($results) ? $results : [];
+  }
+
+  public function fetch($fetch_style = null) {
+    if ($this->position >= count($this->results)) {
+      return false;
+    }
+    $row = $this->results[$this->position];
+    $this->position++;
+    return $row;
+  }
+
+  public function fetchAll($fetch_style = null) { return $this->results; }
+  public function rewind() { $this->position = 0; }
+  public function current() { return $this->results[$this->position]; }
+  public function key() { return $this->position; }
+  public function next() { ++$this->position; }
+  public function valid() { return isset($this->results[$this->position]); }
+}
+
+class RMQStatement {
+  private $rmq;
+  private $sql;
+  private $params = [];
+
+  public function __construct($rmq, $sql) {
+    $this->rmq = $rmq;
+    $this->sql = $sql;
+  }
+
+  public function bindValue($param, $value) {
+    $this->params[$param] = $value;
+    return true;
+  }
+
+  public function bindParam($param, &$var) {
+    $this->params[$param] = $var;
+    return true;
+  }
+
+  public function execute($params = null) {
+    if ($params !== null) {
+      $this->params = array_merge($this->params, $params);
+    }
+    $sql = $this->sql;
+    foreach ($this->params as $key => $value) {
+      if (is_string($key)) {
+        $sql = str_replace($key, $this->quote($value), $sql);
+      } else {
+        $sql = $this->replaceQueryPosition($sql, $this->quote($value));
+      }
+    }
+    return $this->rmq->query($sql);
+  }
+
+  private function quote($value) {
+    if (is_null($value)) {
+      return 'NULL';
+    }
+    if (is_bool($value)) {
+      return $value ? '1' : '0';
+    }
+    if (is_int($value) || is_float($value)) {
+      return $value;
+    }
+    return "'" . addslashes($value) . "'";
+  }
+
+  private function replaceQueryPosition($query, $value) {
+    $pos = strpos($query, '?');
+    if ($pos !== false) {
+      return substr_replace($query, $value, $pos, 1);
+    }
+    return $query;
+  }
+}
+
 if (basename($_SERVER['SCRIPT_FILENAME']) == basename(__FILE__)) {
-  if (php_sapi_name() === 'cli') {
-    if ($argc < 2) {
-      echo "Usage: rmq_proxy <message> <destination>\n";
-      echo "Example: rmq_proxy '{\"query\":\"SELECT * FROM appliances\"}' database\n";
+  if ($argc < 2) {
+    echo "Usage: rmq_proxy <message> <destination>\n";
+    echo "Example: rmq_proxy '{\"query\":\"SELECT * FROM appliances\"}' database\n";
+    exit(1);
+  }
+
+  $rmq = new RMQClient();
+  
+  try {
+    $message = json_decode($argv[1], true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      throw new Exception("Invalid JSON message provided");
+    }
+    $destination = isset($argv[2]) ? $argv[2] : 'backend';
+    echo "Sending message to $destination...\n";
+    $correlation_id = $rmq->sendRequest($message, $destination);        
+    echo "Waiting for response...\n";
+    $response = $rmq->waitForResponse($correlation_id);    
+    if ($response) {
+      echo "Response received:\n";
+      echo json_encode($response, JSON_PRETTY_PRINT) . "\n";
+      exit(0);
+    } else {
+      echo "Error: Request timed out\n";
       exit(1);
     }
-
-    $rmq = new RMQClient();
-    
-    try {
-      $message = json_decode($argv[1], true);
-      if (json_last_error() !== JSON_ERROR_NONE) {
-        throw new Exception("Invalid JSON message provided");
-      }
-
-      $destination = isset($argv[2]) ? $argv[2] : 'BE';
-      echo "Sending message to $destination...\n";
-      $correlation_id = $rmq->sendRequest($message, $destination);        
- 
-      echo "Waiting for response...\n";
-      $response = $rmq->waitForResponse($correlation_id);    
-      if ($response) {
-        echo "Response received:\n";
-        echo json_encode($response, JSON_PRETTY_PRINT) . "\n";
-        exit(0);
-      } else {
-        echo "Error: Request timed out\n";
-        exit(1);
-      }
-        
-    } catch (Exception $e) {
-      echo "Error: " . $e->getMessage() . "\n";
-      exit(1);
-    }
-  } else {
-    try {
-      $rmq = new RMQClient();
-      $input = json_decode(file_get_contents('php://input'), true);
-        
-      if (!$input) {
-        throw new Exception("Invalid JSON input");
-      }
-        
-      $correlation_id = $rmq->sendRequest($input);
-      $response = $rmq->waitForResponse($correlation_id);
-        
-      if ($response) {
-        http_response_code(200);
-      } else {
-        http_response_code(500);
-        $response = ['error' => 'Request timed out'];
-      }
-
-      header('Content-Type: application/json');
-      echo json_encode($response);
-
-    } catch (Exception $e) {
-      http_response_code(500);
-      echo json_encode(['error' => $e->getMessage()]);
-    }
+  } catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+    exit(1);
   }
 }

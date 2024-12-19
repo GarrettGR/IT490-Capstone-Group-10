@@ -15,27 +15,8 @@
 <body>
     <?php include('../common/header.php'); ?>
 
-    <header class="pt-5">
-        <div class="container pt-4 pt-xl-5">
-            <div class="row pt-5">
-                <div class="col-md-8 text-center text-md-start mx-auto">
-                    <div class="text-center">
-                        <h1 class="display-4 fw-bold mb-5">Troubleshoot & Repair Your Home Appliances with Ease.</h1>
-                        <p class="fs-5 text-muted mb-5">Applicare helps you troubleshoot and repair common household appliances yourself, saving time and money. With user-friendly guides, parts recommendations, and nearby repair shop suggestions, managing your home appliances has never been easier.</p>
-                        <form class="d-flex justify-content-center flex-wrap" method="post" data-bs-theme="light">
-                            <div class="shadow-lg mb-3"><input class="form-control" type="email" name="email" placeholder="Your Email"></div>
-                            <div class="shadow-lg mb-3"><button class="btn btn-primary" type="submit">Get Started </button></div>
-                        </form>
-                    </div>
-                </div>
-                <div class="col-12 col-lg-10 mx-auto">
-                    <div class="text-center position-relative"><img class="img-fluid" src="assets/img/illustrations/meeting.svg" style="width: 800px;"></div>
-                </div>
-            </div>
-        </div>
-    </header>
     
-    <img src="images/default-appliance.jpg" alt="default appliances">
+    <img src="assets/img/appliances/default-appliance.jpg" alt="default appliances">
    
     <?php include('../common/footer.php'); ?>
 

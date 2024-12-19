@@ -24,7 +24,7 @@ function fetchData($query, $parameters = []) {
 // Fetch all appliances
 $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
 
-$brands = $models = $parts = $issues = [];
+$brands = $models = $parts = $common_problems = [];
 $appliance_id = $brand_id = $model_id = $area_id = null;
 
 // Sanitize and fetch appliance ID
@@ -39,17 +39,17 @@ if (isset($_GET['appliance_id'])) {
 }
 
 // Fetch models
-if (isset($_GET['brand_id'])) {
+if (isset($_GET['brand'])) {
     $brand_id = filter_input(INPUT_GET, 'brand_id', FILTER_VALIDATE_INT);
     $models = fetchData('SELECT * FROM models WHERE brand_id = :brand_id', [
         ':brand_id' => ['value' => $brand_id, 'type' => PDO::PARAM_INT]
     ]);
 }
 
-// Fetch parts issues
+// Fetch parts common problems
 if (isset($_GET['area_id'])) {
     $area_id = filter_input(INPUT_GET, 'area_id', FILTER_VALIDATE_INT);
-    $issues = fetchData('SELECT * FROM issue_types WHERE area_id = :area_id', [
+    $common_problems = fetchData('SELECT * FROM common_problems WHERE part_id = :appliance_id', [
         ':area_id' => ['value' => $area_id, 'type' => PDO::PARAM_INT]
     ]);
 }
@@ -101,7 +101,7 @@ if (isset($_GET['area_id'])) {
                     $image = '';
                     switch ($appliance['type']) {
                         case 'Washer':
-                            $image = 'assets/img/appliances/washer.jpg';
+                            $image = 'assets/img/appliances/washer.jpeg';
                             echo $image;
                             break;
                         case 'Dryer':

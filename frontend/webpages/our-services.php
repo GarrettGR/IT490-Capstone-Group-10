@@ -23,7 +23,6 @@ function fetchData($query, $parameters = []) {
 
 // Fetch all appliances
 $appliances = fetchData('SELECT * FROM appliances');
-$appliance_id = $brand_id = $model_id = $area_id = null;
 // Sanitize and fetch appliance ID
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
@@ -170,7 +169,7 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
 
     <?php include('../common/footer.php'); ?>
 
-    <script>
+    <!-- <script>
         function toggleDropdown(id) {
             const dropdown = document.getElementById(`dropdown-${id}`);
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
@@ -181,7 +180,7 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
             console.log(`Selected brand for appliance ${id}: ${brand}`);
         }
 
-    </script>
+    </script> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>

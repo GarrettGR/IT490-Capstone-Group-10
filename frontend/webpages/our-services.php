@@ -102,25 +102,25 @@ if (isset($_GET['area_id'])) {
                     $image = '';
                     switch ($appliance['appliance_name']) {
                         case 'Washers':
-                            $image = 'https://image-us.samsung.com/SamsungUS/home/home-appliances/washers/front-load/pd/wf45t6000aw-a5/gallery/Gallery-WF45T6000AW-01-White-1600x1200.jpg?$product-details-jpg$';
+                            $image = '../images/washer.jpg';
                             break;
                         case 'Dryers':
-                            $image = 'https://mobileimages.lowes.com/productimages/4fbb1116-847f-45ce-8cb4-f3fbe3428101/17585630.jpg';
+                            $image = '../dryers.jpg';
                             break;
                         case 'Refrigerators':
-                            $image = 'https://d1b5h9psu9yexj.cloudfront.net/55772/LG-LRFLC2706S_20230823-182245_full.jpeg';
+                            $image = '../images/fridge.jpg';
                             break;
                         case 'Dishwashers':
-                            $image = 'https://images.webfronts.com/cache/frouerpscico.jpg?imgeng=/w_500/h_500/m_letterbox_ffffff_100';
+                            $image = '../images/dishwasher.jpg';
                             break;
                         case 'Microwaves':
-                            $image = 'https://target.scene7.com/is/image/Target/GUEST_738eeb63-eb0c-415f-a2c1-0dcf6ad03ea1?wid=488&hei=488&fmt=pjpeg';
+                            $image = '../images/microwaves.jpg';
                             break;
                         case 'Ovens':
-                            $image = 'https://mobileimages.lowes.com/productimages/06a6bba8-81e9-47ed-90ce-4a1f2b235af6/42672585.jpg';
+                            $image = '../images/oven.jpg';
                             break;
                         default:
-                            $image = 'assets/images/default-appliance.jpg'; // Default image for unknown appliances
+                            $image = '../images/default-appliance.jpg'; // Default image for unknown appliances
                             break;
                     }
 

@@ -100,7 +100,7 @@ if (isset($_GET['area_id'])) {
 
 <div class="col-md-4 mb-4">
     <div class="card">
-        <img src="assets/images/test.jpg" class="card-img-top" alt="Test">
+        <img src="assets/img/default-appliance.jpg" class="card-img-top" alt="Test">
         <div class="card-body text-center">
             <h5 class="card-title">Test Appliance</h5>
             <p class="card-text">This is a test appliance.</p>

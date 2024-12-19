@@ -1,7 +1,11 @@
 <?php
 // checks database connection cause it is needed for troubleshooting
 require_once('../src/database-applicare.php'); 
- 
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Helper function to fetch data with prepared statements
 function fetchData($query, $parameters = []) {
     global $db;

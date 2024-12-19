@@ -174,10 +174,31 @@ class RMQClient {
     }
   }
 
-  public function queryDatabase($query) {
+  private function queryDatabase($query) {
     $message = ['query' => $query];
     $correlation_id = $this->sendRequest($message, 'database');
-    return $this->waitForResponse($correlation_id);
+    $result = $this->waitForResponse($correlation_id);
+    if ($result && isset($result['results'])) {
+      $columns = $result['results']['columns'];
+      $data = $result['results']['data'];
+      error_log("Query: " . $query);
+      if (empty($data)) {
+        error_log("No results found");
+      } else {
+        foreach ($data as $row) {
+          $formatted_values = [];
+          foreach ($columns as $i => $column) {
+            $formatted_values[] = $column . ": " . $row[$i];
+          }
+          error_log(implode(" | ", $formatted_values));
+        }
+        error_log("Total rows: " . count($data));
+      }
+    } elseif ($result && isset($result['affected_rows'])) {
+      error_log("Query: " . $query);
+      error_log("Affected rows: " . $result['affected_rows']);
+    }
+    return $result;
   }
 
   public function sendToBackend($data) {

@@ -57,7 +57,7 @@ class RMQClient {
   public function query($sql) {
     try {
       $result = $this->queryDatabase($sql);
-      error_log("Query result from database: " . print_r($result, true));
+      // error_log("Query result from database: " . print_r($result, true));
       if (isset($result['error'])) {
         $this->last_error = $result['error'];
         error_log("Query error: " . $result['error']);
@@ -68,7 +68,7 @@ class RMQClient {
         return false;
       }
       if (isset($result['results'])) {
-        error_log("Creating RMQResult with data: " . print_r($result['results'], true));
+        // error_log("Creating RMQResult with data: " . print_r($result['results'], true));
         return new RMQResult($result['results']);
       } else if (isset($result['affected_rows'])) {
         return new RMQResult([]);
@@ -133,7 +133,7 @@ class RMQClient {
         while ($message = $this->frontend_queue->get()) {
           $msg_correlation_id = $message->getCorrelationId();
           error_log("Received message with correlation_id: " . $msg_correlation_id);
-          error_log("Message body: " . $message->getBody());
+          // error_log("Message body: " . $message->getBody());
           if ($msg_correlation_id !== $correlation_id) {
             if (!in_array($msg_correlation_id, $processed_messages)) {
               $processed_messages[] = $msg_correlation_id;

@@ -22,7 +22,7 @@ function fetchData($query, $parameters = []) {
 }
 
 // Fetch all appliances
-$appliances = fetchData('SELECT * FROM appliances ORDER BY appliance_id');
+$appliances = fetchData('SELECT * FROM appliances ORDER BY id');
 
 $brands = $models = $parts = $issues = [];
 $appliance_id = $brand_id = $model_id = $area_id = null;

@@ -57,7 +57,9 @@ if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
 // Fetch common problems based on area
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
+    $area = filter_input(INPUT_GET, 'area', FILTER_SANITIZE_STRING);
+    $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id AND area = :area', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT],
         ':area' => ['value' => $area, 'type' => PDO::PARAM_INT]
     ]);
 }
@@ -182,7 +184,9 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                                     <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                         <option value="">Select Problem</option>
                                         <?php foreach ($common_problems as $problem): ?>
-                                            <option value="<?= htmlspecialchars($problem['problem']); ?>"><?= htmlspecialchars($problem['problem']); ?></option>
+                                            <option value="<?= htmlspecialchars($problem['problem_description']); ?>">
+                                                <?= htmlspecialchars($problem['problem_description']); ?>
+                                            </option>
                                         <?php endforeach; ?>
                                     </select>                                    </select>
                                     <button class="btn btn-primary" formmethdo="GET" formaction="part.php">Submit</button>

@@ -55,14 +55,15 @@ if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
 }
 
 // Fetch common problems based on area
-if (isset($_GET['appliance_id'])) {
-    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $area = filter_input(INPUT_GET, 'area', FILTER_SANITIZE_STRING);
+if (!empty($appliance_id) && !empty($area)) {
     $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id AND area = :area', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT],
-        ':area' => ['value' => $area, 'type' => PDO::PARAM_INT]
+        ':area' => ['value' => $area, 'type' => PDO::PARAM_STR]
     ]);
+} else {
+    $common_problems = [];
 }
+
 
 // fetch parts based on selected appliance type and area
 if(isset($_GET['appliance_id']) && isset($_GET['brand'])){

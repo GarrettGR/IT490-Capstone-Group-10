@@ -54,11 +54,11 @@ if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
     ]);
 }
 
-// Fetch common problems for specific appliances (based off of type, brand, model, area)
+// Fetch common problems based on area
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
     $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
-        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+        ':area' => ['value' => $area, 'type' => PDO::PARAM_INT]
     ]);
 }
 
@@ -176,13 +176,15 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                                     <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
                                     <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                         <option value="">Select Area</option>
-                                        <option value="<?php echo htmlspecialchars($appliance['model']); ?>"><?php echo htmlspecialchars($appliance['area']); ?></option>
+                                        <option value="<?php echo htmlspecialchars($appliance['area']); ?>"><?php echo htmlspecialchars($appliance['area']); ?></option>
                                     </select>
                                     <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
                                     <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                         <option value="">Select Problem</option>
-                                        <option value="<?php echo htmlspecialchars($appliance['model']); ?>"><?php echo htmlspecialchars($appliance['model']); ?></option>
-                                    </select>
+                                        <?php foreach ($common_problems as $problem): ?>
+                                            <option value="<?= htmlspecialchars($problem['problem']); ?>"><?= htmlspecialchars($problem['problem']); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>                                    </select>
                                     <button class="btn btn-primary" formmethdo="GET" formaction="part.php">Submit</button>
                                 </div>
                             </div>

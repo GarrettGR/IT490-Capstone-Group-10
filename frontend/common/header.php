@@ -10,7 +10,14 @@
   <head>
     <!-- Add Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* Push the content down 70px */
+      body {
+        padding-top: 70px;
+      }
+    </style>
   </head>
+  
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
       <div class="container-fluid">

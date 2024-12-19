@@ -10,39 +10,51 @@
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password_hash = filter_input(INPUT_POST, 'password_hash');
         $security_question = filter_input(INPUT_POST, 'security_question');
-        $security_answer_hash = filter_input(INPUT_POST, 'security_answer_hash');
+        $security_answer = filter_input(INPUT_POST, 'security_answer');
 
         // Validate required fields
-        if (empty($first_name) || empty($last_name) || empty($email) || empty($password_hash) || empty($security_question) || empty($security_answer_hash)) {
+        if (empty($first_name) || empty($last_name) || empty($email) || empty($password_hash) || empty($security_question) || empty($security_answer)) {
             echo "All fields are required!";
-            
+
         } else{
-            // check if an account with that email already exists 
-            $query = "SELECT COUNT(*) FROM users WHERE email = '$email'";
-            $response = $db->queryDatabase($query);
-            $count = $response['body']['results'][0][0] ?? 0;
+            // Checks if email already exists 
+            $query = "SELECT * FROM users WHERE email = :email";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':email', $email);
+            $statement->execute();
+            $count = $statement->fetchColumn();
 
             if($count > 0){
                 echo "<p class='text-danger text-center'>Email is already registered. Please log in or use another email.</p>";
 
             }else{
                 $password_hash = password_hash($password_hash, PASSWORD_DEFAULT);
-                $security_answer_hash = password_hash($security_answer_hash, PASSWORD_DEFAULT);
+                $security_answer_hash = password_hash($security_answer, PASSWORD_DEFAULT);
 
                 // insert data from form into the database
-                $query = "INSERT INTO users (first_name, last_name, email, password_hash, security_question, security_answer_hash)
-                         VALUES ('$first_name', '$last_name', '$email', '$password_hash', '$security_question', '$security_answer_hash')";
+                $query = 'INSERT INTO users (first_name, last_name, email, password_hash, security_question, security_answer_hash)
+                VALUES
+                (:first_name, :last_name, :email, :password_hash, :security_question, :security_answer_hash)';
+
+                $statement = $db->prepare($query);
+                $statement->bindValue(':first_name', $first_name);
+                $statement->bindValue(':last_name', $last_name);
+                $statement->bindValue(':email', $email);
+                $statement->bindValue(':password_hash', $password_hash);
+                $statement->bindValue(':security_question', $security_question);
+                $statement->bindValue(':security_answer_hash', $security_answer_hash);
+                $success = $statement->execute();
+                $statement->closeCursor();
 
                 try {
-                    $response = $db->queryDatabase($query);
-                    if (isset($response['body']['affected_rows']) && $response['body']['affected_rows'] > 0) {
+                    if ($success) {
                         echo "<p class='text-success text-center'>Sign up successful! You can now <a href='login.php'>log in</a>.</p>";
                         header('Location: login.php'); // Redirect to the login page
                         exit();
                     } else {
                         echo "<p class='text-danger text-center'>Error signing up. Please try again later.</p>";
                     }
-                } catch (Exception $e) {
+                } catch (PDOException $e) {
                     echo "<p class='text-danger text-center'>Error: " . $e->getMessage() . "</p>";
                 }
 
@@ -119,8 +131,8 @@
                                             </select>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="security_answer_hash" class="form-label text-start w-100">Answer</label>
-                                            <input id="security_answer_hash" class="form-control" type="text" name="security_answer_hash" placeholder="Blue" required>
+                                            <label for="security_answer" class="form-label text-start w-100">Answer</label>
+                                            <input id="security_answer" class="form-control" type="text" name="security_answer" placeholder="Blue" required>
                                         </div>
                                         <div class="mb-3">
                                             <button class="btn btn-primary d-block w-100" role="button" href="login.php">Sign Up</button>

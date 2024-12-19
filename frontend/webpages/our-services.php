@@ -6,16 +6,16 @@ require_once('../src/database-applicare.php');
 function fetchData($query, $parameters = []) {
     global $db;
     try {
-        // manually replace parameters in query
+        $statement = $db->prepare($query);
         foreach ($parameters as $param => $value) {
-            $query = str_replace($param, "'" . $value['value'] . "'", $query);
+            $statement->bindValue($param, $value['value'], $value['type']);
         }
-        $response = $db->queryDatabase($query);
-        if (isset($response['body']['results'])) {
-            return $response['body']['results'];
-        }
-        return [];
-    } catch (Exception $e) {
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        // Log error instead of exposing it
         error_log("Database error: " . $e->getMessage());
         return [];
     }

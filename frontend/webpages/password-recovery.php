@@ -1,10 +1,10 @@
 <?php
-     require_once('../src/database-applicare.php');
+  require_once('../src/database-applicare.php');
 
   // Start the session only if it's not already active
   if (session_status() === PHP_SESSION_NONE) {
     session_start();
-}
+  }
 
   if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
@@ -12,20 +12,23 @@
 
     if(empty($email)){
         echo "Email address is required!";
-    } else {
-        try {
-            // verify account with that email exists in users table
-            $query = "SELECT COUNT(*) FROM users WHERE email = '$email'";
-            $response = $db->queryDatabase($query);
+    }else{
+        try{
+            // checks if the email exists in users table
+            $sql = "SELECT * FROM users WHERE email = ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if(isset($response['body']['results']) && !empty($response['body']['results'])) {
-                $user = $response['body']['results'][0];
-                $_SESSION['email'] = $email; 
-                $security_question = $user[5]; // security_question is sixth column
+            if($user){
+                $_SESSION['email'] = $email;
+                $_SESSION['user_id'] = $user['user_id'];
+                $security_question = $user['security_question_1'];
             } else {
                 $error = "No user with that email address.";
             }
-        } catch(Exception $e) {
+
+        } catch(PDOException $e){
             echo "Database Error: " . $e->getMessage();
         }
     }
@@ -48,31 +51,29 @@
         echo "Both answer and new password are required!";
     } else {
         try {
-            // verify user exists and security answer matches
-            $query = "SELECT COUNT(*) FROM users WHERE email = '$email'";
-            $response = $db->queryDatabase($query);
-            
-            if(isset($response['body']['results']) && !empty($response['body']['results'])) {
-                $user = $response['body']['results'][0];
-                if($user[6] == $security_answer) { // Assuming security_answer is seventh column
+             // checks if the user exists again in users table
+             $sql = "SELECT * FROM users WHERE email = ?";
+             $stmt = $db->prepare($sql);
+             $stmt->execute([$email]);
+             $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+             if($user){
+                if($user['security_answer_1'] == $security_answer){
+                    // if answer matches, allow password change
                     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-                    $update_query = "UPDATE users SET password_hash = '$hashed_password' WHERE email = '$email'";
-                    $update_response = $db->queryDatabase($update_query);
-                    
-                    if (isset($update_response['body']['affected_rows']) && $update_response['body']['affected_rows'] > 0) {
-                        echo "Password updated successfully";
-                        header("Location: login.php");
-                        exit();
-                    } else {
-                        $error = "Error updating password.";
-                    }
+                    $sql = "UPDATE users SET password_hash = ? WHERE email = ?";
+                    $stmt = $db->prepare($sql);
+                    $stmt->execute([$hashed_password, $email]);
+                    echo "Password updated successfully";
+                    header("Location: login.php");
+                    exit();
                 } else {
                     $error = "Incorrect security answer.";
                 }
              }else{
                 $error = "User not found.";
              }
-            } catch (Exception $e){
+            } catch (PDOException $e){
                 echo "Databae Error: " . $e->getMessage();
             }
         

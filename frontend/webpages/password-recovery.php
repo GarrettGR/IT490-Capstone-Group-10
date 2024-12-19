@@ -11,7 +11,7 @@
     $error = '';
 
     if(empty($email)){
-        echo "<div style='padding: 10px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;'>Email address is required!</div>";
+        echo "<div style='padding: 70px; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;'>Email address is required!</div>";
     }else{
         try{
             // checks if the email exists in users table

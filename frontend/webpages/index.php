@@ -1,3 +1,29 @@
+<?php
+  // Start the session only if it's not already active
+  if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+  }
+  if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+
+    try {
+        // Check if the user exists
+        $sql = "SELECT * FROM users WHERE email = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            header("Location: login.php");
+        }else{
+            header("Location: signup.php");
+        }
+    } catch (\Throwable $th) {
+        echo "Database Error: " . $e->getMessage();
+    }
+  }
+?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 

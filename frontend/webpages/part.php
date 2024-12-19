@@ -2,6 +2,18 @@
 // checks database connection cause it is needed for troubleshooting
 require_once('../src/database-applicare.php');
 
+// Start the session only if it's not already active
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+  }
+
+  // Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo '<div class="alert alert-warning text-center" role="alert">
+            You are not logged in. Please <a href="login.php">log in</a> to access this page.
+          </div>';
+    exit; // Stop execution if the user is not logged in
+}
 // Check if all required parameters are present
 if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['area_id'], $_GET['issue_id'])) {
     $appliance_id = $_GET['appliance_id'];

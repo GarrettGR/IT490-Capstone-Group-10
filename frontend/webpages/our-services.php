@@ -103,6 +103,7 @@ if (isset($_GET['area_id'])) {
                     switch ($appliance['appliance_name']) {
                         case 'Washers':
                             $image = '../images/washer.jpg';
+                            echo $image;
                             break;
                         case 'Dryers':
                             $image = '../dryers.jpg';

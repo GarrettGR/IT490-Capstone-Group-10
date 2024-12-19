@@ -29,26 +29,15 @@ $appliance_id = $brand_id = $model_id = $area_id = null;
 // Sanitize and fetch appliance ID
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $brands = fetchData('SELECT * FROM brands WHERE appliance_id = :appliance_id', [
+    $parts = fetchData('SELECT * FROM problem_areas WHERE id = :appliance_id', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
-    ]);
-    $parts = fetchData('SELECT * FROM problem_areas WHERE appliance_id = :appliance_id', [
-        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
-    ]);
-}
-
-// Fetch models
-if (isset($_GET['brand'])) {
-    $brand = filter_input(INPUT_GET, 'brand', FILTER_VALIDATE_INT);
-    $models = fetchData('SELECT * FROM models WHERE brand = :brand', [
-        ':brand' => ['value' => $brand, 'type' => PDO::PARAM_INT]
     ]);
 }
 
 // Fetch parts common problems
 if (isset($_GET['id'])) {
     $problem_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    $common_problems = fetchData('SELECT * FROM common_problems WHERE part_id = :appliance_id', [
+    $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
         ':id' => ['value' => $id, 'type' => PDO::PARAM_INT]
     ]);
 }
@@ -144,17 +133,17 @@ if (isset($_GET['id'])) {
         </div>
     </section>
 
-    <?php if (isset($_GET['appliance_id']) && !empty($brands)) : ?>
+    <?php if (isset($_GET['id']) && !empty($brands)) : ?>
         <section class="brand-selection py-5">
             <div class="container">
                 <h2>Select Brand</h2>
                 <form method="get" action="">
                     <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
-                    <select class="form-select form-select-lg mb-3" name="brand_id" onchange="this.form.submit()">
+                    <select class="form-select form-select-lg mb-3" name="brand" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a brand</option>
                         <?php foreach ($brands as $brand) : ?>
-                            <option value="<?= $brand['brand_id']; ?>"
-                                <?= isset($_GET['brand_id']) && $_GET['brand_id'] == $brand['brand_id'] ? 'selected' : ''; ?>>
+                            <option value="<?= $brand['brand']; ?>"
+                                <?= isset($_GET['brand']) && $_GET['brand'] == $brand['brand'] ? 'selected' : ''; ?>>
                                 <?= htmlspecialchars($brand['name']); ?>
                             </option>
                         <?php endforeach; ?>
@@ -164,12 +153,12 @@ if (isset($_GET['id'])) {
         </section>
     <?php endif; ?>
 
-    <?php if (isset($_GET['brand_id']) && !empty($models)) : ?>
+    <?php if (isset($_GET['brand']) && !empty($models)) : ?>
         <section class="model-selection py-5">
             <div class="container">
                 <h2>Select Model</h2>
                 <form method="get" action="">
-                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
+                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['id']; ?>">
                     <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
                     <select class="form-select form-select-lg mb-3" name="model_id" onchange="this.form.submit()">
                         <option value="" disabled selected>Select a model</option>

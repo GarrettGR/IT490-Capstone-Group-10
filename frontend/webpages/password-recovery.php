@@ -1,6 +1,6 @@
 <?php
   require_once('../src/database-applicare.php');
-  email = '';
+  $email = '';
   $security_question = '';
   $security_answer = '';
   $new_password = '';

@@ -1,6 +1,6 @@
 <?php
     require_once('../src/database-applicare.php');
-    email = '';
+    $email = '';
 
   // Start the session only if it's not already active
   if (session_status() === PHP_SESSION_NONE) {

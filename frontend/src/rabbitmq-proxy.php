@@ -6,7 +6,7 @@ if (!extension_loaded('amqp')) {
   die("AMQP extension is not loaded. Please install php-amqp package.\n");
 }
 
-$env = parse_ini_file('.env');
+# $env = parse_ini_file('.env');
 
 if (defined('RABBITMQ_PROXY_INCLUDED')) return;
 define('RABBITMQ_PROXY_INCLUDED', true);
@@ -17,6 +17,7 @@ class RMQClient {
   private $exchange;
   private $frontend_queue;
   private $pending_requests = [];
+  private $consuming = false;
 
   public function __construct() {
     $this->connect();
@@ -29,11 +30,13 @@ class RMQClient {
         'host' => '10.0.0.11',
         'port' => 5672,
         'login' => 'admin',
-        'password' => $env['rmq_passwd']
+        'password' => 'student123', # $env['rmq_passwd'],
+        'read_timeout' => 30,
+        'write_timeout' => 30
       ]);
       $this->connection->connect();
       $this->channel = new AMQPChannel($this->connection);
-
+      $this->channel->setPrefetchCount(1);
       $this->exchange = new AMQPExchange($this->channel);
       $this->exchange->setName('applicare');
       $this->exchange->setType(AMQP_EX_TYPE_DIRECT);
@@ -67,6 +70,7 @@ class RMQClient {
         AMQP_NOPARAM,
         [
           'correlation_id' => $correlation_id,
+          # 'reply_to' => 'frontend',
           'delivery_mode' => 2
         ]
       );
@@ -81,39 +85,45 @@ class RMQClient {
 
   public function waitForResponse($correlation_id, $timeout = 30) {
     $start = time();
-    $response = null;
-    $processed_messages = [];
-
-    while ($response === null && (time() - $start) < $timeout) {
-      try {
-        while ($message = $this->frontend_queue->get(AMQP_AUTOACK)) {
-          $msg_correlation_id = $message->getCorrelationId();
- 
-          if ($msg_correlation_id !== $correlation_id) {
-            if (!in_array($msg_correlation_id, $processed_messages)) {
-              $processed_messages[] = $msg_correlation_id;
-              $this->frontend_queue->nack($message->getDeliveryTag(), AMQP_REQUEUE);
-            }
-            continue;
-          }
-
-          $response = json_decode($message->getBody(), true);
-          $this->frontend_queue->ack($message->getDeliveryTag());
-          break;
-        }
-
-        if ($response === null) {
-          usleep(100000);
-        }
-      } catch (Exception $e) {
-        error_log("Error in consume: " . $e->getMessage());
+    $this->pending_requests[$correlation_id] = null;
+    if (!$this->consuming) {
+      $this->startConsumer();
+    }
+    while (time() - $start < $timeout) {
+      if (isset($this->pending_requests[$correlation_id]) && 
+          $this->pending_requests[$correlation_id] !== null) {
+        $response = $this->pending_requests[$correlation_id];
+        unset($this->pending_requests[$correlation_id]);
+        return $response;
       }
+      usleep(100000);
     }
-    if ($response === null) {
-      error_log("Timeout waiting for response to correlation_id: $correlation_id");
-    }
+    unset($this->pending_requests[$correlation_id]);
+    error_log("Timeout waiting for response to correlation_id: $correlation_id");
+    return null;
+  }
 
-    return $response;
+  private function startConsumer() {
+    try {
+      $this->frontend_queue->consume(
+        function($message, $queue) {
+          $correlation_id = $message->getCorrelationId();
+          if (isset($this->pending_requests[$correlation_id])) {
+            $this->pending_requests[$correlation_id] = json_decode($message->getBody(), true);
+            $queue->ack($message->getDeliveryTag());
+          } else {
+            $queue->nack($message->getDeliveryTag(), AMQP_REQUEUE);
+          }
+          return false;
+        },
+        AMQP_NOPARAM
+      );
+      
+      $this->consuming = true;
+    } catch (AMQPException $e) {
+      error_log("Error starting consumer: " . $e->getMessage());
+      throw $e;
+    }
   }
 
   private function getUniqueId() {

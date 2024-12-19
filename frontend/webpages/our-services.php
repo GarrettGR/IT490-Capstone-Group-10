@@ -94,10 +94,6 @@ if (isset($_GET['area_id'])) {
         </div>
     </section>
 
-    <?php 
-        $image = 'assets/img/appliances/default-appliance.jpg';
-        echo $image; ?>
-
     <section class="appliance-cards-section py-5">
         <div class="container">
             <div class="row">

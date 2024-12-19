@@ -29,11 +29,12 @@ $is_logged_in = isset($_SESSION['user_id']); // assuming 'user_id' is stored in 
     <?php include('../common/header.php'); ?>
 
     <?php if (!$is_logged_in): ?>
-                <div class="text-center pt-3">
-                    <a href="login.php" class="btn btn-primary">Login</a>
-                </div>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Notice!</strong> You are not logged in. Please <a href="login.php" class="alert-link">Login</a> to access your account.    
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     <?php endif; ?>
-    
+
     <section class="py-5">
         <div class="container py-5">
             <div data-reflow-type="shopping-cart"></div>

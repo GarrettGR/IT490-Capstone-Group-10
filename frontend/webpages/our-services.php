@@ -127,11 +127,11 @@ if (isset($_GET['id'])) {
                     echo '
                     <div class="col-md-4 mb-4">
                         <div class="card">
-                            <img src="' . $image . '" class="card-img-top" alt="' . htmlspecialchars($appliance['appliance_name']) . '">
+                            <img src="' . $image . '" class="card-img-top" alt="' . htmlspecialchars($appliance['type']) . '">
                             <div class="card-body text-center">
-                                <h5 class="card-title">' . $appliance['appliance_name'] . '</h5>
+                                <h5 class="card-title">' . $appliance['type'] . '</h5>
                                 <p class="card-text">' . $appliance['description'] . '</p>
-                                <a href="?appliance_id=' . $appliance['appliance_id'] . '" class="btn btn-primary">Select Brand</a>
+                                <a href="?appliance_id=' . $appliance['id'] . '" class="btn btn-primary">Select Brand</a>
 
                             </div>
                         </div>

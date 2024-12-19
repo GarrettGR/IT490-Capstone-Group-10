@@ -95,7 +95,7 @@ if (isset($_GET['area_id'])) {
     </section>
 
     <?php 
-        $image = 'default-appliance.jpg';
+        $image = 'assets/img/appliances/default-appliance.jpg';
         echo $image; ?>
 
 <div class="col-md-4 mb-4">

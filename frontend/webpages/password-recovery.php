@@ -1,5 +1,10 @@
 <?php
   require_once('../src/database-applicare.php');
+  email = '';
+  $security_question = '';
+  $security_answer = '';
+  $new_password = '';
+  $error = '';
 
   // Start the session only if it's not already active
   if (session_status() === PHP_SESSION_NONE) {

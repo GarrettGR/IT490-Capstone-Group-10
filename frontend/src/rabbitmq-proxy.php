@@ -189,18 +189,46 @@ class RMQClient {
 class RMQResult implements Iterator {
   private $results;
   private $position = 0;
+  private $fetchStyle = PDO::FETCH_BOTH;
+  private $columnNames = [];
 
   public function __construct($results = []) {
-    $this->results = is_array($results) ? $results : [];
+    if (isset($results['data']) && isset($results['columns'])) {
+      $this->results = $results['data'];
+      $this->columnNames = $results['columns'];
+    } else {
+      $this->results = is_array($results) ? $results : [];
+      $this->columnNames = [];
+    }
   }
 
   public function fetch($fetch_style = null) {
+    if ($fetch_style !== null) {
+      $this->fetchStyle = $fetch_style;
+    }
     if ($this->position >= count($this->results)) {
       return false;
     }
     $row = $this->results[$this->position];
     $this->position++;
-    return $row;
+    switch ($this->fetchStyle) {
+      case PDO::FETCH_ASSOC:
+        if (empty($this->columnNames)) {
+          return array_combine(range(0, count($row) - 1), $row);
+        }
+        return array_combine($this->columnNames, $row);
+      case PDO::FETCH_NUM:
+        return array_values($row);
+      case PDO::FETCH_BOTH:
+      default:
+        $numeric = array_values($row);
+        if (empty($this->columnNames)) {
+          $assoc = array_combine(range(0, count($row) - 1), $row);
+        } else {
+          $assoc = array_combine($this->columnNames, $row);
+        }
+        return array_merge($numeric, $assoc);
+    }
   }
 
   public function fetchColumn($column_number = 0) {
@@ -222,7 +250,17 @@ class RMQResult implements Iterator {
     return $column_number === 0 ? $row : false;
   }
 
-  public function fetchAll($fetch_style = null) { return $this->results; }
+  public function fetchAll($fetch_style = null) {
+    if ($fetch_style === null) {
+      $fetch_style = $this->fetchStyle;
+    }
+    $rows = [];
+    while ($row = $this->fetch($fetch_style)) {
+      $rows[] = $row;
+    }
+    return $rows;
+  }
+
   public function rewind() { $this->position = 0; }
   public function current() { return $this->results[$this->position]; }
   public function key() { return $this->position; }

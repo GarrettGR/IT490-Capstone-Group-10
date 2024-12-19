@@ -187,7 +187,7 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                                         <option value="Noisy Operation">Noisy Operation</option>
                                         <option value="Leaking">Leaking</option>
                                     </select>
-                                    <button class="btn btn-primary">Submit</button>
+                                    <button class="btn btn-primary" formmethdo="GET" formaction="part.php">Submit</button>
                                 </div>
                             </div>
                         </div>

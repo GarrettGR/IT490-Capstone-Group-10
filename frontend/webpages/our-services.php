@@ -27,41 +27,30 @@ $appliance_id = $brand_id = $model_id = $area_id = null;
 // Sanitize and fetch appliance ID
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $parts = fetchData('SELECT * FROM problem_areas WHERE appliance_id = :appliance_id', [
+    $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
     ]);
 }
 
-// Fetch brands based on selected appliance type
+// Fetch common problems for specific appliances (based off of type, brand, model, area)
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $brands = fetchData('SELECT DISTINCT brand FROM appliances WHERE id = :appliance_id', [
+    $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
     ]);
 }
 
-// fetch models based on selected appliance type and brand
+// fetch parts based on selected appliance type and area
 if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $brand = filter_input(INPUT_GET, 'brand', FILTER_SANITIZE_STRING);
-    $models = fetchData('SELECT DISTINCT model FROM appliances WHERE type = :type AND brand = :brand', [
-        ':type' => ['value' => $_GET['type'], 'type' => PDO::PARAM_STR],
-        ':brand' => ['value' => $brand, 'type' => PDO::PARAM_STR]
+    $area = filter_input(INPUT_GET, 'area', FILTER_SANITIZE_STRING);
+    $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id AND area = :area', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_STR],
+        ':area' => ['value' => $area, 'type' => PDO::PARAM_STR]
     ]);
 }
-
-// Fetch parts common problems
-if (isset($_GET['id'])) {
-    $problem_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-    $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
-        ':appliance_id' => ['value' => $problem_id, 'type' => PDO::PARAM_INT]
-    ]);
-}
-
 
 ?>
-
-
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
@@ -147,37 +136,37 @@ if (isset($_GET['id'])) {
                     <img src="<?php echo $image; ?>" alt="Image of <?php echo htmlspecialchars($appliance['type']); ?>" class="img-fluid mb-3">
 
                     <button class="btn btn-outline-primary" onclick="toggleDropdown(<?php echo $appliance['id']; ?>)">Select Issue</button>
-                        <div class="dropdown mt-3" id="dropdown-<?php echo $appliance['id']; ?>" style="display: none;">
-                            <label for="brand-<?php echo $appliance['id']; ?>">Brand:</label>
-                            <select id="brand-<?php echo $appliance['id']; ?>" class="form-select mb-2" onchange="handleBrandSelection(<?php echo $appliance['id']; ?>, this.value)">
-                                <option value="">Select Brand</option>
-                                <option value="<?php echo htmlspecialchars($appliance['brand']); ?>"><?php echo htmlspecialchars($appliance['brand']); ?></option>
-                            </select>
-                            <label for="model-<?php echo $appliance['id']; ?>">Model:</label>
-                            <select id="model-<?php echo $appliance['id']; ?>" class="form-select mb-2">
-                                <option value="">Select Model</option>
-                                <option value="<?php echo htmlspecialchars($appliance['model']); ?>"><?php echo htmlspecialchars($appliance['model']); ?></option>
-                            </select>
-                            <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
-                            <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
-                                <option value="">Select Area</option>
-                                <option value="Door">Door</option>
-                                <option value="Motor">Motor</option>
-                                <option value="Filter">Filter</option>
-                            </select>
-                            <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
-                            <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
-                                <option value="">Select Problem</option>
-                                <option value="Won't Start">Won't Start</option>
-                                <option value="Noisy Operation">Noisy Operation</option>
-                                <option value="Leaking">Leaking</option>
-                            </select>
-                            <button class="btn btn-primary">Submit</button>
-                        </div>
+                    <div class="dropdown mt-3" id="dropdown-<?php echo $appliance['id']; ?>" style="display: none;">
+                        <label for="brand-<?php echo $appliance['id']; ?>">Brand:</label>
+                        <select id="brand-<?php echo $appliance['id']; ?>" class="form-select mb-2" onchange="handleBrandSelection(<?php echo $appliance['id']; ?>, this.value)">
+                            <option value="">Select Brand</option>
+                            <option value="<?php echo htmlspecialchars($appliance['brand']); ?>"><?php echo htmlspecialchars($appliance['brand']); ?></option>
+                        </select>
+                        <label for="model-<?php echo $appliance['id']; ?>">Model:</label>
+                        <select id="model-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                            <option value="">Select Model</option>
+                            <option value="<?php echo htmlspecialchars($appliance['model']); ?>"><?php echo htmlspecialchars($appliance['model']); ?></option>
+                        </select>
+                        <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
+                        <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                            <option value="">Select Area</option>
+                            <option value="Door">Door</option>
+                            <option value="Motor">Motor</option>
+                            <option value="Filter">Filter</option>
+                        </select>
+                        <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
+                        <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                            <option value="">Select Problem</option>
+                            <option value="Won't Start">Won't Start</option>
+                            <option value="Noisy Operation">Noisy Operation</option>
+                            <option value="Leaking">Leaking</option>
+                        </select>
+                        <button class="btn btn-primary">Submit</button>
                     </div>
                 </div>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
+    </div>
 
     <?php include('../common/footer.php'); ?>
 

@@ -2,6 +2,13 @@
 // checks database connection cause it is needed for logging in 
 include('../src/database-applicare.php'); 
 
+// Start the session only if it's not already active
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$is_logged_in = isset($_SESSION['user_id']); // assuming 'user_id' is stored in session upon login
+
 ?>
 
 <!DOCTYPE html>
@@ -37,6 +44,13 @@ include('../src/database-applicare.php');
                 </div>
             </div>
             <hr>
+
+            <?php if (!$is_logged_in): ?>
+                <div class="text-center pt-3">
+                    <a href="login.php" class="btn btn-primary">Login</a>
+                </div>
+            <?php endif; ?>
+            
             <div class="text-muted d-flex justify-content-between align-items-center pt-3">
                 <p class="mb-0"></p>
                 <section class="text-center">

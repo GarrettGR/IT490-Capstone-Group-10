@@ -15,10 +15,12 @@
 
         if ($user) {
             header("Location: login.php");
+            exit;
         }else{
             header("Location: signup.php");
+            exit;
         }
-    } catch (\Throwable $th) {
+    } catch (\Throwable $e) {
         echo "Database Error: " . $e->getMessage();
     }
   }

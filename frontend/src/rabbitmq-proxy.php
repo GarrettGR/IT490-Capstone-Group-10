@@ -1,5 +1,3 @@
-#!/usr/bin/env php
-
 <?php
 
 if (!extension_loaded('amqp')) {
@@ -144,7 +142,7 @@ class RMQClient {
             continue;
           }
           $wrapped_response = json_decode($message->getBody(), true);
-          error_log("Parsed response: " . print_r($wrapped_response, true));
+          // error_log("Parsed response: " . print_r($wrapped_response, true));
           $response = isset($wrapped_response['body']) ? $wrapped_response['body'] : $wrapped_response;
           $this->frontend_queue->ack($message->getDeliveryTag());
           break;
@@ -269,11 +267,32 @@ class RMQStatement {
     return $this->result;
   }
 
+  public function fetch($fetch_style = null) {
+    if ($this->result === null) {
+      return false;
+    }
+    return $this->result->fetch($fetch_style);
+  }
+
+  public function fetchAll($fetch_style = null) {
+    if ($this->result === null) {
+      return false;
+    }
+    return $this->result->fetchAll($fetch_style);
+  }
+
   public function fetchColumn($column_number = 0) {
     if ($this->result === null) {
       return false;
     }
     return $this->result->fetchColumn($column_number);
+  }
+
+  public function rowCount() {
+    if ($this->result === null) {
+      return 0;
+    }
+    return count($this->result->fetchAll());
   }
 
   private function quote($value) {
@@ -296,6 +315,7 @@ class RMQStatement {
     }
     return $query;
   }
+
   public function closeCursor() {
     $this->result = null;
     return true;

@@ -106,7 +106,7 @@ if (isset($_GET['area_id'])) {
                     $image = '';
                     switch ($appliance['appliance_name']) {
                         case 'Washers':
-                            $image = '../images/washer.jpeg';
+                            $image = '../images/washer.jpg';
                             echo $image;
                             break;
                         case 'Dryers':
@@ -119,7 +119,7 @@ if (isset($_GET['area_id'])) {
                             $image = '../images/dishwasher.jpg';
                             break;
                         case 'Microwaves':
-                            $image = '../images/microwave.jpg';
+                            $image = '../images/microwaves.jpg';
                             break;
                         case 'Ovens':
                             $image = '../images/oven.jpeg';

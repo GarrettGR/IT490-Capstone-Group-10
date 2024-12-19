@@ -185,7 +185,7 @@ require_once('../src/database-applicare.php');
                 </div>
             </div>
         <?php endif; ?>
-    </div> -->
+    </div>
 
     <?php include('../common/footer.php'); ?>
 

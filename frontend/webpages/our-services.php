@@ -100,23 +100,23 @@ if (isset($_GET['area_id'])) {
                 <?php foreach ($appliances as $appliance) {
                     $image = '';
                     switch ($appliance['type']) {
-                        case 'Washers':
+                        case 'Washer':
                             $image = 'assets/img/appliances/washer.jpg';
                             echo $image;
                             break;
-                        case 'Dryers':
+                        case 'Dryer':
                             $image = 'assets/img/appliances/dryer.jpeg';
                             break;
-                        case 'Refrigerators':
+                        case 'Refrigerator':
                             $image = 'assets/img/appliances/fridge.jpeg';
                             break;
-                        case 'Dishwashers':
+                        case 'Dishwasher':
                             $image = 'assets/img/appliances/dishwasher.jpg';
                             break;
-                        case 'Microwaves':
+                        case 'Microwave':
                             $image = 'assets/img/appliances/microwave.jpg';
                             break;
-                        case 'Ovens':
+                        case 'Oven':
                             $image = 'assets/img/appliances/oven.jpeg';
                             break;
                         default:

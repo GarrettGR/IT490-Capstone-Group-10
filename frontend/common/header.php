@@ -16,7 +16,7 @@
       <div class="container-fluid">
         <!-- Brand Name/Logo -->
         <a class="navbar-brand" href="index.php">
-          <img src="Applicare.png" alt="Applicare Logo" style="height: 40px;">
+          <img src="assets/img/logo.png" alt="Applicare Logo" style="height: 40px;">
           Applicare
         </a>
 

@@ -106,23 +106,23 @@ if (isset($_GET['area_id'])) {
                     $image = '';
                     switch ($appliance['appliance_name']) {
                         case 'Washers':
-                            $image = '../images/washer.jpg';
+                            $image = '../images/washer.jpeg';
                             echo $image;
                             break;
                         case 'Dryers':
-                            $image = '../dryers.jpg';
+                            $image = '../dryers.jpeg';
                             break;
                         case 'Refrigerators':
-                            $image = '../images/fridge.jpg';
+                            $image = '../images/fridge.jpeg';
                             break;
                         case 'Dishwashers':
                             $image = '../images/dishwasher.jpg';
                             break;
                         case 'Microwaves':
-                            $image = '../images/microwaves.jpg';
+                            $image = '../images/microwave.jpg';
                             break;
                         case 'Ovens':
-                            $image = '../images/oven.jpg';
+                            $image = '../images/oven.jpeg';
                             break;
                         default:
                             $image = '../images/default-appliance.jpg'; // Default image for unknown appliances

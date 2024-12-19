@@ -98,17 +98,6 @@ if (isset($_GET['area_id'])) {
         $image = 'assets/img/appliances/default-appliance.jpg';
         echo $image; ?>
 
-<div class="col-md-4 mb-4">
-    <div class="card">
-        <img src="assets/img/default-appliance.jpg" class="card-img-top" alt="Test">
-        <div class="card-body text-center">
-            <h5 class="card-title">Test Appliance</h5>
-            <p class="card-text">This is a test appliance.</p>
-            <a href="#" class="btn btn-primary">Test Button</a>
-        </div>
-    </div>
-</div>
-
     <section class="appliance-cards-section py-5">
         <div class="container">
             <div class="row">

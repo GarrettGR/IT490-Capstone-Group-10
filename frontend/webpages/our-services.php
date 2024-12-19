@@ -99,7 +99,7 @@ if (isset($_GET['area_id'])) {
             <div class="row">
                 <?php foreach ($appliances as $appliance) {
                     $image = ' ';
-                    switch ($appliance['appliance_name']) {
+                    switch ($appliance['type']) {
                         case 'Washers':
                             $image = 'assets/img/appliances/washer.jpg';
                             echo $image;

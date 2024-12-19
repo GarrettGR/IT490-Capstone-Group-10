@@ -27,7 +27,7 @@ $appliance_id = $brand_id = $model_id = $area_id = null;
 // Sanitize and fetch appliance ID
 if (isset($_GET['appliance_id'])) {
     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $parts = fetchData('SELECT * FROM problem_areas WHERE id = :appliance_id', [
+    $parts = fetchData('SELECT * FROM problem_areas WHERE appliance_id = :appliance_id', [
         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
     ]);
 }
@@ -54,7 +54,7 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
 if (isset($_GET['id'])) {
     $problem_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
     $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
-        ':id' => ['value' => $id, 'type' => PDO::PARAM_INT]
+        ':appliance_id' => ['value' => $problem_id, 'type' => PDO::PARAM_INT]
     ]);
 }
 
@@ -146,7 +146,6 @@ if (isset($_GET['id'])) {
                     ?>
                     <img src="<?php echo $image; ?>" alt="Image of <?php echo htmlspecialchars($appliance['type']); ?>" class="img-fluid mb-3">
 
-                    <button class="btn btn-outline-primary" onclick="toggleDropdown(<?php echo $appliance['id']; ?>)">Select Issue</button>
                     <button class="btn btn-outline-primary" onclick="toggleDropdown(<?php echo $appliance['id']; ?>)">Select Issue</button>
                         <div class="dropdown mt-3" id="dropdown-<?php echo $appliance['id']; ?>" style="display: none;">
                             <label for="brand-<?php echo $appliance['id']; ?>">Brand:</label>

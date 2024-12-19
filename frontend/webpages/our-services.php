@@ -78,7 +78,7 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
         </div>
     </header>
 
-    <section class="search-bar py-3">
+    <!-- <section class="search-bar py-3">
         <div class="container">
             <form method="get" action="" class="d-flex">
                 <input type="text" name="search" class="form-control me-2" placeholder="Search appliances..." value="<?= htmlspecialchars($search); ?>">
@@ -165,7 +165,7 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                 </div>
             </div>
         <?php endif; ?>
-    </div>
+    </div> -->
 
     <?php include('../common/footer.php'); ?>
 

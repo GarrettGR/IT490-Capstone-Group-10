@@ -197,6 +197,7 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                     </div>
                 </div>
             </div>
+            <?php endforeach; ?>
         <?php endif; ?>
     </div>
 

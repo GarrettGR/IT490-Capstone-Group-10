@@ -6,6 +6,7 @@ import json
 import mysql.connector
 from mysql.connector import pooling
 from datetime import datetime
+from statistics import correlation
 
 db_config = {
   'user': 'admin',
@@ -34,7 +35,8 @@ def listen_for_requests():
   def callback(ch, method, properties, body):
     try:
       request = json.loads(body)
-      print(f"Received message: {request}")
+      print(f"Received message: {properties.correlation_id}")
+      print(f"Request: {request}")
       execute_query(request, properties.correlation_id)
       ch.basic_ack(delivery_tag=method.delivery_tag)
     except Exception as e:
@@ -89,7 +91,8 @@ def send_db_response(response, correlation_id):
       body=message,
       properties=pika.BasicProperties(correlation_id=correlation_id)
     )
-    print(f"Sent response to frontend: {response}")
+    print(f"Sent response to frontend: {correlation_id}")
+    print(f"Response: {response}")
   except Exception as e:
     print(f"Error sending response: {e}")
 

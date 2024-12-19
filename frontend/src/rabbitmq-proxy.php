@@ -205,6 +205,25 @@ class RMQResult implements Iterator {
     return $row;
   }
 
+  public function fetchColumn($column_number = 0) {
+    if ($this->position >= count($this->results)) {
+      return false;
+    }
+    $row = $this->results[$this->position];
+    $this->position++;
+    if (is_array($row)) {
+      if (isset($row[$column_number])) {
+        return $row[$column_number];
+      }
+      if ($column_number >= count($row)) {
+        return false;
+      }
+      $values = array_values($row);
+      return $values[$column_number];
+    }
+    return $column_number === 0 ? $row : false;
+  }
+
   public function fetchAll($fetch_style = null) { return $this->results; }
   public function rewind() { $this->position = 0; }
   public function current() { return $this->results[$this->position]; }
@@ -217,6 +236,7 @@ class RMQStatement {
   private $rmq;
   private $sql;
   private $params = [];
+  private $result = null;
 
   public function __construct($rmq, $sql) {
     $this->rmq = $rmq;
@@ -245,7 +265,15 @@ class RMQStatement {
         $sql = $this->replaceQueryPosition($sql, $this->quote($value));
       }
     }
-    return $this->rmq->query($sql);
+    $this->result = $this->rmq->query($sql);
+    return $this->result;
+  }
+
+  public function fetchColumn($column_number = 0) {
+    if ($this->result === null) {
+      return false;
+    }
+    return $this->result->fetchColumn($column_number);
   }
 
   private function quote($value) {
@@ -268,6 +296,10 @@ class RMQStatement {
     }
     return $query;
   }
+  public function closeCursor() {
+    $this->result = null;
+    return true;
+  }
 }
 
 if (basename($_SERVER['SCRIPT_FILENAME']) == basename(__FILE__)) {
@@ -286,9 +318,9 @@ if (basename($_SERVER['SCRIPT_FILENAME']) == basename(__FILE__)) {
     }
     $destination = isset($argv[2]) ? $argv[2] : 'backend';
     echo "Sending message to $destination...\n";
-    $correlation_id = $rmq->sendRequest($message, $destination);        
+    $correlation_id = $rmq->sendRequest($message, $destination);
     echo "Waiting for response...\n";
-    $response = $rmq->waitForResponse($correlation_id);    
+    $response = $rmq->waitForResponse($correlation_id);
     if ($response) {
       echo "Response received:\n";
       echo json_encode($response, JSON_PRETTY_PRINT) . "\n";

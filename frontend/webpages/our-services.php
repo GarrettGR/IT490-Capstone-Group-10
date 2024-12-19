@@ -22,8 +22,7 @@ function fetchData($query, $parameters = []) {
 }
 
 // Fetch all appliances
-$appliances = fetchData('SELECT * FROM appliances ORDER BY id');
-$brands = $models = $parts = $common_problems = [];
+$appliances = fetchData('SELECT * FROM appliances');
 $appliance_id = $brand_id = $model_id = $area_id = null;
 // Sanitize and fetch appliance ID
 if (isset($_GET['appliance_id'])) {
@@ -58,6 +57,7 @@ if (isset($_GET['id'])) {
         ':id' => ['value' => $id, 'type' => PDO::PARAM_INT]
     ]);
 }
+
 
 ?>
 
@@ -97,12 +97,28 @@ if (isset($_GET['id'])) {
                 <button type="submit" class="btn btn-primary">Search</button>
             </form>
         </div>
+        <?php
+        // Handle search functionality
+        if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
+            $searchTerm = '%' . trim($_GET['search']) . '%';
+            $query = "SELECT * FROM appliances WHERE type LIKE :search OR brand LIKE :search OR model LIKE :search";
+            $appliances = fetchData($query, ['search' => ['value' => $searchTerm, 'type' => PDO::PARAM_STR]]);
+        }
+        ?>
     </section>
 
-    <section class="appliance-cards-section py-5">
-        <div class="container">
-            <div class="row">
-                <?php foreach ($appliances as $appliance) {
+    <?php if (empty($appliances)): ?>
+        <p>No appliances found.</p>
+    <?php else: ?>
+        <?php foreach ($appliances as $appliance): ?> 
+            <div class="card mb-3">
+                <div class="card-body">
+                <h3><?php echo htmlspecialchars($appliance['type']); ?> - <?php echo htmlspecialchars($appliance['brand']); ?></h3>
+                    <p><strong>Model:</strong> <?php echo htmlspecialchars($appliance['model']); ?></p>
+                    <p><?php echo nl2br(htmlspecialchars($appliance['description'])); ?></p>
+                    <p><small>Added on: <?php echo htmlspecialchars($appliance['created_at']); ?></small></p>
+
+                    <?php
                     $image = '';
                     switch ($appliance['type']) {
                         case 'Washer':
@@ -127,144 +143,56 @@ if (isset($_GET['id'])) {
                             $image = 'assets/img/appliances/default-appliance.jpg'; // Default image for unknown appliances
                             break;
                     }
+                    ?>
+                    <img src="<?php echo $image; ?>" alt="Image of <?php echo htmlspecialchars($appliance['type']); ?>" class="img-fluid mb-3">
 
-                
-                    echo '
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="' . $image . '" class="card-img-top" alt="' . htmlspecialchars($appliance['type']) . '">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">' . $appliance['type'] . '</h5>
-                                <p class="card-text">' . $appliance['description'] . '</p>
-                                <a href="?appliance_id=' . $appliance['id'] . '" class="btn btn-primary">Select Brand</a>
-
-                            </div>
+                    <button class="btn btn-outline-primary" onclick="toggleDropdown(<?php echo $appliance['id']; ?>)">Select Issue</button>
+                    <button class="btn btn-outline-primary" onclick="toggleDropdown(<?php echo $appliance['id']; ?>)">Select Issue</button>
+                        <div class="dropdown mt-3" id="dropdown-<?php echo $appliance['id']; ?>" style="display: none;">
+                            <label for="brand-<?php echo $appliance['id']; ?>">Brand:</label>
+                            <select id="brand-<?php echo $appliance['id']; ?>" class="form-select mb-2" onchange="handleBrandSelection(<?php echo $appliance['id']; ?>, this.value)">
+                                <option value="">Select Brand</option>
+                                <option value="<?php echo htmlspecialchars($appliance['brand']); ?>"><?php echo htmlspecialchars($appliance['brand']); ?></option>
+                            </select>
+                            <label for="model-<?php echo $appliance['id']; ?>">Model:</label>
+                            <select id="model-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                <option value="">Select Model</option>
+                                <option value="<?php echo htmlspecialchars($appliance['model']); ?>"><?php echo htmlspecialchars($appliance['model']); ?></option>
+                            </select>
+                            <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
+                            <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                <option value="">Select Area</option>
+                                <option value="Door">Door</option>
+                                <option value="Motor">Motor</option>
+                                <option value="Filter">Filter</option>
+                            </select>
+                            <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
+                            <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                <option value="">Select Problem</option>
+                                <option value="Won't Start">Won't Start</option>
+                                <option value="Noisy Operation">Noisy Operation</option>
+                                <option value="Leaking">Leaking</option>
+                            </select>
+                            <button class="btn btn-primary">Submit</button>
                         </div>
-                       
-                    </div>';
-                    
-                }
-                ?>
-            </div>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
-    </section>
-
-    <?php if (isset($_GET['id']) && !empty($brands)) : ?>
-        <section class="brand-selection py-5">
-            <div class="container">
-                <h2>Select Brand</h2>
-                <form method="get" action="">
-                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['id']; ?>">
-                    <select class="form-select form-select-lg mb-3" name="brand" onchange="this.form.submit()">
-                        <option value="" disabled selected>Select a brand</option>
-                        <?php foreach ($brands as $brand) : ?>
-                            <option value="<?= $brand['brand']; ?>"
-                                <?= isset($_GET['brand']) && $_GET['brand'] == $brand['brand'] ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($brand['name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </form>
-            </div>
-        </section>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['brand']) && !empty($models)) : ?>
-        <section class="model-selection py-5">
-            <div class="container">
-                <h2>Select Model</h2>
-                <form method="get" action="">
-                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['id']; ?>">
-                    <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
-                    <select class="form-select form-select-lg mb-3" name="model_id" onchange="this.form.submit()">
-                        <option value="" disabled selected>Select a model</option>
-                        <?php foreach ($models as $model) : ?>
-                            <option value="<?= $model['model_id']; ?>"
-                                <?= isset($_GET['model_id']) && $_GET['model_id'] == $model['model_id'] ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($model['name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </form>
-            </div>
-        </section>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['model_id']) && !empty($parts)) : ?>
-        <section class="parts-selection py-5">
-            <div class="container">
-                <h2>Select Part</h2>
-                <form method="get" action="">
-                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
-                    <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
-                    <input type="hidden" name="model_id" value="<?php echo $_GET['model_id']; ?>">
-                    <select class="form-select form-select-lg mb-3" name="area_id" onchange="this.form.submit()">
-                        <option value="" disabled selected>Select a part</option>
-                        <?php foreach ($parts as $part) : ?>
-                            <option value="<?= $part['area_id']; ?>"
-                                <?= isset($_GET['area_id']) && $_GET['area_id'] == $part['area_id'] ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($part['area_name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </form>
-            </div>
-        </section>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['area_id']) && !empty($issues)) : ?>
-        <section class="issue-selection py-5">
-            <div class="container">
-                <h2>Select Issue</h2>
-                <form method="get" action="">
-                    <input type="hidden" name="appliance_id" value="<?php echo $_GET['appliance_id']; ?>">
-                    <input type="hidden" name="brand_id" value="<?php echo $_GET['brand_id']; ?>">
-                    <input type="hidden" name="model_id" value="<?php echo $_GET['model_id']; ?>">
-                    <input type="hidden" name="area_id" value="<?php echo $_GET['area_id']; ?>">
-                    <select class="form-select form-select-lg mb-3" name="issue_id" onchange="this.form.submit()">
-                        <option value="" disabled selected>Select an issue</option>
-                        <?php foreach ($issues as $issue) : ?>
-                            <option value="<?= $issue['issue_id']; ?>"
-                                <?= isset($_GET['issue_id']) && $_GET['issue_id'] == $issue['issue_id'] ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($issue['issue_description']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </form>
-            </div>
-        </section>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['issue_id'])): ?>
-        <!-- Button to redirect to the part page with the selected issue -->
-        <div class="text-center my-4">
-            <a href="part.php?appliance_id=<?= $_GET['appliance_id']; ?>&brand_id=<?= $_GET['brand_id']; ?>&model_id=<?= $_GET['model_id']; ?>&area_id=<?= $_GET['area_id']; ?>&issue_id=<?= $_GET['issue_id']; ?>"
-                class="btn btn-primary mt-3">View Recommended Parts</a>
-        </div>
-    <?php endif; ?>
 
     <?php include('../common/footer.php'); ?>
 
     <script>
-        // Automatically scroll to the anchor section if it exists in the URL
-        document.addEventListener('DOMContentLoaded', function () {
-            const hash = window.location.hash;
-            if (hash) {
-                const element = document.querySelector(hash);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-        const viewPartsButton = document.getElementById('viewPartsButton');
-        if (viewPartsButton) {
-            viewPartsButton.addEventListener('click', function (event) {
-                viewPartsButton.classList.add('disabled');
-                viewPartsButton.textContent = 'Loading...';
-            });
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(`dropdown-${id}`);
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         }
-    });
+
+        function handleBrandSelection(id, brand) {
+            // Example: Fetch models dynamically based on brand
+            console.log(`Selected brand for appliance ${id}: ${brand}`);
+        }
+
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

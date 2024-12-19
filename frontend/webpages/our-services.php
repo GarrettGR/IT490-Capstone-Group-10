@@ -110,10 +110,15 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
         </div>
         <?php
         // Handle search functionality
-        if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
+        $search = isset($_GET['search']) ? trim($_GET['search']) : ''; // Get the search input, if available
+
+        if ($search !== '') {
             $searchTerm = '%' . trim($_GET['search']) . '%';
             $query = "SELECT * FROM appliances WHERE type LIKE :search OR brand LIKE :search OR model LIKE :search";
             $appliances = fetchData($query, ['search' => ['value' => $searchTerm, 'type' => PDO::PARAM_STR]]);
+        } else {
+            // If no search term is provided, fetch all appliances
+            $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
         }
         ?>
     </section>

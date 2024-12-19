@@ -185,10 +185,11 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                                     <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
                                     <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                         <option value="">Select Area</option>
-                                        <?php foreach ($areas as $area): ?>
-                                            <option value="<?= htmlspecialchars($area['area']); ?>"><?= htmlspecialchars($area['area']); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                        <?php foreach ($common_problems as $problem): ?>
+                                            <option value="<?= htmlspecialchars($problem['area']); ?>">
+                                                <?= htmlspecialchars($problem['problem_description']); ?>
+                                            </option>
+                                        <?php endforeach; ?>                                    </select>
                                     <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
                                     <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                         <option value="">Select Problem</option>

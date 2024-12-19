@@ -54,6 +54,12 @@ if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
     ]);
 }
 
+// fetch area (i.e. door) from common problems table
+$areas = fetchData('SELECT DISTINCT area FROM common_problems WHERE appliance_id = :appliance_id', [
+    ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+]);
+
+
 // Fetch common problems based on area
 if (!empty($appliance_id) && !empty($area)) {
     $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id AND area = :area', [
@@ -179,7 +185,9 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                                     <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
                                     <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                         <option value="">Select Area</option>
-                                        <option value="<?php echo htmlspecialchars($appliance['area']); ?>"><?php echo htmlspecialchars($appliance['area']); ?></option>
+                                        <?php foreach ($areas as $area): ?>
+                                            <option value="<?= htmlspecialchars($area['area']); ?>"><?= htmlspecialchars($area['area']); ?></option>
+                                        <?php endforeach; ?>
                                     </select>
                                     <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
                                     <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">

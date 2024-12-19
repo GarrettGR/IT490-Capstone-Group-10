@@ -2,72 +2,80 @@
 // checks database connection cause it is needed for troubleshooting
 require_once('../src/database-applicare.php'); 
  
-// /// Helper function to fetch data with prepared statements
-// function fetchData($query, $parameters = []) {
-//     global $db;
-//     try {
-//         $statement = $db->prepare($query);
-//         foreach ($parameters as $param => $value) {
-//             $statement->bindValue($param, $value['value'], $value['type']);
-//         }
-//         $statement->execute();
-//         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-//         $statement->closeCursor();
-//         return $result;
-//     } catch (PDOException $e) {
-//         // Log error instead of exposing it
-//         error_log("Database error: " . $e->getMessage());
-//         return [];
-//     }
-// }
+// Helper function to fetch data with prepared statements
+function fetchData($query, $parameters = []) {
+    global $db;
+    try {
+        echo "<p>Executing query: $query</p>"; // Echo query for debugging
+        $statement = $db->prepare($query);
+        foreach ($parameters as $param => $value) {
+            echo "<p>Binding parameter: $param with value: " . htmlspecialchars($value['value']) . "</p>"; // Echo parameters being bound
+        }
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        echo "<pre>" . print_r($result, true) . "</pre>"; // Echo fetched data for debugging
+        return $result;
+    } catch (PDOException $e) {
+        // Log error instead of exposing it
+        error_log("Database error: " . $e->getMessage());
+        echo "<p>Error: " . $e->getMessage() . "</p>"; // Display error for debugging
+        return [];
+    }
+}
 
-// // Fetch all appliances
-// $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
-// $brands = $models = $parts = $common_problems = [];
+// Fetch all appliances
+echo "<p>Fetching all appliances...</p>";
+$appliances = fetchData('SELECT * FROM appliances ORDER BY id');
+$brands = $models = $parts = $common_problems = [];
 
-// // Sanitize and fetch appliance ID
-// if (isset($_GET['appliance_id'])) {
-//     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-//     $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id', [
-//         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
-//     ]);
-// }
+// Sanitize and fetch appliance ID
+if (isset($_GET['appliance_id'])) {
+    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
+    echo "<p>Appliance ID: $appliance_id</p>"; // Echo appliance ID
+    $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+    ]);
+}
 
-// // Fetch brands based on selected appliance type
-// if (isset($_GET['appliance_id'])) {
-//     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-//     $brands = fetchData('SELECT DISTINCT brand FROM appliances WHERE appliance_id = :appliance_id', [
-//         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
-//     ]);
-// }
+// Fetch brands based on selected appliance type
+if (isset($_GET['appliance_id'])) {
+    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
+    echo "<p>Fetching brands for appliance ID: $appliance_id</p>"; // Echo appliance ID
+    $brands = fetchData('SELECT DISTINCT brand FROM appliances WHERE appliance_id = :appliance_id', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+    ]);
+}
 
-// // Fetch models based on selected appliance type and brand
-// if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
-//     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-//     $brand = filter_input(INPUT_GET, 'brand', FILTER_SANITIZE_STRING);
-//     $models = fetchData('SELECT DISTINCT model FROM appliances WHERE appliance_id = :appliance_id AND brand = :brand', [
-//         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT],
-//         ':brand' => ['value' => $brand, 'type' => PDO::PARAM_STR]
-//     ]);
-// }
+// Fetch models based on selected appliance type and brand
+if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
+    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
+    $brand = filter_input(INPUT_GET, 'brand', FILTER_SANITIZE_STRING);
+    echo "<p>Fetching models for appliance ID: $appliance_id and brand: $brand</p>"; // Echo appliance and brand
+    $models = fetchData('SELECT DISTINCT model FROM appliances WHERE appliance_id = :appliance_id AND brand = :brand', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT],
+        ':brand' => ['value' => $brand, 'type' => PDO::PARAM_STR]
+    ]);
+}
 
-// // Fetch common problems for specific appliances (based off of type, brand, model, area)
-// if (isset($_GET['appliance_id'])) {
-//     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-//     $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
-//         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
-//     ]);
-// }
+// Fetch common problems for specific appliances (based off of type, brand, model, area)
+if (isset($_GET['appliance_id'])) {
+    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
+    echo "<p>Fetching common problems for appliance ID: $appliance_id</p>"; // Echo appliance ID
+    $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
+    ]);
+}
 
-// // fetch parts based on selected appliance type and area
-// if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
-//     $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-//     $area = filter_input(INPUT_GET, 'area', FILTER_SANITIZE_STRING);
-//     $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id AND area = :area', [
-//         ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_STR],
-//         ':area' => ['value' => $area, 'type' => PDO::PARAM_STR]
-//     ]);
-// }
+// fetch parts based on selected appliance type and area
+if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
+    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
+    $area = filter_input(INPUT_GET, 'area', FILTER_SANITIZE_STRING);
+    echo "<p>Fetching parts for appliance ID: $appliance_id and area: $area</p>"; // Echo appliance ID and area
+    $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id AND area = :area', [
+        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_STR],
+        ':area' => ['value' => $area, 'type' => PDO::PARAM_STR]
+    ]);
+}
 
 ?>
 
@@ -98,7 +106,7 @@ require_once('../src/database-applicare.php');
         </div>
     </header>
 
-    <!-- <section class="search-bar py-3">
+    <section class="search-bar py-3">
         <div class="container">
             <form method="get" action="" class="d-flex">
                 <input type="text" name="search" class="form-control me-2" placeholder="Search appliances..." value="<?= htmlspecialchars($search); ?>">
@@ -109,11 +117,12 @@ require_once('../src/database-applicare.php');
         // Handle search functionality
         if (isset($_GET['search']) && !empty(trim($_GET['search']))) {
             $searchTerm = '%' . trim($_GET['search']) . '%';
+            echo "<p>Search term: $searchTerm</p>"; // Echo search term
             $query = "SELECT * FROM appliances WHERE type LIKE :search OR brand LIKE :search OR model LIKE :search";
             $appliances = fetchData($query, ['search' => ['value' => $searchTerm, 'type' => PDO::PARAM_STR]]);
         }
         ?>
-    </section> -->
+    </section>
 
     <?php if (empty($appliances)): ?>
         <p>No appliances found.</p>
@@ -189,7 +198,7 @@ require_once('../src/database-applicare.php');
 
     <?php include('../common/footer.php'); ?>
 
-    <!-- <script>
+    <script>
         function toggleDropdown(id) {
             const dropdown = document.getElementById(`dropdown-${id}`);
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
@@ -200,7 +209,7 @@ require_once('../src/database-applicare.php');
             console.log(`Selected brand for appliance ${id}: ${brand}`);
         }
 
-    </script> -->
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>

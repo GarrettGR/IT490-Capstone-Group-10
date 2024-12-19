@@ -2,24 +2,24 @@
 // checks database connection cause it is needed for troubleshooting
 require_once('../src/database-applicare.php'); 
  
-/// Helper function to fetch data with prepared statements
-function fetchData($query, $parameters = []) {
-    global $db;
-    try {
-        $statement = $db->prepare($query);
-        foreach ($parameters as $param => $value) {
-            $statement->bindValue($param, $value['value'], $value['type']);
-        }
-        $statement->execute();
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $statement->closeCursor();
-        return $result;
-    } catch (PDOException $e) {
-        // Log error instead of exposing it
-        error_log("Database error: " . $e->getMessage());
-        return [];
-    }
-}
+// /// Helper function to fetch data with prepared statements
+// function fetchData($query, $parameters = []) {
+//     global $db;
+//     try {
+//         $statement = $db->prepare($query);
+//         foreach ($parameters as $param => $value) {
+//             $statement->bindValue($param, $value['value'], $value['type']);
+//         }
+//         $statement->execute();
+//         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+//         $statement->closeCursor();
+//         return $result;
+//     } catch (PDOException $e) {
+//         // Log error instead of exposing it
+//         error_log("Database error: " . $e->getMessage());
+//         return [];
+//     }
+// }
 
 // // Fetch all appliances
 // $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
@@ -113,7 +113,7 @@ function fetchData($query, $parameters = []) {
             $appliances = fetchData($query, ['search' => ['value' => $searchTerm, 'type' => PDO::PARAM_STR]]);
         }
         ?>
-    </section>
+    </section> -->
 
     <?php if (empty($appliances)): ?>
         <p>No appliances found.</p>

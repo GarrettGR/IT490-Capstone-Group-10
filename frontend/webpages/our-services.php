@@ -111,7 +111,7 @@ if (isset($_GET['area_id'])) {
         <div class="container">
             <div class="row">
                 <?php foreach ($appliances as $appliance) {
-                    $image = '';
+                    $image = '../images/default-appliance.jpg';
                     switch ($appliance['appliance_name']) {
                         case 'Washers':
                             $image = 'washer.jpg';

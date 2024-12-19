@@ -28,7 +28,7 @@
             if($user){
                 $_SESSION['email'] = $email;
                 $_SESSION['user_id'] = $user['user_id'];
-                $security_question = $user['security_question'];
+                $security_question = $user['security_question']; // Set security question after email validation
             } else {
                 $error = "No user with that email address.";
             }
@@ -79,16 +79,15 @@
                 $error = "User not found.";
              }
             } catch (PDOException $e){
-                echo "Databae Error: " . $e->getMessage();
+                echo "Database Error: " . $e->getMessage();
             }
 
     }
   }
-
 ?>
+
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -106,8 +105,8 @@
     <section class="py-5 mt-5">
         <div class="container py-4 py-xl-5">
             <?php if (!isset($_SESSION['email'])): ?>
+                <!-- Email form (when email is not yet entered) -->
                 <div class="text-center">
-
                     <h2>Password Recovery</h2>
                     <p class="w-lg-50">Enter your email address to reset your password.</p>
                     <form method="post">
@@ -119,9 +118,9 @@
                         </div>
                     </form>
                 </div>
-            <?php else: ?>
-                <!-- security question form -->
-                 <div class="text-center">
+            <?php elseif (!empty($security_question)): ?>
+                <!-- Security question form (after email is validated) -->
+                <div class="text-center">
                     <h2>Security Question</h2>
                     <p>Answer the security question to reset your password.</p>
                     <form method="post">

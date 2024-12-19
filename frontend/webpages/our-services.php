@@ -96,7 +96,7 @@ if (isset($_GET['area_id'])) {
     </section>
 
     <?php 
-        $image = '/images/default-appliance.jpg';
+        $image = 'default-appliance.jpg';
         echo $image; ?>
 
     <section class="appliance-cards-section py-5">
@@ -106,26 +106,26 @@ if (isset($_GET['area_id'])) {
                     $image = '';
                     switch ($appliance['appliance_name']) {
                         case 'Washers':
-                            $image = '../images/washer.jpg';
+                            $image = 'washer.jpg';
                             echo $image;
                             break;
                         case 'Dryers':
-                            $image = '../images/dryers.jpeg';
+                            $image = 'dryers.jpeg';
                             break;
                         case 'Refrigerators':
-                            $image = '../images/fridge.jpeg';
+                            $image = 'fridge.jpeg';
                             break;
                         case 'Dishwashers':
-                            $image = '../images/dishwasher.jpg';
+                            $image = 'dishwasher.jpg';
                             break;
                         case 'Microwaves':
-                            $image = '../images/microwaves.jpg';
+                            $image = 'microwaves.jpg';
                             break;
                         case 'Ovens':
-                            $image = '../images/oven.jpeg';
+                            $image = 'oven.jpeg';
                             break;
                         default:
-                            $image = '../images/default-appliance.jpg'; // Default image for unknown appliances
+                            $image = 'default-appliance.jpg'; // Default image for unknown appliances
                             break;
                     }
 

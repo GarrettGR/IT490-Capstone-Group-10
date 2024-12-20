@@ -66,7 +66,7 @@
              $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
              if($user){
-                if($user['security_answer_hash'] == $security_answer){
+                if (password_verify($security_answer, $user['security_answer_hash'])) {
                     // if answer matches, allow password change
                     $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                     $sql = "UPDATE users SET password_hash = ? WHERE email = ?";

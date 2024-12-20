@@ -159,7 +159,7 @@ if($search !== ''){
                                             <?php endforeach; ?>
                                         </select>
                                     
-                                    <button class="btn btn-primary" formmethdo="GET" formaction="part.php">Submit</button>
+                                    <button class="btn btn-primary" formmethod="GET" formaction="part.php">Submit</button>
                                     <form>
                                 </div>
                             </div>

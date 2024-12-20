@@ -108,7 +108,6 @@
         <div class="container py-4 py-xl-5">
             <?php if (empty($email)): ?>
                 <div class="text-center">
-
                     <h2>Password Recovery</h2>
                     <p class="w-lg-50">Enter your email address to reset your password.</p>
                     <form method="post">

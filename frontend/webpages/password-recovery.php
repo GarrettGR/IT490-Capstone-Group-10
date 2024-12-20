@@ -6,12 +6,15 @@
   $new_password = '';
   $error = '';
 
+
   // Start the session only if it's not already active
   if (session_status() === PHP_SESSION_NONE) {
     session_start();
   }
-
+  error_log("test");
+  //error_log("Value of email: " . print_r($email, true),3, "/root/Capstone-Group-10/frontend/webpages/error.log");
   if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     $error = '';
 
@@ -105,9 +108,8 @@
 
     <section class="py-5 mt-5">
         <div class="container py-4 py-xl-5">
-            <?php if (!isset($email)): ?>
+            <?php if (empty($email)): ?>
                 <div class="text-center">
-
                     <h2>Password Recovery</h2>
                     <p class="w-lg-50">Enter your email address to reset your password.</p>
                     <form method="post">

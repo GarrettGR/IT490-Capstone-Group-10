@@ -29,7 +29,7 @@ $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
 
 // handle search functionality
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-of($search !== ''){
+if($search !== ''){
     $searchTerm = '%' . trim($_GET['search']) . '%';
     $query = "SELECT * FROM appliances WHERE type LIKE :search OR brand LIKE :search OR model LIKE :search";
     $appliances = fetchData($query, ['search' => ['value' => $searchTerm, 'type' => PDO::PARAM_STR]]);

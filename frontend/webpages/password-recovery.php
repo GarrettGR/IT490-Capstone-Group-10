@@ -42,7 +42,7 @@
     }
   }
 
-  if (isset($_POST['security_answer'])){
+  if (isset($_POST['security_answer']) && isset($_POST['new_password'])){
 
     if(isset($_SESSION['email'])){
         $email = $_SESSION['email'];

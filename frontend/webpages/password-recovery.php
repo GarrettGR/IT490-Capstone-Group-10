@@ -5,6 +5,8 @@
   $security_answer = '';
   $new_password = '';
   $error = '';
+//screw it, let's see what happens
+session_unset();
 
   // Start the session only if it's not already active
   if (session_status() === PHP_SESSION_NONE) {

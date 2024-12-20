@@ -7,31 +7,25 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
   }
 
-  // Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    echo '<div class="alert alert-warning text-center" role="alert">
-            You are not logged in. Please <a href="login.php">log in</a> to access this page.
-          </div>';
-    exit; // Stop execution if the user is not logged in
-}
+  $is_logged_in = isset($_SESSION['user_id']);
+
 // Check if all required parameters are present
-if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['area_id'], $_GET['issue_id'])) {
+if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], $_GET['issue'])) {
     $appliance_id = $_GET['appliance_id'];
-    $brand_id = $_GET['brand_id'];
-    $model_id = $_GET['model_id'];
-    $area_id = $_GET['area_id'];
-    $issue_id = $_GET['issue_id'];
+    $brand = $_GET['brand'];
+    $model_ = $_GET['model'];
+    $part_id = $_GET['part_id'];
 
     // Database connection and fetching relevant parts
     $query = '
         SELECT cp.id AS problem_id, cp.problem_description, cp.solution_steps, cp.area
-    FROM common_problems cp
-    JOIN appliances a ON cp.appliance_id = a.id
-    JOIN parts p ON cp.part_id = p.id
-    WHERE a.type = :appliance_type
-    AND a.brand = :brand
-    AND a.model = :model
-    AND p.id = :part_id
+        FROM common_problems cp
+        JOIN appliances a ON cp.appliance_id = a.id
+        JOIN parts p ON cp.part_id = p.id
+        WHERE a.type = :appliance_type
+        AND a.brand = :brand
+        AND a.model = :model
+        AND p.id = :part_id
 
     ';
     
@@ -65,6 +59,48 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
     exit;
 }
 
+// Handle the review form submission
+if (isset($_POST['submit_review'])) {
+    $user_id = $_POST['user_id'];
+    $part_id = $_POST['part_id'];
+    $problem_id = $_POST['problem_id'];
+    $user_name = $_POST['user_name'];
+    $rating = $_POST['rating'];
+    $fixed_issue = $_POST['fixed_issue'];
+    $comment = $_POST['review_text'];
+
+    // Perform the necessary insert/update query to save the review
+    $query = "INSERT INTO reviews (user_id, part_id, problem_id, user_name, rating, fixed_issue, review_text) 
+              VALUES (:user_id, :part_id, :problem_id, :user_name, :rating, :fixed_issue, :review_text)";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+    $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
+    $statement->bindValue(':problem_id', $problem_id, PDO::PARAM_INT);
+    $statement->bindValue(':user_name', $user_name, PDO::PARAM_STR);
+    $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
+    $statement->bindValue(':fixed_issue', $fixed_issue, PDO::PARAM_INT);
+    $statement->bindValue(':comment', $review_text, PDO::PARAM_STR);
+    $statement->execute();
+}
+
+// Handle the bookmark functionality
+if (isset($_POST['bookmark'])) {
+    if ($is_logged_in) {
+        $user_id = $_SESSION['user_id'];
+        $part_id = $_POST['part_id'];
+
+        // Save the part to the user's saved parts
+        $query = "INSERT INTO saved_parts (user_id, part_id) VALUES (:user_id, :part_id)";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
+        $statement->execute();
+        echo "<script>alert('Part bookmarked successfully!');</script>";
+    } else {
+        echo "<script>alert('You must be logged in to bookmark this part.');</script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -94,13 +130,23 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
                     </div>
                 </div>
             </div>
+
+             <!-- Bookmark button (only available if logged in) -->
+             <?php if ($is_logged_in): ?>
+                <form method="POST" class="text-center mt-3">
+                    <input type="hidden" name="part_id" value="<?= $recommended_part['part_id']; ?>">
+                    <button type="submit" name="bookmark" class="btn btn-warning">Bookmark This Part</button>
+                </form>
+            <?php else: ?>
+                <p class="text-center mt-3">You need to <a href="login.php">log in</a> to bookmark this part.</p>
+            <?php endif; ?>
+            
         <?php else: ?>
             <div class="alert alert-warning text-center">
                 No recommended parts found for the selected issue.
             </div>
         <?php endif; ?>
 
-        <!-- Form to collect Zip Code input -->
         <h3 class="mt-5 text-center">Find Nearby Handymen</h3>
 
         <!-- Google Maps Iframe to search for Handymen -->

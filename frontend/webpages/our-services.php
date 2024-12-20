@@ -26,59 +26,15 @@ function fetchData($query, $parameters = []) {
 
 // Fetch all appliances
 $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
-$brands = $models = $parts = $common_problems = [];
 
-// Sanitize and fetch appliance ID
-if (isset($_GET['appliance_id'])) {
-    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id', [
-        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
-    ]);
-}
-
-// Fetch brands based on selected appliance type
-if (isset($_GET['appliance_id'])) {
-    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $brands = fetchData('SELECT DISTINCT brand FROM appliances WHERE appliance_id = :appliance_id', [
-        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
-    ]);
-}
-
-// Fetch models based on selected appliance type and brand
-if (isset($_GET['appliance_id']) && isset($_GET['brand'])) {
-    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $brand = filter_input(INPUT_GET, 'brand', FILTER_SANITIZE_STRING);
-    $models = fetchData('SELECT DISTINCT model FROM appliances WHERE appliance_id = :appliance_id AND brand = :brand', [
-        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT],
-        ':brand' => ['value' => $brand, 'type' => PDO::PARAM_STR]
-    ]);
-}
-
-// fetch area (i.e. door) from common problems table
-$areas = fetchData('SELECT DISTINCT area FROM common_problems WHERE appliance_id = :appliance_id', [
-    ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT]
-]);
-
-
-// Fetch common problems based on area
-if (!empty($appliance_id) && !empty($area)) {
-    $common_problems = fetchData('SELECT * FROM common_problems WHERE appliance_id = :appliance_id AND area = :area', [
-        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_INT],
-        ':area' => ['value' => $area, 'type' => PDO::PARAM_STR]
-    ]);
+// handle search functionality
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+if($search !== ''){
+    $searchTerm = '%' . trim($_GET['search']) . '%';
+    $query = "SELECT * FROM appliances WHERE type LIKE :search OR brand LIKE :search OR model LIKE :search";
+    $appliances = fetchData($query, ['search' => ['value' => $searchTerm, 'type' => PDO::PARAM_STR]]);
 } else {
-    $common_problems = [];
-}
-
-
-// fetch parts based on selected appliance type and area
-if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
-    $appliance_id = filter_input(INPUT_GET, 'appliance_id', FILTER_VALIDATE_INT);
-    $area = filter_input(INPUT_GET, 'area', FILTER_SANITIZE_STRING);
-    $parts = fetchData('SELECT * FROM parts WHERE appliance_id = :appliance_id AND area = :area', [
-        ':appliance_id' => ['value' => $appliance_id, 'type' => PDO::PARAM_STR],
-        ':area' => ['value' => $area, 'type' => PDO::PARAM_STR]
-    ]);
+    $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
 }
 
 ?>
@@ -117,19 +73,6 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                 <button type="submit" class="btn btn-primary">Search</button>
             </form>
         </div>
-        <?php
-        // Handle search functionality
-        $search = isset($_GET['search']) ? trim($_GET['search']) : ''; // Get the search input, if available
-
-        if ($search !== '') {
-            $searchTerm = '%' . trim($_GET['search']) . '%';
-            $query = "SELECT * FROM appliances WHERE type LIKE :search OR brand LIKE :search OR model LIKE :search";
-            $appliances = fetchData($query, ['search' => ['value' => $searchTerm, 'type' => PDO::PARAM_STR]]);
-        } else {
-            // If no search term is provided, fetch all appliances
-            $appliances = fetchData('SELECT * FROM appliances ORDER BY id');
-        }
-        ?>
     </section>
 
     <?php if (empty($appliances)): ?>
@@ -185,14 +128,24 @@ if(isset($_GET['appliance_id']) && isset($_GET['brand'])){
                                     <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
                                     <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                         <option value="">Select Area</option>
-                                        <?php foreach ($areas as $area): ?>
-                                            <option value="<?= htmlspecialchars($area['area']); ?>"><?= htmlspecialchars($area['area']); ?></option>
+                                        <?php 
+                                        $areas = fetchData('SELECT DISTINCT area FROM common_problems WHERE appliance_id = :appliance_id', [
+                                            ':appliance_id' => ['value' => $appliance['id'], 'type' => PDO::PARAM_INT]
+                                        ]);
+                                        foreach ($areas as $area): ?>
+                                            <option value="<?= htmlspecialchars($area['area']); ?>">
+                                                <?= htmlspecialchars($area['area']); ?>
+                                            </option>
                                         <?php endforeach; ?>
                                     </select>
                                     <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
                                     <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                         <option value="">Select Problem</option>
-                                        <?php foreach ($common_problems as $problem): ?>
+                                        <?php 
+                                        $problems = fetchData('SELECT DISTINCT problem_description FROM common_problems WHERE appliance_id = :appliance_id', [
+                                            ':appliance_id' => ['value' => $appliance['id'], 'type' => PDO::PARAM_INT]
+                                        ]);
+                                        foreach ($problems as $problem): ?>
                                             <option value="<?= htmlspecialchars($problem['problem_description']); ?>">
                                                 <?= htmlspecialchars($problem['problem_description']); ?>
                                             </option>

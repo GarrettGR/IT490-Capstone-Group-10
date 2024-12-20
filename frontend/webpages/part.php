@@ -24,27 +24,22 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
 
     // Database connection and fetching relevant parts
     $query = '
-        SELECT parts.part_name, parts.part_image, parts.part_link, parts.instructions_video
-        FROM parts
-        JOIN issues_parts ON parts.part_id = issues_parts.part_id
-        JOIN issue_types ON issues_parts.issue_id = issue_types.issue_id
-        JOIN problem_areas ON issue_types.area_id = problem_areas.area_id
-        JOIN brands b1 ON problem_areas.appliance_id = b1.appliance_id
-        JOIN models ON models.brand_id = b1.brand_id
-        WHERE b1.appliance_id = :appliance_id
-        AND b1.brand_id = :brand_id
-        AND models.model_id = :model_id
-        AND problem_areas.area_id = :area_id
-        AND issue_types.issue_id = :issue_id
+        SELECT cp.id AS problem_id, cp.problem_description, cp.solution_steps, cp.area
+    FROM common_problems cp
+    JOIN appliances a ON cp.appliance_id = a.id
+    JOIN parts p ON cp.part_id = p.id
+    WHERE a.type = :appliance_type
+    AND a.brand = :brand
+    AND a.model = :model
+    AND p.id = :part_id
 
     ';
     
     $statement = $db->prepare($query);
     $statement->bindValue(':appliance_id', $appliance_id, PDO::PARAM_INT);
-    $statement->bindValue(':brand_id', $brand_id, PDO::PARAM_INT);
-    $statement->bindValue(':model_id', $model_id, PDO::PARAM_INT);
-    $statement->bindValue(':area_id', $area_id, PDO::PARAM_INT);
-    $statement->bindValue(':issue_id', $issue_id, PDO::PARAM_INT);
+    $statement->bindValue(':brand', $brand, PDO::PARAM_INT);
+    $statement->bindValue(':model', $model, PDO::PARAM_INT);
+    $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
     $statement->execute();
     $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -130,7 +125,9 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
     <!-- Review Form -->
     <h3 class="text-center" mt-5 mb-4>Leave a Review</h3>
         <form method="POST" action="" class="mx-auto" style="max-width: 600px; border: 1px solid #ccc; padding: 20px; border-radius:8px; background-color: #f9f9f9;">
+            <input type="hidden" name="user_id" value="<?= $_SESSION['user_id']; ?>">
             <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['part_id'] : '' ?>">
+            <input type="hidden" name="problem_id" value="<?= $issue_id; ?>">
             <div class="mb-3">
                 <label for="user_name" class="form-label">Your Name</label>
                 <input type="text" class="form-control" id="user_name" name="user_name" required>
@@ -143,6 +140,13 @@ if (isset($_GET['appliance_id'], $_GET['brand_id'], $_GET['model_id'], $_GET['ar
                     <option value="3">3 - Good</option>
                     <option value="4">4 - Very Good</option>
                     <option value="5">5 - Excellent</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="fixed_issue" class="form-label">Did this fix your issue?</label>
+                <select class="form-select" id="fixed_issue" name="fixed_issue" required>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
                 </select>
             </div>
             <div class="mb-3">

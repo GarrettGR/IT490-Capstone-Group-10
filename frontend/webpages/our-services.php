@@ -117,43 +117,49 @@ if($search !== ''){
 
                                 <button class="btn btn-outline-primary" onclick="toggleDropdown(<?php echo $appliance['id']; ?>)">Select Issue</button>
                                 <div class="dropdown mt-3" id="dropdown-<?php echo $appliance['id']; ?>" style="display: none;">
-                                    <label for="brand-<?php echo $appliance['id']; ?>">Brand:</label>
-                                    <select id="brand-<?php echo $appliance['id']; ?>" class="form-select mb-2" onchange="handleBrandSelection(<?php echo $appliance['id']; ?>, this.value)">
-                                        <option value="">Select Brand</option>
-                                        <option value="<?php echo htmlspecialchars($appliance['brand']); ?>"><?php echo htmlspecialchars($appliance['brand']); ?></option>
-                                    </select>
-                                    <label for="model-<?php echo $appliance['id']; ?>">Model:</label>
-                                    <select id="model-<?php echo $appliance['id']; ?>" class="form-select mb-2">
-                                        <option value="">Select Model</option>
-                                        <option value="<?php echo htmlspecialchars($appliance['model']); ?>"><?php echo htmlspecialchars($appliance['model']); ?></option>
-                                    </select>
-                                    <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
-                                    <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
-                                        <option value="">Select Area</option>
-                                        <?php 
-                                        $areas = fetchData('SELECT DISTINCT area FROM common_problems WHERE appliance_id = :appliance_id', [
-                                            ':appliance_id' => ['value' => $appliance['id'], 'type' => PDO::PARAM_INT]
-                                        ]);
-                                        foreach ($areas as $area): ?>
-                                            <option value="<?= htmlspecialchars($area['area']); ?>">
-                                                <?= htmlspecialchars($area['area']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                    <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
-                                    <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
-                                        <option value="">Select Problem</option>
-                                        <?php 
-                                        $problems = fetchData('SELECT DISTINCT problem_description FROM common_problems WHERE appliance_id = :appliance_id', [
-                                            ':appliance_id' => ['value' => $appliance['id'], 'type' => PDO::PARAM_INT]
-                                        ]);
-                                        foreach ($problems as $problem): ?>
-                                            <option value="<?= htmlspecialchars($problem['problem_description']); ?>">
-                                                <?= htmlspecialchars($problem['problem_description']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>                                    </select>
+                                    <form action="part.php" method="get">
+                                        <input type="hidden" name="appliance_id" value="<?= $appliance['id']; ?>">
+                                        <input type="hidden" name="appliance_type" value="<?= $appliance['type']; ?>">
+
+                                        <label for="brand-<?php echo $appliance['id']; ?>">Brand:</label>
+                                        <select id="brand-<?php echo $appliance['id']; ?>" class="form-select mb-2" onchange="handleBrandSelection(<?php echo $appliance['id']; ?>, this.value)">
+                                            <option value="">Select Brand</option>
+                                            <option value="<?php echo htmlspecialchars($appliance['brand']); ?>"><?php echo htmlspecialchars($appliance['brand']); ?></option>
+                                        </select>
+                                        <label for="model-<?php echo $appliance['id']; ?>">Model:</label>
+                                        <select id="model-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                            <option value="">Select Model</option>
+                                            <option value="<?php echo htmlspecialchars($appliance['model']); ?>"><?php echo htmlspecialchars($appliance['model']); ?></option>
+                                        </select>
+                                        <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
+                                        <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                            <option value="">Select Area</option>
+                                            <?php 
+                                            $areas = fetchData('SELECT DISTINCT area FROM common_problems WHERE appliance_id = :appliance_id', [
+                                                ':appliance_id' => ['value' => $appliance['id'], 'type' => PDO::PARAM_INT]
+                                            ]);
+                                            foreach ($areas as $area): ?>
+                                                <option value="<?= htmlspecialchars($area['area']); ?>">
+                                                    <?= htmlspecialchars($area['area']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
+                                        <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                            <option value="">Select Problem</option>
+                                            <?php 
+                                            $problems = fetchData('SELECT DISTINCT problem_description FROM common_problems WHERE appliance_id = :appliance_id', [
+                                                ':appliance_id' => ['value' => $appliance['id'], 'type' => PDO::PARAM_INT]
+                                            ]);
+                                            foreach ($problems as $problem): ?>
+                                                <option value="<?= htmlspecialchars($problem['problem_description']); ?>">
+                                                    <?= htmlspecialchars($problem['problem_description']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    
                                     <button class="btn btn-primary" formmethdo="GET" formaction="part.php">Submit</button>
+                                    <form>
                                 </div>
                             </div>
                         </div>

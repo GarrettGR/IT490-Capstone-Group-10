@@ -106,7 +106,7 @@
 
     <section class="py-5 mt-5">
         <div class="container py-4 py-xl-5">
-            <?php if (!isset($email)): ?>
+            <?php if (empty($email)): ?>
                 <div class="text-center">
 
                     <h2>Password Recovery</h2>

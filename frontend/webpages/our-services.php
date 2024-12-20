@@ -163,7 +163,7 @@ if($search !== ''){
                                         </select>
                                     
                                     <button class="btn btn-primary" formmethod="GET" formaction="part.php">Submit</button>
-                                    <form>
+                                    </form>
                                 </div>
                             </div>
                         </div>

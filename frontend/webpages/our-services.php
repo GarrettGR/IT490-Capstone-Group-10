@@ -125,12 +125,12 @@ if($search !== ''){
                                         <label for="brand-<?php echo $appliance['id']; ?>">Brand:</label>
                                         <select id="brand-<?php echo $appliance['id']; ?>" class="form-select mb-2" onchange="handleBrandSelection(<?php echo $appliance['id']; ?>, this.value)">
                                             <option value="">Select Brand</option>
-                                            <option value="<?php echo htmlspecialchars($appliance['brand']); ?>"><?php echo htmlspecialchars($appliance['brand']); ?></option>
+                                            <option value="<?php echo htmlspecialchars($appliance['brand']); ?>" <?= (isset($_GET['brand']) && $_GET['brand'] == $appliance['brand']) ? 'selected' : ''; ?>>
                                         </select>
                                         <label for="model-<?php echo $appliance['id']; ?>">Model:</label>
                                         <select id="model-<?php echo $appliance['id']; ?>" class="form-select mb-2">
                                             <option value="">Select Model</option>
-                                            <option value="<?php echo htmlspecialchars($appliance['model']); ?>"><?php echo htmlspecialchars($appliance['model']); ?></option>
+                                            <option value="<?php echo htmlspecialchars($appliance['model']); ?>" <?= (isset($_GET['model']) && $_GET['model'] == $appliance['model']) ? 'selected' : ''; ?>>
                                         </select>
                                         <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
                                         <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
@@ -179,9 +179,9 @@ if($search !== ''){
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         }
 
-        function handleBrandSelection(id, brand) {
-            // Example: Fetch models dynamically based on brand
-            console.log(`Selected brand for appliance ${id}: ${brand}`);
+        function handleBrandSelection(id) {
+            const brand = document.getElementById(`brand-${id}`).value;
+            document.getElementById(`hidden-brand-${id}`).value = brand;
         }
 
     </script>

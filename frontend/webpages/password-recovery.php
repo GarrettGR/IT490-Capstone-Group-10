@@ -11,7 +11,7 @@
   if (session_status() === PHP_SESSION_NONE) {
     session_start();
   }
-  error_log("Value of email: " . print_r($email, true), "/Capstone-Group-10/frontend/webpages/error.log");
+  error_log("Value of email: " . print_r($email, true), "/root/Capstone-Group-10/frontend/webpages/error.log");
   if($_SERVER['REQUEST_METHOD'] == 'POST'){
     
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);

@@ -123,20 +123,20 @@ if($search !== ''){
                                         <input type="hidden" name="appliance_type" value="<?= $appliance['type']; ?>">
 
                                         <label for="brand-<?php echo $appliance['id']; ?>">Brand:</label>
-                                        <select id="brand-<?php echo $appliance['id']; ?>" class="form-select mb-2" onchange="handleBrandSelection(<?php echo $appliance['id']; ?>, this.value)">
+                                        <select id="brand-<?php echo $appliance['id']; ?>" name="brand" class="form-select mb-2" onchange="handleBrandSelection(<?php echo $appliance['id']; ?>, this.value)">
                                             <option value="">Select Brand</option>
                                             <option value="<?php echo htmlspecialchars($appliance['brand']); ?>" <?= (isset($_GET['brand']) && $_GET['brand'] == $appliance['brand']) ? 'selected' : ''; ?>>
                                                 <?php echo htmlspecialchars($appliance['brand']); ?>
                                             </option>
                                         </select>
                                         <label for="model-<?php echo $appliance['id']; ?>">Model:</label>
-                                        <select id="model-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                        <select id="model-<?php echo $appliance['id']; ?>" name="model" class="form-select mb-2">
                                             <option value="">Select Model</option>
                                             <option value="<?php echo htmlspecialchars($appliance['model']); ?>" <?= (isset($_GET['brand']) && $_GET['brand'] == $appliance['brand']) ? 'selected' : ''; ?>>
                                                 <?php echo htmlspecialchars($appliance['model']); ?>
                                             </option>                                            </select>
                                         <label for="area-<?php echo $appliance['id']; ?>">Area:</label>
-                                        <select id="area-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                        <select id="area-<?php echo $appliance['id']; ?>" name="area" class="form-select mb-2">
                                             <option value="">Select Area</option>
                                             <?php 
                                             $areas = fetchData('SELECT DISTINCT area FROM common_problems WHERE appliance_id = :appliance_id', [
@@ -149,7 +149,7 @@ if($search !== ''){
                                             <?php endforeach; ?>
                                         </select>
                                         <label for="problem-<?php echo $appliance['id']; ?>">Problem:</label>
-                                        <select id="problem-<?php echo $appliance['id']; ?>" class="form-select mb-2">
+                                        <select id="problem-<?php echo $appliance['id']; ?>" name="problem" class="form-select mb-2">
                                             <option value="">Select Problem</option>
                                             <?php 
                                             $problems = fetchData('SELECT DISTINCT problem_description FROM common_problems WHERE appliance_id = :appliance_id', [

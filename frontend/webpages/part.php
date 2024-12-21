@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
   }
 
   $is_logged_in = isset($_SESSION['user_id']);
-  var_dump($_GET)
+  var_dump($_GET);
 
   // Debugging for the values captured
 echo "Appliance ID: " . htmlspecialchars($_GET['appliance_id']) . "<br>";

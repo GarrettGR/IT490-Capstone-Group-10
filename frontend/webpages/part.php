@@ -8,6 +8,11 @@ if (session_status() === PHP_SESSION_NONE) {
   }
 
 $is_logged_in = isset($_SESSION['user_id']) && $_SESSION['user_id'] > 0;
+if (!isset($_SESSION['user_id'])) {
+    // Handle the case where the user is not logged in
+    echo "User not logged in. Please log in.";
+    exit;
+}
   //   var_dump($_GET);
 
 //   // Debugging for the values captured
@@ -47,6 +52,8 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
 
         $statement->execute();
         $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
+        var_dump($parts);  // Check the fetched parts
+
 
     if (!$parts) {
         echo "No parts found. Check database entries and query conditions.";

@@ -9,6 +9,17 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $is_logged_in = isset($_SESSION['user_id']); // assuming 'user_id' is stored in session upon login
 
+if ($is_logged_in) {
+    $user_id = $_SESSION['user_id']; // retrieve the user ID from session
+    $query = "SELECT * FROM saved_parts WHERE user_id = ?";
+    $stmt = $db->prepare($query);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    // No saved parts if not logged in
+    $result = [];
+}
 ?>
 
 <!DOCTYPE html>

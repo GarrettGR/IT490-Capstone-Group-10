@@ -18,7 +18,7 @@ if (isset($_SESSION['user_id'])) {
         SELECT sp.*, p.id AS part_id, p.part_name, p.description, p.image_url
         FROM saved_parts sp
         JOIN parts p ON sp.part_id = p.id
-        WHERE sp.user_id = 4;
+        WHERE sp.user_id = ?
 
     ";
 

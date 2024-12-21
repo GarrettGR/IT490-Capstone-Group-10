@@ -50,9 +50,10 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
 
     if (!$parts) {
         echo "No parts found. Check database entries and query conditions.";
-    } else {
-        var_dump($parts); // Display fetched parts for debugging
-    }
+    } 
+    // else {
+    //     var_dump($parts); // Display fetched parts for debugging
+    // }
     
     $statement->closeCursor();
 

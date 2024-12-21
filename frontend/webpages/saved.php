@@ -22,7 +22,9 @@ if (isset($_SESSION['user_id'])) {
     
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $user_id);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        echo "Error: " . $stmt->error;
+    }
     $result = $stmt->get_result();
 
 } else {

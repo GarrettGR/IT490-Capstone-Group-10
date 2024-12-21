@@ -11,17 +11,18 @@ $is_logged_in = isset($_SESSION['user_id']); // assuming 'user_id' is stored in 
 
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id']; // retrieve the user ID from session
-    $query = "SELECT * FROM saved_parts WHERE user_id = ?";
+    
+    // Query to fetch saved parts from saved_parts table and join with part table
+    $query = "
+        SELECT sp.*, p.part_name, p.description, p.image_url
+        FROM saved_parts sp
+        JOIN part p ON sp.part_id = p.part_id
+        WHERE sp.user_id = ?";
+    
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
-
-    // Debugging - check how many rows were returned
-    echo "Number of rows: " . $result->num_rows;
-    echo "<pre>";
-    var_dump($result->fetch_all(MYSQLI_ASSOC)); // This will show the fetched rows
-    echo "</pre>";
 
 } else {
     // No saved parts if not logged in

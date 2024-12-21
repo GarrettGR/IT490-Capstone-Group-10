@@ -109,6 +109,9 @@ if (isset($_POST['bookmark'])) {
         $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
         $statement->execute();
         echo "<script>alert('Part bookmarked successfully!');</script>";
+        // Redirect to prevent form resubmission
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
     } else {
         echo "<script>alert('You must be logged in to bookmark this part.');</script>";
     }

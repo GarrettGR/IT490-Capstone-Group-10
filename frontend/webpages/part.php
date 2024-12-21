@@ -7,16 +7,16 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
   }
 
-  $is_logged_in = isset($_SESSION['user_id']);
-  var_dump($_GET);
+//   $is_logged_in = isset($_SESSION['user_id']);
+//   var_dump($_GET);
 
-  // Debugging for the values captured
-echo "Appliance ID: " . htmlspecialchars($_GET['appliance_id']) . "<br>";
-echo "Appliance Type: " . htmlspecialchars($_GET['appliance_type']) . "<br>";
-echo "Brand: " . htmlspecialchars($_GET['brand']) . "<br>";
-echo "Model: " . htmlspecialchars($_GET['model']) . "<br>";
-echo "Area: " . htmlspecialchars($_GET['area']) . "<br>";
-echo "Problem: " . htmlspecialchars($_GET['problem']) . "<br>";
+//   // Debugging for the values captured
+// echo "Appliance ID: " . htmlspecialchars($_GET['appliance_id']) . "<br>";
+// echo "Appliance Type: " . htmlspecialchars($_GET['appliance_type']) . "<br>";
+// echo "Brand: " . htmlspecialchars($_GET['brand']) . "<br>";
+// echo "Model: " . htmlspecialchars($_GET['model']) . "<br>";
+// echo "Area: " . htmlspecialchars($_GET['area']) . "<br>";
+// echo "Problem: " . htmlspecialchars($_GET['problem']) . "<br>";
 
 // Check if all required parameters are present
 if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], $_GET['problem'])) {

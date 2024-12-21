@@ -15,10 +15,11 @@ if (isset($_SESSION['user_id'])) {
     
     // Query to fetch saved parts from saved_parts table and join with part table
     $query = "
-        SELECT sp.*, p.part_name, p.description, p.image_url
-        FROM saved_parts sp
-        JOIN part p ON sp.part_id = p.part_id
-        WHERE sp.user_id = ?";
+    SELECT * FROM saved_parts WHERE user_id = ?";
+        // SELECT sp.*, p.part_name, p.description, p.image_url
+        // FROM saved_parts sp
+        // JOIN part p ON sp.part_id = p.part_id
+        // WHERE sp.user_id = ?";
     
         // Debug the SQL query
     echo "<pre>" . htmlspecialchars($query) . "</pre>";

@@ -72,37 +72,36 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
 }
 
 // Handle the review form submission
-// Handle the review form submission
 if (isset($_POST['submit_review'])) {
-    $user_id = $_POST['user_id'];
-    $part_id = $_POST['part_id'];
-    $problem_id = $_POST['problem_id'];
-    $user_name = $_POST['user_name'];
-    $rating = $_POST['rating'];
-    $fixed_issue = $_POST['fixed_issue'];
-    $review_text = $_POST['review_text']; // Correct the variable name
+    if ($is_logged_in) {
+        $user_id = $_SESSION['user_id'];
+        $part_id = $_POST['part_id'];
+        $problem_id = $_POST['problem_id'];
+        $rating = $_POST['rating'];
+        $fixed_issue = $_POST['fixed_issue'];
+        $review_text = $_POST['review_text']; // Correct the variable name
 
-    // Perform the necessary insert/update query to save the review
-    $query = "INSERT INTO part_reviews (user_id, part_id, problem_id, rating, fixed_issue, review_text) 
-              VALUES (:user_id, :part_id, :problem_id, :rating, :fixed_issue, :review_text)";
+        // Perform the necessary insert/update query to save the review
+        $query = "INSERT INTO part_reviews (user_id, part_id, problem_id, rating, fixed_issue, review_text) 
+                VALUES (:user_id, :part_id, :problem_id, :rating, :fixed_issue, :review_text)";
 
-    $statement = $db->prepare($query);
-    $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-    $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
-    $statement->bindValue(':problem_id', $problem_id, PDO::PARAM_INT);
-    $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
-    $statement->bindValue(':fixed_issue', $fixed_issue, PDO::PARAM_INT);
-    $statement->bindValue(':review_text', $review_text, PDO::PARAM_STR); // Corrected here
-    if ($statement->execute()) {
-        echo "Review submitted successfully!";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        echo "Error submitting review! " . implode(" - ", $statement->errorInfo());
+        $statement = $db->prepare($query);
+        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
+        $statement->bindValue(':problem_id', $problem_id, PDO::PARAM_INT);
+        $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
+        $statement->bindValue(':fixed_issue', $fixed_issue, PDO::PARAM_INT);
+        $statement->bindValue(':review_text', $review_text, PDO::PARAM_STR); // Corrected here
+        if ($statement->execute()) {
+            echo "Review submitted successfully!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
+        } else {
+            echo "Error submitting review! " . implode(" - ", $statement->errorInfo());
+        }
     }
     
 }
-
 
 // Handle the bookmark functionality
 if (isset($_POST['bookmark'])) {
@@ -197,10 +196,6 @@ if (isset($_POST['bookmark'])) {
             <input type="hidden" name="user_id" value="<?= $_SESSION['user_id']; ?>">
             <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['part_id'] : '' ?>">
             <input type="hidden" name="problem_id" value="<?= $problem_id; ?>">
-            <div class="mb-3">
-                <label for="user_name" class="form-label">Your Name</label>
-                <input type="text" class="form-control" id="user_name" name="user_name" required>
-            </div>
             <div class="mb-3">
                 <label for="rating" class="form-label">Rating</label>
                 <select class="form-select" id="rating" name="rating" required>

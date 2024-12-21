@@ -55,27 +55,27 @@ if (isset($_SESSION['user_id'])) {
     <?php endif; ?>
 
     <section class="py-5">
-    <div class="container py-5">
+        <div class="container py-5">
             <h2>Your Saved Parts</h2>
-            <?php if ($result && $result->num_rows > 0): ?>
-                <div class="row">
-                    <?php while ($row = $result->fetch_assoc()): ?>
-                        <div class="col-sm-4 col-md-3 mb-4">
-                            <div class="card">
-                                <img src="<?= $row['image_url']; ?>" class="card-img-top" alt="Part Image">
-                                <div class="card-body">
-                                    <h5 class="card-title"><?= $row['part_name']; ?></h5>
-                                    <p class="card-text"><?= $row['description']; ?></p>
-                                    <a href="view_part.php?id=<?= $row['part_id']; ?>" class="btn btn-primary">View Details</a>
+                <?php if ($result && $result->num_rows > 0): ?>
+                    <div class="row">
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <div class="col-sm-4 col-md-3 mb-4">
+                                <div class="card">
+                                    <img src="<?= $row['image_url']; ?>" class="card-img-top" alt="Part Image">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?= $row['part_name']; ?></h5>
+                                        <p class="card-text"><?= $row['description']; ?></p>
+                                        <a href="view_part.php?id=<?= $row['part_id']; ?>" class="btn btn-primary">View Details</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php endwhile; ?>
-                </div>
+                        <?php endwhile; ?>
+                    </div>
             <?php else: ?>
                 <p>No saved parts found.</p>
             <?php endif; ?>
-        </div>
+         </div>
     </section>
 
     <?php include('../common/footer.php'); ?>

@@ -16,7 +16,7 @@ if (isset($_SESSION['user_id'])) {
     // Query to fetch saved parts from saved_parts table and join with part table
     $query = "
         select * from parts;
-    "
+    ";
 
     
         // Debug the SQL query

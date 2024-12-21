@@ -71,6 +71,7 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
         $recommended_part = null;
     }
 } else {
+    echo "Missing parameters!";
     // If required parameters are missing, redirect to 'our-services.php'
     header('Location: our-services.php');
     exit;
@@ -123,8 +124,9 @@ if (isset($_POST['bookmark'])) {
         $statement->execute();
         echo "<script>alert('Part bookmarked successfully!');</script>";
         // Redirect to prevent form resubmission
-        header("Location: " . $_SERVER['PHP_SELF']);
+        header("Location: " . $_SERVER['REQUEST_URI']);
         exit;
+                exit;
     } else {
         echo "<script>alert('You must be logged in to bookmark this part.');</script>";
     }

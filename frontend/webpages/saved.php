@@ -19,9 +19,7 @@ if (isset($_SESSION['user_id'])) {
 
     
         // Debug the SQL query
-    echo "<pre>" . htmlspecialchars($query) . "</pre>";
-    echo "<pre>" . htmlspecialchars($part_id) . "</pre>";
-
+    var_dump($query);
     echo "<pre>" . htmlspecialchars($user_id) . "</pre>";  // Debug user_id
 
     $stmt = $db->prepare($query);
@@ -53,7 +51,7 @@ if (isset($_SESSION['user_id'])) {
 </head>
 
 <body>
-    <?php include('../common/header.php'); ?>
+    <!-- <?php include('../common/header.php'); ?>
 
     <?php if (!$is_logged_in): ?>
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -87,7 +85,7 @@ if (isset($_SESSION['user_id'])) {
          </div>
     </section>
 
-    <?php include('../common/footer.php'); ?>
+    <?php include('../common/footer.php'); ?> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.reflowhq.com/v2/toolkit.min.js"></script>

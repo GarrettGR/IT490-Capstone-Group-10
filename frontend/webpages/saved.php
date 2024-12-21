@@ -1,6 +1,6 @@
 <?php
 // checks database connection cause it is needed for logging in 
-include('../src/database-applicare.php'); 
+require_once('../src/database-applicare.php'); 
 
 // Start the session only if it's not already active
 if (session_status() === PHP_SESSION_NONE) {

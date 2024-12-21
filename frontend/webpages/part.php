@@ -95,10 +95,12 @@ if (isset($_POST['submit_review'])) {
     $statement->bindValue(':review_text', $review_text, PDO::PARAM_STR); // Corrected here
     if ($statement->execute()) {
         echo "Review submitted successfully!";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
     } else {
-        echo "Error submitting review!". implode(" - ", $statement->errorInfo());
-        var_dump($_SESSION);
+        echo "Error submitting review! " . implode(" - ", $statement->errorInfo());
     }
+    
 }
 
 

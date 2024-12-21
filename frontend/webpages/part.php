@@ -73,6 +73,7 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
 
 // Handle the review form submission
 if (isset($_POST['submit_review'])) {
+    var_dump($_POST);
     if ($is_logged_in) {
         $user_id = $_SESSION['user_id'];
         $part_id = $_POST['part_id'];

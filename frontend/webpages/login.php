@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                if (password_verify(trim($_POST['password']), $user['password_hash'])) {
                 // Successful login
                 $_SESSION['first_name'] = $user['first_name'];
-                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['user_id'] = $user['id'];
                 // Redirect to dashboard or home page
                 header("Location: index.php");
                 exit();

@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 $is_logged_in = isset($_SESSION['user_id']); // assuming 'user_id' is stored in session upon login
 
-if ($is_logged_in) {
+if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id']; // retrieve the user ID from session
     $query = "SELECT * FROM saved_parts WHERE user_id = ?";
     $stmt = $db->prepare($query);
@@ -22,7 +22,7 @@ if ($is_logged_in) {
     echo "<pre>";
     var_dump($result->fetch_all(MYSQLI_ASSOC)); // This will show the fetched rows
     echo "</pre>";
-    
+
 } else {
     // No saved parts if not logged in
     $result = [];

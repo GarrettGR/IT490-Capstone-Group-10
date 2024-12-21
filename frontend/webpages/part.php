@@ -62,7 +62,7 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
 
         $statement->execute();
         $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
-        var_dump($parts);  // Check the fetched parts
+        // var_dump($parts);  // Check the fetched parts
 
 
     if (!$parts) {
@@ -220,7 +220,7 @@ if (isset($_POST['bookmark'])) {
             <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['part_id'] : '' ?>">
             <input type="hidden" name="problem_id" value="<?= $problem_id; ?>">
             
-            <pre><?php var_dump($_SESSION['user_id'], $recommended_part, $problem_id); ?></pre>
+            <!-- <pre><?php var_dump($_SESSION['user_id'], $recommended_part, $problem_id); ?></pre> -->
 
             <div class="mb-3">
                 <label for="rating" class="form-label">Rating</label>

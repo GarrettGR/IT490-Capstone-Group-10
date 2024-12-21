@@ -184,8 +184,8 @@ if (isset($_POST['bookmark'])) {
              <!-- Bookmark button (only available if logged in) -->
              <?php if ($is_logged_in): ?>
                 <form method="POST" class="text-center mt-3">
-                    <input type="hidden" name="part_id" value="<?= $recommended_part['id']; ?>">
-                    <button type="submit" name="bookmark" class="btn btn-warning">Bookmark This Part</button>
+                <input type="hidden" name="user_id" value="<?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : '' ?>">
+                <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['part_id'] : '' ?>">                    <button type="submit" name="bookmark" class="btn btn-warning">Bookmark This Part</button>
                 </form>
             <?php else: ?>
                 <p class="text-center mt-3">You need to <a href="login.php">log in</a> to bookmark this part.</p>

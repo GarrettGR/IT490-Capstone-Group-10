@@ -20,6 +20,10 @@ if (isset($_SESSION['user_id'])) {
         JOIN part p ON sp.part_id = p.part_id
         WHERE sp.user_id = ?";
     
+        // Debug the SQL query
+    echo "<pre>" . htmlspecialchars($query) . "</pre>";
+    echo "<pre>" . htmlspecialchars($user_id) . "</pre>";  // Debug user_id
+
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $user_id);
     if (!$stmt->execute()) {

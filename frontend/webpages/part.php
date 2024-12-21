@@ -130,13 +130,13 @@ if (isset($_POST['bookmark'])) {
         
         <?php if ($recommended_part): ?>
             <div class="card mx-auto" style="max-width: 600px;">
-                <img src="<?= htmlspecialchars($recommended_part['part_image']); ?>" class="card-img-top" alt="Part Image">
+                <img src="<?= htmlspecialchars($recommended_part['image_url']); ?>" class="card-img-top" alt="Part Image">
                 <div class="card-body">
-                    <h5 class="card-title"><?= htmlspecialchars($recommended_part['part_name']); ?></h5>
+                    <h5 class="card-title"><?= htmlspecialchars($recommended_part['name']); ?></h5>
                     <div class="d-flex justify-content-center gap-2">
-                        <a href="<?= htmlspecialchars($recommended_part['part_link']); ?>" class="btn btn-primary" target="_blank">Buy Part</a>
-                        <?php if ($recommended_part['instructions_video']): ?>
-                            <a href="<?= htmlspecialchars($recommended_part['instructions_video']); ?>" class="btn btn-secondary" target="_blank">Watch Instructions</a>
+                        <a href="<?= htmlspecialchars($recommended_part['purchase_url']); ?>" class="btn btn-primary" target="_blank">Buy Part</a>
+                        <?php if ($recommended_part['video_url']): ?>
+                            <a href="<?= htmlspecialchars($recommended_part['video_url']); ?>" class="btn btn-secondary" target="_blank">Watch Instructions</a>
                         <?php endif; ?>
                     </div>
                 </div>

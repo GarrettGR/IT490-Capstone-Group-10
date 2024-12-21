@@ -36,7 +36,7 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
             cp.problem_description, 
             cp.solution_steps, 
             cp.area,
-            p.name AS part_name,
+            p.name,
             p.image_url,
             p.video_url,
             p.purchase_url
@@ -160,16 +160,13 @@ if (isset($_POST['bookmark'])) {
         <?php if ($recommended_part): ?>
             <div class="card mx-auto" style="max-width: 600px;">
                 <img src="<?= htmlspecialchars($recommended_part['image_url']); ?>" class="card-img-top" alt="Part Image">
-                <?php echo "Image URL: " . htmlspecialchars($recommended_part['image_url']); ?>
                 <div class="card-body">
                     <h5 class="card-title"><?= htmlspecialchars($recommended_part['name']); ?></h5>
                     <div class="d-flex justify-content-center gap-2">
                         <a href="<?= htmlspecialchars($recommended_part['purchase_url']); ?>" class="btn btn-primary" target="_blank">Buy Part</a>
-                        <?php echo "Purchase URL: " . htmlspecialchars($recommended_part['purchase_url']); ?>
 
                         <?php if ($recommended_part['video_url']): ?>
                             <a href="<?= htmlspecialchars($recommended_part['video_url']); ?>" class="btn btn-secondary" target="_blank">Watch Instructions</a>
-                            <?php echo "Video URL: " . htmlspecialchars($recommended_part['video_url']); ?>
 
                         <?php endif; ?>
                     </div>

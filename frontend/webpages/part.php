@@ -134,17 +134,11 @@ if (isset($_POST['bookmark'])) {
         $statement = $db->prepare($query);
         $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
-        
-        if ($statement->execute()) {
-            echo "<script>alert('Part bookmarked successfully!');</script>";
-            // Redirect to prevent form resubmission
-            header("Location: " . $_SERVER['REQUEST_URI']);
-            exit;
-        } else {
-            // Output error details if query fails
-            echo "Error bookmarking part: " . implode(" - ", $statement->errorInfo());
-        }
-        
+        $statement->execute();
+        echo "<script>alert('Part bookmarked successfully!');</script>";
+        // Redirect to prevent form resubmission
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit;
     } else {
         echo "<script>alert('You must be logged in to bookmark this part.');</script>";
     }

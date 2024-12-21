@@ -125,6 +125,8 @@ if (isset($_POST['submit_review'])) {
 
 // Handle the bookmark functionality
 if (isset($_POST['bookmark'])) {
+    var_dump($_POST); // Debugging to check if the form data is being received
+
     if ($is_logged_in) {
         $user_id = $_SESSION['user_id'];
         $part_id = $_POST['part_id'];

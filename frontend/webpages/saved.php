@@ -24,8 +24,8 @@ if (isset($_SESSION['user_id'])) {
 
     
         // Debug the SQL query
-    var_dump($query);
-    echo "<pre>" . htmlspecialchars($user_id) . "</pre>";  // Debug user_id
+        echo "Executing Query: " . htmlspecialchars($query); // Show query being executed
+        echo "<pre>" . htmlspecialchars($user_id) . "</pre>";  // Debug user_id
 
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $user_id);

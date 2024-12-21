@@ -72,6 +72,7 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
 }
 
 // Handle the review form submission
+// Handle the review form submission
 if (isset($_POST['submit_review'])) {
     $user_id = $_POST['user_id'];
     $part_id = $_POST['part_id'];
@@ -79,10 +80,10 @@ if (isset($_POST['submit_review'])) {
     $user_name = $_POST['user_name'];
     $rating = $_POST['rating'];
     $fixed_issue = $_POST['fixed_issue'];
-    $comment = $_POST['review_text'];
+    $review_text = $_POST['review_text']; // Correct the variable name
 
     // Perform the necessary insert/update query to save the review
-    $query = "INSERT INTO reviews (user_id, part_id, problem_id, user_name, rating, fixed_issue, review_text) 
+    $query = "INSERT INTO part_reviews (user_id, part_id, problem_id, user_name, rating, fixed_issue, review_text) 
               VALUES (:user_id, :part_id, :problem_id, :user_name, :rating, :fixed_issue, :review_text)";
 
     $statement = $db->prepare($query);
@@ -92,9 +93,10 @@ if (isset($_POST['submit_review'])) {
     $statement->bindValue(':user_name', $user_name, PDO::PARAM_STR);
     $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
     $statement->bindValue(':fixed_issue', $fixed_issue, PDO::PARAM_INT);
-    $statement->bindValue(':comment', $review_text, PDO::PARAM_STR);
+    $statement->bindValue(':review_text', $review_text, PDO::PARAM_STR); // Corrected here
     $statement->execute();
 }
+
 
 // Handle the bookmark functionality
 if (isset($_POST['bookmark'])) {
@@ -212,7 +214,7 @@ if (isset($_POST['bookmark'])) {
             </div>
             <div class="mb-3">
                 <label for="comment" class="form-label">Your Review</label>
-                <textarea class="form-control" id="comment" name="comment" rows="4" required></textarea>
+                <textarea class="form-control" id="comment" name="review_text" rows="4" required></textarea>
             </div>
             <button type="submit" name="submit_review" class="btn btn-primary">Submit Review</button>
         </form>

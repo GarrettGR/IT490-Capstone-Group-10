@@ -83,14 +83,13 @@ if (isset($_POST['submit_review'])) {
     $review_text = $_POST['review_text']; // Correct the variable name
 
     // Perform the necessary insert/update query to save the review
-    $query = "INSERT INTO part_reviews (user_id, part_id, problem_id, user_name, rating, fixed_issue, review_text) 
-              VALUES (:user_id, :part_id, :problem_id, :user_name, :rating, :fixed_issue, :review_text)";
+    $query = "INSERT INTO part_reviews (user_id, part_id, problem_id, rating, fixed_issue, review_text) 
+              VALUES (:user_id, :part_id, :problem_id, :rating, :fixed_issue, :review_text)";
 
     $statement = $db->prepare($query);
     $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
     $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
     $statement->bindValue(':problem_id', $problem_id, PDO::PARAM_INT);
-    $statement->bindValue(':user_name', $user_name, PDO::PARAM_STR);
     $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
     $statement->bindValue(':fixed_issue', $fixed_issue, PDO::PARAM_INT);
     $statement->bindValue(':review_text', $review_text, PDO::PARAM_STR); // Corrected here

@@ -29,22 +29,23 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
 
     // Database connection and fetching relevant parts
     $query = '
-        SELECT cp.id AS problem_id, cp.problem_description, cp.solution_steps, cp.area
-        FROM common_problems cp
-        JOIN appliances a ON cp.appliance_id = a.id
-        JOIN parts p ON cp.part_id = p.id
-        WHERE a.type = :appliance_type
-        AND a.brand = :brand
-        AND a.model = :model
-        AND p.id = :part_id
-
+SELECT cp.id AS problem_id, cp.problem_description, cp.solution_steps, cp.area
+    FROM common_problems cp
+    JOIN appliances a ON cp.appliance_id = a.id
+    WHERE a.type = :appliance_type
+    AND a.brand = :brand
+    AND a.model = :model
+    AND cp.area = :area
+    AND cp.problem_description = :problem_description
     ';
     
     $statement = $db->prepare($query);
     $statement->bindValue(':appliance_id', $appliance_id, PDO::PARAM_INT);
     $statement->bindValue(':brand', $brand, PDO::PARAM_INT);
     $statement->bindValue(':model', $model, PDO::PARAM_INT);
-    $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
+    
+$statement->bindValue(':area', $area, PDO::PARAM_STR);
+$statement->bindValue(':problem_description', $problem, PDO::PARAM_STR);
     $statement->execute();
     $parts = $statement->fetchAll(PDO::FETCH_ASSOC);
 

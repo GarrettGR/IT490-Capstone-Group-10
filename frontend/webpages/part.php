@@ -31,15 +31,25 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
 
     // Database connection and fetching relevant parts
     $query = '
-        SELECT cp.id AS problem_id, cp.problem_description, cp.solution_steps, cp.area
+        SELECT 
+            cp.id AS problem_id, 
+            cp.problem_description, 
+            cp.solution_steps, 
+            cp.area,
+            p.name AS part_name,
+            p.image_url,
+            p.video_url,
+            p.purchase_url
         FROM common_problems cp
         JOIN appliances a ON cp.appliance_id = a.id
+        JOIN parts p ON p.id = cp.part_id  -- Join the parts table
         WHERE a.type = :appliance_type
         AND a.brand = :brand
         AND a.model = :model
         AND cp.area = :area
-         AND cp.problem_description = :problem_description
+        AND cp.problem_description = :problem_description
     ';
+
 
         $statement = $db->prepare($query);
         $statement->bindValue(':appliance_type', $_GET['appliance_type'], PDO::PARAM_STR);

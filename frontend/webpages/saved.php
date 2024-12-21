@@ -33,6 +33,7 @@ if (isset($_SESSION['user_id'])) {
         echo "Error: " . $stmt->error;
     } else {
         $result = $stmt->get_result();
+        var_dump($result);
     }
 
 } else {

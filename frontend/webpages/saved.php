@@ -16,6 +16,13 @@ if ($is_logged_in) {
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
+
+    // Debugging - check how many rows were returned
+    echo "Number of rows: " . $result->num_rows;
+    echo "<pre>";
+    var_dump($result->fetch_all(MYSQLI_ASSOC)); // This will show the fetched rows
+    echo "</pre>";
+    
 } else {
     // No saved parts if not logged in
     $result = [];

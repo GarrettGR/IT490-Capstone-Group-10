@@ -217,8 +217,8 @@ if (isset($_POST['bookmark'])) {
     <h3 class="text-center" mt-5 mb-4>Leave a Review</h3>
         <form method="POST" action="" class="mx-auto" style="max-width: 600px; border: 1px solid #ccc; padding: 20px; border-radius:8px; background-color: #f9f9f9;">
             <input type="hidden" name="user_id" value="<?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : '' ?>">
-            <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['id'] : '' ?>">
-            <input type="hidden" name="problem_id" value="<?= htmlspecialchars($problem_id); ?>">
+            <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['part_id'] : '' ?>">
+            <input type="hidden" name="problem_id" value="<?= $problem_id; ?>">
             
             <pre><?php var_dump($_SESSION['user_id'], $recommended_part, $problem_id); ?></pre>
 

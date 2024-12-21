@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Successful login
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['user_id'] = $user['user_id'];
-                echo "User ID: " . $_SESSION['user_id']; // Debugging
                 // Redirect to dashboard or home page
                 header("Location: index.php");
                 exit();

@@ -6,7 +6,7 @@ include('../src/database-applicare.php');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-var_dump($_SESSION);  // Add this to debug the session
+// var_dump($_SESSION);  // Add this to debug the session
 
 $is_logged_in = isset($_SESSION['user_id']); // assuming 'user_id' is stored in session upon login
 

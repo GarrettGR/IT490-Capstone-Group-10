@@ -78,29 +78,6 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </section>
 
-    <section>
-        <div class="container py-4 py-lg-5">
-            <hr>
-            <div class="text-muted d-flex justify-content-between align-items-center pt-3">
-                <p class="mb-0"></p>
-                <section class="text-center">
-                    <div class="container text-muted py-4 py-lg-5">
-                        <ul class="list-inline">
-                            <li class="list-inline-item me-4"><a class="link-secondary" href="contacts.html">Help Center</a></li>
-                            <li class="list-inline-item me-4"><a class="link-secondary" href="#">Terms of Service</a></li>
-                            <li class="list-inline-item"><a class="link-secondary" href="#">Privacy Policy</a></li>
-                        </ul>
-                        <ul class="list-inline">
-                            <li class="list-inline-item me-4"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-facebook"></svg></li>
-                            <li class="list-inline-item me-4"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-twitter"></svg></li>
-                            <li class="list-inline-item"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-instagram"></svg></li>
-                        </ul>
-                        <p class="mb-0">Copyright © 2024 Brand</p>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </section>
     <?php include('../common/footer.php'); ?>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

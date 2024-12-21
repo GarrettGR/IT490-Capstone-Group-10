@@ -19,12 +19,12 @@ echo "Area: " . htmlspecialchars($_GET['area']) . "<br>";
 echo "Problem: " . htmlspecialchars($_GET['problem']) . "<br>";
 
 // Check if all required parameters are present
-if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], $_GET['issue'])) {
+if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], $_GET['problem'])) {
     $appliance_id = $_GET['appliance_id'];
     $brand = $_GET['brand'];
     $model_ = $_GET['model'];
     $part_id = $_GET['area'];
-    $part_id = $_GET['issue'];
+    $part_id = $_GET['problem'];
 
 
     // Database connection and fetching relevant parts

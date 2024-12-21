@@ -36,20 +36,21 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
             cp.problem_description, 
             cp.solution_steps, 
             cp.area,
-            p.id,
+            p.id AS part_id,
             p.name,
             p.image_url,
             p.video_url,
             p.purchase_url
         FROM common_problems cp
         JOIN appliances a ON cp.appliance_id = a.id
-        JOIN parts p ON p.id = cp.part_id  -- Join the parts table
+        JOIN parts p ON p.id = cp.part_id
         WHERE a.type = :appliance_type
         AND a.brand = :brand
         AND a.model = :model
         AND cp.area = :area
         AND cp.problem_description = :problem_description
     ';
+
 
 
         $statement = $db->prepare($query);
@@ -77,6 +78,7 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
     if ($parts) {
         // Use the first part found as the recommended part
         $recommended_part = $parts[0];
+        $problem_id = $recommended_part['problem_id'];  // Set problem_id here
     } else {
         // No parts found
         $recommended_part = null;
@@ -216,7 +218,7 @@ if (isset($_POST['bookmark'])) {
         <form method="POST" action="" class="mx-auto" style="max-width: 600px; border: 1px solid #ccc; padding: 20px; border-radius:8px; background-color: #f9f9f9;">
             <input type="hidden" name="user_id" value="<?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : '' ?>">
             <input type="hidden" name="part_id" value="<?= $recommended_part ? $recommended_part['id'] : '' ?>">
-            <input type="hidden" name="problem_id" value="<?= $problem_id; ?>">
+            <input type="hidden" name="problem_id" value="<?= htmlspecialchars($problem_id); ?>">
             
             <pre><?php var_dump($_SESSION['user_id'], $recommended_part, $problem_id); ?></pre>
 

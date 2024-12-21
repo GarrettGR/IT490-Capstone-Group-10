@@ -5,7 +5,7 @@ session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
-    $password = trim($_POST['password_hash']);
+    $password = trim($_POST['password']);
     $error = '';
 
     if (empty($email) || empty($password)) {
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($user) {
                // Verify the password
-               if (password_verify(trim($_POST['password_hash']), $user['password_hash'])) {
+               if (password_verify(trim($_POST['password']), $user['password_hash'])) {
                 // Successful login
                 $_SESSION['first_name'] = $user['first_name'];
                 $_SESSION['user_id'] = $user['user_id'];
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                         </svg></div>
                                     <form class="text-center" method="post">
                                         <div class="mb-3"><input class="form-control" type="email" name="email" placeholder="Email"></div>
-                                        <div class="mb-3"><input class="form-control" type="password" name="password_hash" placeholder="Password"></div>
+                                        <div class="mb-3"><input class="form-control" type="password" name="password" placeholder="Password"></div>
                                         <?php if (!empty($error)) : ?>
                                             <div class="alert alert-danger"><?php echo $error; ?></div>
                                         <?php endif; ?>

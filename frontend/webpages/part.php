@@ -176,7 +176,7 @@ if (isset($_POST['bookmark'])) {
              <!-- Bookmark button (only available if logged in) -->
              <?php if ($is_logged_in): ?>
                 <form method="POST" class="text-center mt-3">
-                    <input type="hidden" name="part_id" value="<?= $recommended_part['part_id']; ?>">
+                    <input type="hidden" name="part_id" value="<?= $recommended_part['id']; ?>">
                     <button type="submit" name="bookmark" class="btn btn-warning">Bookmark This Part</button>
                 </form>
             <?php else: ?>

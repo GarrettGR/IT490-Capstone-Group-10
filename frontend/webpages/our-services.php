@@ -118,7 +118,7 @@ if($search !== ''){
 
                                 <button class="btn btn-outline-primary" onclick="toggleDropdown(<?php echo $appliance['id']; ?>)">Select Issue</button>
                                 <div class="dropdown mt-3" id="dropdown-<?php echo $appliance['id']; ?>" style="display: none;">
-                                    <form action="part.php" method="get">
+                                    <form action="part.php" method="GET">
                                         <input type="hidden" name="appliance_id" value="<?= $appliance['id']; ?>">
                                         <input type="hidden" name="appliance_type" value="<?= $appliance['type']; ?>">
 
@@ -162,7 +162,7 @@ if($search !== ''){
                                             <?php endforeach; ?>
                                         </select>
                                     
-                                    <button class="btn btn-primary" formmethod="GET" formaction="part.php">Submit</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
                                     </form>
                                 </div>
                             </div>

@@ -14,7 +14,9 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
     $appliance_id = $_GET['appliance_id'];
     $brand = $_GET['brand'];
     $model_ = $_GET['model'];
-    $part_id = $_GET['part_id'];
+    $part_id = $_GET['area'];
+    $part_id = $_GET['issue'];
+
 
     // Database connection and fetching relevant parts
     $query = '

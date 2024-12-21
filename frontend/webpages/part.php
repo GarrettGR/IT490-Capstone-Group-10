@@ -8,11 +8,9 @@ if (session_status() === PHP_SESSION_NONE) {
   }
 
 $is_logged_in = isset($_SESSION['user_id']) && $_SESSION['user_id'] > 0;
-if (!isset($_SESSION['user_id'])) {
-    // Handle the case where the user is not logged in
-    echo "User not logged in. Please log in.";
-    exit;
-}
+
+echo "Session User ID: " . $_SESSION['user_id']; // Debugging
+
   //   var_dump($_GET);
 
 //   // Debugging for the values captured

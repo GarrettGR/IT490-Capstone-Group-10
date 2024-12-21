@@ -24,7 +24,6 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
     $brand = $_GET['brand'];
     $model_ = $_GET['model'];
     $part_id = $_GET['area'];
-    $part_id = $_GET['problem'];
 
 
     // Database connection and fetching relevant parts
@@ -36,7 +35,6 @@ SELECT cp.id AS problem_id, cp.problem_description, cp.solution_steps, cp.area
     AND a.brand = :brand
     AND a.model = :model
     AND cp.area = :area
-    AND cp.problem_description = :problem_description
     ';
     
     $statement = $db->prepare($query);

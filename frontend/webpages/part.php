@@ -97,9 +97,8 @@ if (isset($_POST['submit_review'])) {
         echo "Review submitted successfully!";
     } else {
         echo "Error submitting review!". implode(" - ", $statement->errorInfo());
+        var_dump($_SESSION);
     }
-    var_dump($_SESSION);
-
 }
 
 

@@ -13,24 +13,37 @@ if ($is_logged_in) {
     $user_id = $_SESSION['user_id'];
     echo "User ID: " . $_SESSION['user_id']; // This should output the user ID.
 
-    // Fetch saved parts for the logged-in user
-    $query = "SELECT sp.*, p.*
-        FROM saved_parts sp
-        JOIN parts p ON p.id = sp.part_id
-        WHERE sp.user_id = 4;
-";
-
-    echo $query;
     
-    $stmt = $db->prepare($query);
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-} else {
-    // Redirect to login page if the user is not logged in
-    header("Location: login.php");
-    exit();
+$query = "SELECT p.id, p.name, p.type, p.area, p.description, p.image_url, p.purchase_url, p.video_url, sp.notes
+          FROM saved_parts sp
+          JOIN parts p ON sp.part_id = p.id
+          WHERE sp.user_id = ?";
+
+$stmt = $db->prepare($query);
+
+if (!$stmt) {
+    die("Query preparation failed: " . $db->error);
 }
+
+$stmt->bind_param("i", $user_id);
+
+if (!$stmt->execute()) {
+    die("Query execution failed: " . $stmt->error);
+}
+
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    echo "No results found for User ID: " . htmlspecialchars($user_id);
+} else {
+    echo "<h1>Results</h1>";
+    while ($row = $result->fetch_assoc()) {
+        echo "<pre>";
+        print_r($row);
+        echo "</pre>";
+    }
+}
+
 ?>
 
 <!DOCTYPE html>

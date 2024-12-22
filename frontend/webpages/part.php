@@ -85,7 +85,6 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
         $recommended_part = null;
     }
 } else {
-    echo "Missing parameters!";
     // If required parameters are missing, redirect to 'our-services.php'
     header('Location: our-services.php');
     exit;

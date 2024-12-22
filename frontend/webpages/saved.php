@@ -59,42 +59,43 @@ if ($is_logged_in) {
     <div class="container mt-5">
         <h1>Saved Parts</h1>
 
-        <?php if ($result->num_rows > 0): ?>
-            <div class="row">
-                <?php while ($part = $result->fetch_assoc()): ?>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <?php if ($part['image_url']): ?>
-                                <img src="<?= $part['image_url']; ?>" class="card-img-top" alt="<?= $part['name']; ?>">
-                            <?php endif; ?>
-                            <div class="card-body">
-                                <h5 class="card-title"><?= $part['name']; ?></h5>
-                                <p class="card-text"><?= $part['description']; ?></p>
-                                <p><strong>Type:</strong> <?= $part['type']; ?></p>
-                                <p><strong>Area:</strong> <?= $part['area']; ?></p>
+        <?php if (count($saved_parts) > 0): ?>
+    <div class="row">
+        <?php foreach ($saved_parts as $part): ?>
+            <div class="col-md-4">
+                <div class="card">
+                    <?php if ($part['image_url']): ?>
+                        <img src="<?= htmlspecialchars($part['image_url']); ?>" class="card-img-top" alt="<?= htmlspecialchars($part['name']); ?>">
+                    <?php endif; ?>
+                    <div class="card-body">
+                        <h5 class="card-title"><?= htmlspecialchars($part['name']); ?></h5>
+                        <p class="card-text"><?= htmlspecialchars($part['description']); ?></p>
+                        <p><strong>Type:</strong> <?= htmlspecialchars($part['type']); ?></p>
+                        <p><strong>Area:</strong> <?= htmlspecialchars($part['area']); ?></p>
 
-                                <?php if ($part['purchase_url']): ?>
-                                    <a href="<?= $part['purchase_url']; ?>" class="btn btn-primary" target="_blank">Buy Now</a>
-                                <?php endif; ?>
+                        <?php if ($part['purchase_url']): ?>
+                            <a href="<?= htmlspecialchars($part['purchase_url']); ?>" class="btn btn-primary" target="_blank">Buy Now</a>
+                        <?php endif; ?>
 
-                                <?php if ($part['video_url']): ?>
-                                    <a href="<?= $part['video_url']; ?>" class="btn btn-secondary" target="_blank">Watch Video</a>
-                                <?php endif; ?>
+                        <?php if ($part['video_url']): ?>
+                            <a href="<?= htmlspecialchars($part['video_url']); ?>" class="btn btn-secondary" target="_blank">Watch Video</a>
+                        <?php endif; ?>
 
-                                <?php if ($part['notes']): ?>
-                                    <div class="mt-3">
-                                        <strong>Notes:</strong>
-                                        <p><?= nl2br($part['notes']); ?></p>
-                                    </div>
-                                <?php endif; ?>
+                        <?php if ($part['notes']): ?>
+                            <div class="mt-3">
+                                <strong>Notes:</strong>
+                                <p><?= nl2br(htmlspecialchars($part['notes'])); ?></p>
                             </div>
-                        </div>
+                        <?php endif; ?>
                     </div>
-                <?php endwhile; ?>
+                </div>
             </div>
-        <?php else: ?>
-            <p>You have no saved parts.</p>
-        <?php endif; ?>
+        <?php endforeach; ?>
+        </div>
+    <?php else: ?>
+        <p>You have no saved parts.</p>
+    <?php endif; ?>
+
     </div>
 
     <?php include('../common/footer.php'); ?>

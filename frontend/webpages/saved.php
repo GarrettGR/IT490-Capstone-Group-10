@@ -12,28 +12,32 @@ $saved_parts = [];
 
 if ($is_logged_in) {
     $user_id = $_SESSION['user_id'];
-    echo "User ID: " . htmlspecialchars($user_id) . "<br>"; // Debugging user ID
 
     // Query to fetch saved parts
-    $query = "SELECT p.id, p.name, p.type, p.area, p.description, p.image_url, p.purchase_url, p.video_url, sp.notes
+    $query = "SELECT 
+                p.id, 
+                p.name, 
+                p.type, 
+                p.area, 
+                p.description, 
+                p.image_url, 
+                p.purchase_url, 
+                p.video_url, 
+                sp.notes
               FROM saved_parts sp
               JOIN parts p ON sp.part_id = p.id
-              WHERE sp.user_id = ?";
+              WHERE sp.user_id = :user_id";
 
     // Prepare the statement to prevent SQL injection
     if ($stmt = $db->prepare($query)) {
-        $stmt->bind_param('i', $user_id); // Bind the user_id parameter
+        $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT); // Bind the user_id parameter
         $stmt->execute();
-        $result = $stmt->get_result();
+        $saved_parts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $saved_parts[] = $row;
-            }
-        } else {
+        if (!$saved_parts) {
             echo "No saved parts found for User ID: " . htmlspecialchars($user_id);
         }
-        $stmt->close();
+        $stmt->closeCursor();
     } else {
         echo "Error preparing the query.";
     }

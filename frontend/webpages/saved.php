@@ -19,7 +19,7 @@ if ($is_logged_in) {
             JOIN parts p ON sp.part_id = p.id
             WHERE sp.user_id = ?";
 
-    echo $sql;
+    echo $query;
     
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $user_id);

@@ -1,5 +1,5 @@
 <?php
-// checks database connection cause it is needed for troubleshooting
+// Include database connection
 require_once('../src/database-applicare.php'); 
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -7,43 +7,44 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $is_logged_in = isset($_SESSION['user_id']);
-
+$saved_parts = [];
 
 if ($is_logged_in) {
     $user_id = $_SESSION['user_id'];
-    echo "User ID: " . $_SESSION['user_id']; // This should output the user ID.
+    echo "User ID: " . htmlspecialchars($user_id) . "<br>"; // Debugging user ID
 
-    
-$query = "SELECT p.id, p.name, p.type, p.area, p.description, p.image_url, p.purchase_url, p.video_url, sp.notes
-          FROM saved_parts sp
-          JOIN parts p ON sp.part_id = p.id
-          WHERE sp.user_id = ?";
+    // Query to fetch saved parts
+    $query = "SELECT p.id, p.name, p.type, p.area, p.description, p.image_url, p.purchase_url, p.video_url, sp.notes
+              FROM saved_parts sp
+              JOIN parts p ON sp.part_id = p.id
+              WHERE sp.user_id = ?";
 
-$stmt = $db->prepare($query);
+    $stmt = $db->prepare($query);
 
-if (!$stmt) {
-    die("Query preparation failed: " . $db->error);
-}
-
-$stmt->bind_param("i", $user_id);
-
-if (!$stmt->execute()) {
-    die("Query execution failed: " . $stmt->error);
-}
-
-$result = $stmt->get_result();
-
-if ($result->num_rows === 0) {
-    echo "No results found for User ID: " . htmlspecialchars($user_id);
-} else {
-    echo "<h1>Results</h1>";
-    while ($row = $result->fetch_assoc()) {
-        echo "<pre>";
-        print_r($row);
-        echo "</pre>";
+    if (!$stmt) {
+        die("Query preparation failed: " . $db->error);
     }
-}
 
+    $stmt->bind_param("i", $user_id);
+
+    if (!$stmt->execute()) {
+        die("Query execution failed: " . $stmt->error);
+    }
+
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $saved_parts[] = $row;
+        }
+    } else {
+        echo "No saved parts found for User ID: " . htmlspecialchars($user_id);
+    }
+
+    $stmt->close();
+} else {
+    echo "You are not logged in.";
+}
 ?>
 
 <!DOCTYPE html>

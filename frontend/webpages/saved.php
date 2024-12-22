@@ -18,6 +18,8 @@ if ($is_logged_in) {
             FROM saved_parts sp
             JOIN parts p ON sp.part_id = p.id
             WHERE sp.user_id = ?";
+
+    echo $sql;
     
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $user_id);

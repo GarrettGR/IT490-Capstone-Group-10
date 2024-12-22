@@ -56,24 +56,32 @@ if ($is_logged_in) {
 </head>
 <body>
     <?php include('../common/header.php'); ?>
-    <div class="container mt-5">
-        <div class="text-center">
-            <h1 class="display-4 fw-bold mb-5">Saved Parts</h1>
+    <header class="pt-5">
+        <div class="container pt-4 pt-xl-5">
+            <div class="row pt-5">
+                <div class="col-md-8 text-center text-md-start mx-auto">
+                    <div class="text-center">
+                        <h1 class="display-4 fw-bold mb-5">Saved Parts</h1>
+                    </div>
+                </div>
+            </div>
         </div>
-
+    </header>
+    <div class="container mt-5">
+   
         <?php if (count($saved_parts) > 0): ?>
-    <div class="row">
-        <?php foreach ($saved_parts as $part): ?>
-            <div class="col-md-4">
-                <div class="card">
-                    <?php if ($part['image_url']): ?>
-                        <img src="<?= htmlspecialchars($part['image_url']); ?>" class="card-img-top" alt="<?= htmlspecialchars($part['name']); ?>">
-                    <?php endif; ?>
-                    <div class="card-body">
-                        <h5 class="card-title"><?= htmlspecialchars($part['name']); ?></h5>
-                        <p class="card-text"><?= htmlspecialchars($part['description']); ?></p>
-                        <p><strong>Type:</strong> <?= htmlspecialchars($part['type']); ?></p>
-                        <p><strong>Area:</strong> <?= htmlspecialchars($part['area']); ?></p>
+            <div class="row">
+                <?php foreach ($saved_parts as $part): ?>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <?php if ($part['image_url']): ?>
+                                <img src="<?= htmlspecialchars($part['image_url']); ?>" class="card-img-top" alt="<?= htmlspecialchars($part['name']); ?>">
+                            <?php endif; ?>
+                        <div class="card-body">
+                            <h5 class="card-title"><?= htmlspecialchars($part['name']); ?></h5>
+                            <p class="card-text"><?= htmlspecialchars($part['description']); ?></p>
+                            <p><strong>Type:</strong> <?= htmlspecialchars($part['type']); ?></p>
+                            <p><strong>Area:</strong> <?= htmlspecialchars($part['area']); ?></p>
 
                         <?php if ($part['purchase_url']): ?>
                             <a href="<?= htmlspecialchars($part['purchase_url']); ?>" class="btn btn-primary" target="_blank">Buy Now</a>

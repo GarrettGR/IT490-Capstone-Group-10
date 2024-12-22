@@ -14,14 +14,14 @@ if ($is_logged_in) {
     echo "User ID: " . $_SESSION['user_id']; // This should output the user ID.
 
     // Fetch saved parts for the logged-in user
-    $sql = "SELECT p.id, p.name, p.type, p.area, p.description, p.image_url, p.purchase_url, p.video_url, sp.notes
+    $query = "SELECT p.id, p.name, p.type, p.area, p.description, p.image_url, p.purchase_url, p.video_url, sp.notes
             FROM saved_parts sp
             JOIN parts p ON sp.part_id = p.id
             WHERE sp.user_id = ?";
 
     echo $sql;
     
-    $stmt = $conn->prepare($sql);
+    $stmt = $db->prepare($query);
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();

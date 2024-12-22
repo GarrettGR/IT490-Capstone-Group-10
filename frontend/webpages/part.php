@@ -1,4 +1,8 @@
 <?php
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // checks database connection cause it is needed for troubleshooting
 require_once('../src/database-applicare.php');
 

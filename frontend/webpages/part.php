@@ -1,8 +1,4 @@
 <?php
-
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 // checks database connection cause it is needed for troubleshooting
 require_once('../src/database-applicare.php');
 
@@ -128,23 +124,36 @@ if (isset($_POST['submit_review'])) {
 }
 
 // Handle the bookmark functionality
+// Handle the bookmark functionality
 if (isset($_POST['bookmark'])) {
-    // var_dump($_POST); // Debugging to check if the form data is being received
-
     if ($is_logged_in) {
         $user_id = $_SESSION['user_id'];
         $part_id = $_POST['part_id'];
-        // Save the part to the user's saved parts
-        $query = "INSERT INTO saved_parts (user_id, part_id) VALUES (:user_id, :part_id)";
-        $statement = $db->prepare($query);
-        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
-        if ($statement->execute()) {
-            echo "<script>alert('Part bookmarked successfully!');</script>";
+
+        // Check if the part is already bookmarked by the user
+        $check_query = "SELECT COUNT(*) FROM saved_parts WHERE user_id = :user_id AND part_id = :part_id";
+        $check_statement = $db->prepare($check_query);
+        $check_statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $check_statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
+        $check_statement->execute();
+        $already_bookmarked = $check_statement->fetchColumn();
+
+        if ($already_bookmarked) {
+            // If the part is already bookmarked, show an alert
+            echo "<script>alert('This part is already bookmarked!');</script>";
         } else {
-            echo "<script>alert('Error: " . implode(" - ", $statement->errorInfo()) . "');</script>";
+            // Save the part to the user's saved parts
+            $query = "INSERT INTO saved_parts (user_id, part_id) VALUES (:user_id, :part_id)";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+            $statement->bindValue(':part_id', $part_id, PDO::PARAM_INT);
+            if ($statement->execute()) {
+                echo "<script>alert('Part bookmarked successfully!');</script>";
+            } else {
+                echo "<script>alert('Error: " . implode(" - ", $statement->errorInfo()) . "');</script>";
+            }
         }
-        echo "<script>alert('Part bookmarked successfully!');</script>";
+
         // Redirect to prevent form resubmission
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit;
@@ -152,6 +161,7 @@ if (isset($_POST['bookmark'])) {
         echo "<script>alert('You must be logged in to bookmark this part.');</script>";
     }
 }
+
 ?>
 
 <!DOCTYPE html>

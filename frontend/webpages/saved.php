@@ -11,6 +11,8 @@ $is_logged_in = isset($_SESSION['user_id']);
 
 if ($is_logged_in) {
     $user_id = $_SESSION['user_id'];
+    echo "User ID: " . $_SESSION['user_id']; // This should output the user ID.
+
     // Fetch saved parts for the logged-in user
     $sql = "SELECT p.id, p.name, p.type, p.area, p.description, p.image_url, p.purchase_url, p.video_url, sp.notes
             FROM saved_parts sp

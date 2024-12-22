@@ -57,7 +57,9 @@ if ($is_logged_in) {
 <body>
     <?php include('../common/header.php'); ?>
     <div class="container mt-5">
-        <h1 class="display-4 fw-bold mb-5">Saved Parts</h1>
+        <div class="text-center">
+            <h1 class="display-4 fw-bold mb-5">Saved Parts</h1>
+        </div>
 
         <?php if (count($saved_parts) > 0): ?>
     <div class="row">

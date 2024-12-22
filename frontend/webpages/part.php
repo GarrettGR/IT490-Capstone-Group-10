@@ -38,6 +38,7 @@ if (isset($_GET['appliance_id'], $_GET['brand'], $_GET['model'], $_GET['area'], 
             cp.area,
             p.id AS part_id,
             p.name,
+            p.description,
             p.image_url,
             p.video_url,
             p.purchase_url
@@ -170,6 +171,7 @@ if (isset($_POST['bookmark'])) {
                 <img src="<?= htmlspecialchars($recommended_part['image_url']); ?>" class="card-img-top mx-auto d-block" alt="Part Image">
                 <div class="card-body text-center">
                     <h5 class="card-title"><?= htmlspecialchars($recommended_part['name']); ?></h5>
+                    <p class="card-title"><?= htmlspecialchars($recommended_part['description']); ?></p>
                     <div class="d-flex justify-content-center gap-2">
                         <a href="<?= htmlspecialchars($recommended_part['purchase_url']); ?>" class="btn btn-primary" target="_blank">Buy Part</a>
 

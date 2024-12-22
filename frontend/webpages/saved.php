@@ -5,7 +5,8 @@ require_once('../src/database-applicare.php');
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$is_logged_in = isset($_SESSION['user_id'])0;
+
+$is_logged_in = isset($_SESSION['user_id']);
 
 ?>
 

@@ -126,12 +126,11 @@ if (isset($_POST['submit_review'])) {
 
 // Handle the bookmark functionality
 if (isset($_POST['bookmark'])) {
-    var_dump($_POST); // Debugging to check if the form data is being received
+    // var_dump($_POST); // Debugging to check if the form data is being received
 
     if ($is_logged_in) {
         $user_id = $_SESSION['user_id'];
         $part_id = $_POST['part_id'];
-        echo $part_id;
         // Save the part to the user's saved parts
         $query = "INSERT INTO saved_parts (user_id, part_id) VALUES (:user_id, :part_id)";
         $statement = $db->prepare($query);

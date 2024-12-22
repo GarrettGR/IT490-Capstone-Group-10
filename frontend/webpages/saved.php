@@ -22,32 +22,22 @@ if ($is_logged_in) {
               JOIN parts p ON sp.part_id = p.id
               WHERE sp.user_id = ?";
 
-    $stmt = $db->prepare($query);
+    $result = $db->query($query); // Using the query method directly
 
-    if (!$stmt) {
-        die("Query preparation failed: " . $db->error);
+    if (!$result) {
+        die("Query execution failed: " . $db->error);
     }
 
-    $stmt->bind_param("i", $user_id);
-
-    if (!$stmt->execute()) {
-        die("Query execution failed: " . $stmt->error);
-    }
-
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $saved_parts[] = $row;
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $saved_parts[] = $row;
+            }
+        } else {
+            echo "No saved parts found for User ID: " . htmlspecialchars($user_id);
         }
     } else {
-        echo "No saved parts found for User ID: " . htmlspecialchars($user_id);
+        echo "You are not logged in.";
     }
-
-    $stmt->close();
-} else {
-    echo "You are not logged in.";
-}
 ?>
 
 <!DOCTYPE html>

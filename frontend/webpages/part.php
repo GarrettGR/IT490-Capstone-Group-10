@@ -141,6 +141,8 @@ if (isset($_POST['bookmark'])) {
         if ($already_bookmarked) {
             // If the part is already bookmarked, show an alert
             echo "<script>alert('This part is already bookmarked!');</script>";
+            header("Location: " . $_SERVER['REQUEST_URI']);
+            exit; // Ensure no further code is executed 
         } else {
             // Save the part to the user's saved parts
             $query = "INSERT INTO saved_parts (user_id, part_id) VALUES (:user_id, :part_id)";

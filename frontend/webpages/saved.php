@@ -16,7 +16,7 @@ if ($is_logged_in) {
     // Fetch saved parts for the logged-in user
     $query = "SELECT sp.*, p.*
         FROM saved_parts sp
-        JOIN parts p ON sp.part_id = p.id
+        JOIN parts p ON p.id = sp.part_id
         WHERE sp.user_id = 4;
 ";
 
